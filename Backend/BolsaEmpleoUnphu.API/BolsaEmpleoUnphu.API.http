@@ -1,0 +1,6 @@
+@BolsaEmpleoUnphu.API_HostAddress = http://localhost:5287
+
+GET {{BolsaEmpleoUnphu.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
