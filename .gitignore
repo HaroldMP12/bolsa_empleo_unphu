@@ -1,0 +1,10 @@
+# --- Visual Studio / .NET ---
+/backend/bin/
+/backend/obj/
+/backend/.vs/
+
+#--- Node.js / Angular ---
+/frontend/node_modules/
+/frontend/dist/
+/frontend/.angular/cache/
+/Backend/BolsaEmpleoUnphu.API/.vs/BolsaEmpleoUnphu.API/FileContentIndex/47cbecaf-7436-4b59-92ea-767127fac923.vsidx
