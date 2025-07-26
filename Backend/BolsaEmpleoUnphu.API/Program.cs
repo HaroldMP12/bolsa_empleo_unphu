@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using BolsaEmpleoUnphu.API.Data;
 
 namespace BolsaEmpleoUnphu.API
 {
@@ -9,6 +11,10 @@ namespace BolsaEmpleoUnphu.API
 
             // Add services to the container.
 
+            // Configuración de la conexión a la base de datos
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+                
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
