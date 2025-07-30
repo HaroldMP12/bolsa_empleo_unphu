@@ -14,7 +14,11 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BolsaEmpleoUnphu.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
+<<<<<<< HEAD
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0b317c87e78a0455836baaf3b505f8df80bf2969")]
+=======
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8f9f0b91323bfe47d5f0f4d2f9bed3f699a4744e")]
+>>>>>>> 1a352a765b8f980ef9b45124402f2cc0176a9e2f
 [assembly: System.Reflection.AssemblyProductAttribute("BolsaEmpleoUnphu.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BolsaEmpleoUnphu.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
