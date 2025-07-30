@@ -1,61 +1,19 @@
 # --- Visual Studio / .NET ---
-/backend/bin/
-/backend/obj/
-/backend/.vs/
+.vs/
+bin/
+obj/
+*.user
+*.suo
+*.cache
+*.log
 
-#--- Node.js / Angular ---
-/frontend/node_modules/
-/frontend/dist/
-/frontend/.angular/cache/
-/Backend/BolsaEmpleoUnphu.API/.vs/BolsaEmpleoUnphu.API/FileContentIndex/47cbecaf-7436-4b59-92ea-767127fac923.vsidx
-<<<<<<< HEAD
-<<<<<<< HEAD
-/Backend/BolsaEmpleoUnphu.API/.vs/BolsaEmpleoUnphu.API/FileContentIndex/24cdbb85-1767-439d-bf1c-2df08bdc2071.vsidx
-/Backend/BolsaEmpleoUnphu.API/.vs/BolsaEmpleoUnphu.API/FileContentIndex/8b085e9f-aa73-4057-8082-13f7ac1fc7e8.vsidx
-/Backend/BolsaEmpleoUnphu.API/.vs/BolsaEmpleoUnphu.API/FileContentIndex/cfd1e16d-8bb5-401f-9f4d-a526245438ce.vsidx
-/Backend/BolsaEmpleoUnphu.API/.vs/BolsaEmpleoUnphu.API/FileContentIndex/e37f18a4-3373-45fe-8194-e8e206de8ca2.vsidx
-/Backend/BolsaEmpleoUnphu.API/.vs/BolsaEmpleoUnphu.API/FileContentIndex/40884b7d-a3ee-4d32-8b79-92c1a0fd4ffd.vsidx
-/Backend/BolsaEmpleoUnphu.API/.vs/BolsaEmpleoUnphu.API/FileContentIndex/5777bbf2-10a8-445a-88f6-fff302306533.vsidx
-/Backend/BolsaEmpleoUnphu.API/.vs/BolsaEmpleoUnphu.API/FileContentIndex/8b900aba-258b-48cc-bfe1-e10b1f27cc93.vsidx
-/Backend/BolsaEmpleoUnphu.API/.vs/BolsaEmpleoUnphu.API/FileContentIndex/b0702b6e-f326-48e3-90c4-a00999252ca8.vsidx
-/Backend/BolsaEmpleoUnphu.API/.vs/BolsaEmpleoUnphu.API/FileContentIndex/b7002d8b-80d8-41bd-887e-9f5712c253ae.vsidx
-=======
-=======
->>>>>>> 1a352a765b8f980ef9b45124402f2cc0176a9e2f
-/Backend/BolsaEmpleoUnphu.API/.vs/BolsaEmpleoUnphu.API/FileContentIndex/0ded72e1-1cb8-4f10-86f6-77b81a4a0582.vsidx
-/Backend/BolsaEmpleoUnphu.API/.vs/BolsaEmpleoUnphu.API/FileContentIndex/512c2bcf-3ad8-4141-abdc-9d9337110586.vsidx
-/Backend/BolsaEmpleoUnphu.API/.vs/BolsaEmpleoUnphu.API/FileContentIndex/748d838c-6d3f-4c6d-8b55-ec1a4b7e4422.vsidx
-/Backend/BolsaEmpleoUnphu.API/.vs/BolsaEmpleoUnphu.API/FileContentIndex/868a233e-c331-4da8-be48-4cf987053e76.vsidx
-/Backend/BolsaEmpleoUnphu.API/.vs/BolsaEmpleoUnphu.API/FileContentIndex/d60f0856-a6bc-41f4-8388-db9dfda7194f.vsidx
-<<<<<<< HEAD
->>>>>>> 1a352a765b8f980ef9b45124402f2cc0176a9e2f
-/Backend/BolsaEmpleoUnphu.API/.vs/BolsaEmpleoUnphu.API/FileContentIndex/719f5345-eeda-49b5-a967-9cd46f621159.vsidx
-/Backend/BolsaEmpleoUnphu.API/.vs/BolsaEmpleoUnphu.API/FileContentIndex/8c53f358-e6ec-4936-a21b-835eb4e0f3c3.vsidx
-/Backend/BolsaEmpleoUnphu.API/.vs/BolsaEmpleoUnphu.API/FileContentIndex/e020610f-6b22-4502-9a02-5894b9a3180f.vsidx
-/Backend/BolsaEmpleoUnphu.API/.vs/BolsaEmpleoUnphu.API/FileContentIndex/24433a0d-ac8a-4c7c-80af-9614db0cf64f.vsidx
-/Backend/BolsaEmpleoUnphu.API/.vs/BolsaEmpleoUnphu.API/FileContentIndex/b7379b1a-1088-4bcf-91a8-e416b40b1510.vsidx
-/Backend/BolsaEmpleoUnphu.API/.vs/BolsaEmpleoUnphu.API/FileContentIndex/65575a9d-3202-4d96-b6ae-b911953d9205.vsidx
-/Backend/BolsaEmpleoUnphu.API/.vs/BolsaEmpleoUnphu.API/FileContentIndex/6a977f50-e0a5-428d-a6cc-7160f345601b.vsidx
-/Backend/BolsaEmpleoUnphu.API/.vs/BolsaEmpleoUnphu.API/FileContentIndex/aee5cd2a-2536-44a8-b6b7-80fa58bfcaed.vsidx
-=======
->>>>>>> 1a352a765b8f980ef9b45124402f2cc0176a9e2f
-/Backend/BolsaEmpleoUnphu.API/.vs/BolsaEmpleoUnphu.API/FileContentIndex/992038d4-a9e3-482f-832d-1ac0089c5217.vsidx
-/Backend/BolsaEmpleoUnphu.API/.vs/BolsaEmpleoUnphu.API/FileContentIndex/c0b00df2-9ebf-4eeb-a343-8d43e057483c.vsidx
-<<<<<<< HEAD
-/Backend/BolsaEmpleoUnphu.API/.vs/BolsaEmpleoUnphu.API/FileContentIndex/149aa3fd-362b-49e6-802c-601dcc26ba42.vsidx
-=======
-/Backend/BolsaEmpleoUnphu.API/.vs/BolsaEmpleoUnphu.API/FileContentIndex/1b4d94f4-0bdf-4e09-85c2-0e14dd122dd1.vsidx
-/Backend/BolsaEmpleoUnphu.API/.vs/BolsaEmpleoUnphu.API/FileContentIndex/586c6817-4ad6-4663-aab5-33127bffa174.vsidx
-/Backend/BolsaEmpleoUnphu.API/.vs/BolsaEmpleoUnphu.API/FileContentIndex/6a0ae3b0-63e4-43a3-a464-5754a37c94de.vsidx
-/Backend/BolsaEmpleoUnphu.API/.vs/BolsaEmpleoUnphu.API/FileContentIndex/8cd68d48-a5a5-4460-966f-0f44f62a4a6a.vsidx
-/Backend/BolsaEmpleoUnphu.API/.vs/BolsaEmpleoUnphu.API/FileContentIndex/f10890a7-e5b0-45b9-9c21-5e9e56001c08.vsidx
->>>>>>> 9a0d0edd863a23dde02eabc1566c941f59218b7d
-/Backend/BolsaEmpleoUnphu.API/.vs/BolsaEmpleoUnphu.API/FileContentIndex/0a341cfa-6dce-4007-b356-79913bccc880.vsidx
-/Backend/BolsaEmpleoUnphu.API/.vs/BolsaEmpleoUnphu.API/FileContentIndex/6e15782a-73b3-41da-95ce-3bdc5138a0f1.vsidx
-/Backend/BolsaEmpleoUnphu.API/.vs/BolsaEmpleoUnphu.API/FileContentIndex/c20b5c0f-2811-45da-992c-1e72062541d6.vsidx
-/Backend/BolsaEmpleoUnphu.API/.vs/BolsaEmpleoUnphu.API/FileContentIndex/d27f7cf5-2dd3-47fd-b388-6ff4891aa31d.vsidx
-/Backend/BolsaEmpleoUnphu.API/.vs/BolsaEmpleoUnphu.API/FileContentIndex/bbbbc654-0ded-4186-84da-fb915950facf.vsidx
-/Backend/BolsaEmpleoUnphu.API/.vs/BolsaEmpleoUnphu.API/FileContentIndex/df3c8466-6855-4b70-8bb2-22b63d518832.vsidx
-/Backend/BolsaEmpleoUnphu.API/.vs/BolsaEmpleoUnphu.API/FileContentIndex/34e6615c-c752-499b-a40e-2fc222608960.vsidx
-/Backend/BolsaEmpleoUnphu.API/.vs/BolsaEmpleoUnphu.API/FileContentIndex/5fc5afb8-0f78-4673-bd2e-67332fc51ed3.vsidx
-/Backend/BolsaEmpleoUnphu.API/.vs/BolsaEmpleoUnphu.API/FileContentIndex/80caea41-4519-4efd-89c0-2d6a0625d89e.vsidx
+# --- Node.js / Angular ---
+node_modules/
+dist/
+.angular/
+
+# --- General ---
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
