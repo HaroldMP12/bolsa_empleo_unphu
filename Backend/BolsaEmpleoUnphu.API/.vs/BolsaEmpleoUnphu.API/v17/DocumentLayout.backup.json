@@ -1,24 +1,7 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Users\\jsuarez\\source\\repos\\bolsa_empleo_unphu\\Backend\\BolsaEmpleoUnphu.API\\",
-  "Documents": [
-    {
-      "AbsoluteMoniker": "D:0:0:{8FCF0A5F-9772-44F8-B683-A18914D37526}|BolsaEmpleoUnphu.API.csproj|c:\\users\\jsuarez\\source\\repos\\bolsa_empleo_unphu\\backend\\bolsaempleounphu.api\\data\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8FCF0A5F-9772-44F8-B683-A18914D37526}|BolsaEmpleoUnphu.API.csproj|solutionrelative:data\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8FCF0A5F-9772-44F8-B683-A18914D37526}|BolsaEmpleoUnphu.API.csproj|c:\\users\\jsuarez\\source\\repos\\bolsa_empleo_unphu\\backend\\bolsaempleounphu.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{8FCF0A5F-9772-44F8-B683-A18914D37526}|BolsaEmpleoUnphu.API.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8FCF0A5F-9772-44F8-B683-A18914D37526}|BolsaEmpleoUnphu.API.csproj|c:\\users\\jsuarez\\source\\repos\\bolsa_empleo_unphu\\backend\\bolsaempleounphu.api\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{8FCF0A5F-9772-44F8-B683-A18914D37526}|BolsaEmpleoUnphu.API.csproj|solutionrelative:appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8FCF0A5F-9772-44F8-B683-A18914D37526}|BolsaEmpleoUnphu.API.csproj|c:\\users\\jsuarez\\source\\repos\\bolsa_empleo_unphu\\backend\\bolsaempleounphu.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8FCF0A5F-9772-44F8-B683-A18914D37526}|BolsaEmpleoUnphu.API.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    }
-  ],
+  "Documents": [],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -26,7 +9,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": -1,
           "Children": [
             {
               "$type": "Bookmark",
@@ -34,59 +17,11 @@
             },
             {
               "$type": "Bookmark",
+<<<<<<< HEAD
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+=======
               "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "ApplicationDbContext.cs",
-              "DocumentMoniker": "C:\\Users\\jsuarez\\source\\repos\\bolsa_empleo_unphu\\Backend\\BolsaEmpleoUnphu.API\\Data\\ApplicationDbContext.cs",
-              "RelativeDocumentMoniker": "Data\\ApplicationDbContext.cs",
-              "ToolTip": "C:\\Users\\jsuarez\\source\\repos\\bolsa_empleo_unphu\\Backend\\BolsaEmpleoUnphu.API\\Data\\ApplicationDbContext.cs",
-              "RelativeToolTip": "Data\\ApplicationDbContext.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-23T19:04:16.171Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "C:\\Users\\jsuarez\\source\\repos\\bolsa_empleo_unphu\\Backend\\BolsaEmpleoUnphu.API\\appsettings.json",
-              "RelativeDocumentMoniker": "appsettings.json",
-              "ToolTip": "C:\\Users\\jsuarez\\source\\repos\\bolsa_empleo_unphu\\Backend\\BolsaEmpleoUnphu.API\\appsettings.json",
-              "RelativeToolTip": "appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-07-23T19:05:12.475Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "appsettings.Development.json",
-              "DocumentMoniker": "C:\\Users\\jsuarez\\source\\repos\\bolsa_empleo_unphu\\Backend\\BolsaEmpleoUnphu.API\\appsettings.Development.json",
-              "RelativeDocumentMoniker": "appsettings.Development.json",
-              "ToolTip": "C:\\Users\\jsuarez\\source\\repos\\bolsa_empleo_unphu\\Backend\\BolsaEmpleoUnphu.API\\appsettings.Development.json",
-              "RelativeToolTip": "appsettings.Development.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-07-23T19:05:09.86Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\jsuarez\\source\\repos\\bolsa_empleo_unphu\\Backend\\BolsaEmpleoUnphu.API\\Program.cs",
-              "RelativeDocumentMoniker": "Program.cs",
-              "ToolTip": "C:\\Users\\jsuarez\\source\\repos\\bolsa_empleo_unphu\\Backend\\BolsaEmpleoUnphu.API\\Program.cs",
-              "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-23T18:45:41.709Z",
-              "EditorCaption": ""
+>>>>>>> 1a352a765b8f980ef9b45124402f2cc0176a9e2f
             }
           ]
         }
