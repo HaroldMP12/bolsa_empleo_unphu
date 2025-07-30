@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\jsuarez\\source\\repos\\bolsa_empleo_unphu\\Backend\\BolsaEmpleoUnphu.API\\BolsaEmpleoUnphu.API.csproj": {}
+    "C:\\bolsa_empleo_unphu\\Backend\\BolsaEmpleoUnphu.API\\BolsaEmpleoUnphu.API.csproj": {}
   },
   "projects": {
-    "C:\\Users\\jsuarez\\source\\repos\\bolsa_empleo_unphu\\Backend\\BolsaEmpleoUnphu.API\\BolsaEmpleoUnphu.API.csproj": {
+    "C:\\bolsa_empleo_unphu\\Backend\\BolsaEmpleoUnphu.API\\BolsaEmpleoUnphu.API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\jsuarez\\source\\repos\\bolsa_empleo_unphu\\Backend\\BolsaEmpleoUnphu.API\\BolsaEmpleoUnphu.API.csproj",
+        "projectUniqueName": "C:\\bolsa_empleo_unphu\\Backend\\BolsaEmpleoUnphu.API\\BolsaEmpleoUnphu.API.csproj",
         "projectName": "BolsaEmpleoUnphu.API",
-        "projectPath": "C:\\Users\\jsuarez\\source\\repos\\bolsa_empleo_unphu\\Backend\\BolsaEmpleoUnphu.API\\BolsaEmpleoUnphu.API.csproj",
-        "packagesPath": "C:\\Users\\jsuarez\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\jsuarez\\source\\repos\\bolsa_empleo_unphu\\Backend\\BolsaEmpleoUnphu.API\\obj\\",
+        "projectPath": "C:\\bolsa_empleo_unphu\\Backend\\BolsaEmpleoUnphu.API\\BolsaEmpleoUnphu.API.csproj",
+        "packagesPath": "C:\\Users\\hmori\\.nuget\\packages\\",
+        "outputPath": "C:\\bolsa_empleo_unphu\\Backend\\BolsaEmpleoUnphu.API\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\jsuarez\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\hmori\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -26,15 +26,14 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\Users\\jsuarez\\source\\repos\\bolsa_empleo_unphu\\Backend\\BolsaEmpleoUnphu.Data\\BolsaEmpleoUnphu.Data.csproj": {
-                "projectPath": "C:\\Users\\jsuarez\\source\\repos\\bolsa_empleo_unphu\\Backend\\BolsaEmpleoUnphu.Data\\BolsaEmpleoUnphu.Data.csproj"
+              "C:\\bolsa_empleo_unphu\\Backend\\BolsaEmpleoUnphu.Data\\BolsaEmpleoUnphu.Data.csproj": {
+                "projectPath": "C:\\bolsa_empleo_unphu\\Backend\\BolsaEmpleoUnphu.Data\\BolsaEmpleoUnphu.Data.csproj"
               }
             }
           }
@@ -49,7 +48,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.300"
+        "SdkAnalysisLevel": "9.0.100"
       },
       "frameworks": {
         "net8.0": {
@@ -93,24 +92,24 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.302/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.102/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\jsuarez\\source\\repos\\bolsa_empleo_unphu\\Backend\\BolsaEmpleoUnphu.Data\\BolsaEmpleoUnphu.Data.csproj": {
+    "C:\\bolsa_empleo_unphu\\Backend\\BolsaEmpleoUnphu.Data\\BolsaEmpleoUnphu.Data.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\jsuarez\\source\\repos\\bolsa_empleo_unphu\\Backend\\BolsaEmpleoUnphu.Data\\BolsaEmpleoUnphu.Data.csproj",
+        "projectUniqueName": "C:\\bolsa_empleo_unphu\\Backend\\BolsaEmpleoUnphu.Data\\BolsaEmpleoUnphu.Data.csproj",
         "projectName": "BolsaEmpleoUnphu.Data",
-        "projectPath": "C:\\Users\\jsuarez\\source\\repos\\bolsa_empleo_unphu\\Backend\\BolsaEmpleoUnphu.Data\\BolsaEmpleoUnphu.Data.csproj",
-        "packagesPath": "C:\\Users\\jsuarez\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\jsuarez\\source\\repos\\bolsa_empleo_unphu\\Backend\\BolsaEmpleoUnphu.Data\\obj\\",
+        "projectPath": "C:\\bolsa_empleo_unphu\\Backend\\BolsaEmpleoUnphu.Data\\BolsaEmpleoUnphu.Data.csproj",
+        "packagesPath": "C:\\Users\\hmori\\.nuget\\packages\\",
+        "outputPath": "C:\\bolsa_empleo_unphu\\Backend\\BolsaEmpleoUnphu.Data\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\jsuarez\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\hmori\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -119,7 +118,6 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -138,7 +136,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.300"
+        "SdkAnalysisLevel": "9.0.100"
       },
       "frameworks": {
         "net8.0": {
@@ -175,7 +173,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.302/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.102/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
