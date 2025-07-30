@@ -1,5 +1,1313 @@
 [
   {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.BitacoraAccionesController",
+    "Method": "GetBitacoraAcciones",
+    "RelativePath": "api/BitacoraAcciones",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[BolsaEmpleoUnphu.Data.Models.BitacoraAccionesModel, BolsaEmpleoUnphu.Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.BitacoraAccionesController",
+    "Method": "PostBitacoraAccion",
+    "RelativePath": "api/BitacoraAcciones",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "bitacoraAccion",
+        "Type": "BolsaEmpleoUnphu.Data.Models.BitacoraAccionesModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BolsaEmpleoUnphu.Data.Models.BitacoraAccionesModel",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.BitacoraAccionesController",
+    "Method": "GetBitacoraAccion",
+    "RelativePath": "api/BitacoraAcciones/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BolsaEmpleoUnphu.Data.Models.BitacoraAccionesModel",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.BitacoraAccionesController",
+    "Method": "PutBitacoraAccion",
+    "RelativePath": "api/BitacoraAcciones/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "bitacoraAccion",
+        "Type": "BolsaEmpleoUnphu.Data.Models.BitacoraAccionesModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.BitacoraAccionesController",
+    "Method": "DeleteBitacoraAccion",
+    "RelativePath": "api/BitacoraAcciones/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.CarrerasController",
+    "Method": "GetCarreras",
+    "RelativePath": "api/Carreras",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[BolsaEmpleoUnphu.Data.Models.CarrerasModel, BolsaEmpleoUnphu.Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.CarrerasController",
+    "Method": "PostCarrera",
+    "RelativePath": "api/Carreras",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "carrera",
+        "Type": "BolsaEmpleoUnphu.Data.Models.CarrerasModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BolsaEmpleoUnphu.Data.Models.CarrerasModel",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.CarrerasController",
+    "Method": "GetCarrera",
+    "RelativePath": "api/Carreras/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BolsaEmpleoUnphu.Data.Models.CarrerasModel",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.CarrerasController",
+    "Method": "PutCarrera",
+    "RelativePath": "api/Carreras/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "carrera",
+        "Type": "BolsaEmpleoUnphu.Data.Models.CarrerasModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.CarrerasController",
+    "Method": "DeleteCarrera",
+    "RelativePath": "api/Carreras/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.CategoriasController",
+    "Method": "GetCategorias",
+    "RelativePath": "api/Categorias",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[BolsaEmpleoUnphu.Data.Models.CategoriasModel, BolsaEmpleoUnphu.Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.CategoriasController",
+    "Method": "PostCategoria",
+    "RelativePath": "api/Categorias",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "categoria",
+        "Type": "BolsaEmpleoUnphu.Data.Models.CategoriasModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BolsaEmpleoUnphu.Data.Models.CategoriasModel",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.CategoriasController",
+    "Method": "GetCategoria",
+    "RelativePath": "api/Categorias/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BolsaEmpleoUnphu.Data.Models.CategoriasModel",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.CategoriasController",
+    "Method": "PutCategoria",
+    "RelativePath": "api/Categorias/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "categoria",
+        "Type": "BolsaEmpleoUnphu.Data.Models.CategoriasModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.CategoriasController",
+    "Method": "DeleteCategoria",
+    "RelativePath": "api/Categorias/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.EmpresasController",
+    "Method": "GetEmpresas",
+    "RelativePath": "api/Empresas",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[BolsaEmpleoUnphu.Data.Models.EmpresasModel, BolsaEmpleoUnphu.Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.EmpresasController",
+    "Method": "PostEmpresa",
+    "RelativePath": "api/Empresas",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "empresa",
+        "Type": "BolsaEmpleoUnphu.Data.Models.EmpresasModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BolsaEmpleoUnphu.Data.Models.EmpresasModel",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.EmpresasController",
+    "Method": "GetEmpresa",
+    "RelativePath": "api/Empresas/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BolsaEmpleoUnphu.Data.Models.EmpresasModel",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.EmpresasController",
+    "Method": "PutEmpresa",
+    "RelativePath": "api/Empresas/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "empresa",
+        "Type": "BolsaEmpleoUnphu.Data.Models.EmpresasModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.EmpresasController",
+    "Method": "DeleteEmpresa",
+    "RelativePath": "api/Empresas/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.InformacionesAcademicasController",
+    "Method": "GetInformacionesAcademicas",
+    "RelativePath": "api/InformacionesAcademicas",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[BolsaEmpleoUnphu.Data.Models.InformacionesAcademicasModel, BolsaEmpleoUnphu.Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.InformacionesAcademicasController",
+    "Method": "PostInformacionAcademica",
+    "RelativePath": "api/InformacionesAcademicas",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "informacionAcademica",
+        "Type": "BolsaEmpleoUnphu.Data.Models.InformacionesAcademicasModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BolsaEmpleoUnphu.Data.Models.InformacionesAcademicasModel",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.InformacionesAcademicasController",
+    "Method": "GetInformacionAcademica",
+    "RelativePath": "api/InformacionesAcademicas/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BolsaEmpleoUnphu.Data.Models.InformacionesAcademicasModel",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.InformacionesAcademicasController",
+    "Method": "PutInformacionAcademica",
+    "RelativePath": "api/InformacionesAcademicas/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "informacionAcademica",
+        "Type": "BolsaEmpleoUnphu.Data.Models.InformacionesAcademicasModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.InformacionesAcademicasController",
+    "Method": "DeleteInformacionAcademica",
+    "RelativePath": "api/InformacionesAcademicas/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.InformacionesLaboralesController",
+    "Method": "GetInformacionesLaborales",
+    "RelativePath": "api/InformacionesLaborales",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[BolsaEmpleoUnphu.Data.Models.InformacionesLaboralesModel, BolsaEmpleoUnphu.Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.InformacionesLaboralesController",
+    "Method": "PostInformacionLaboral",
+    "RelativePath": "api/InformacionesLaborales",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "informacionLaboral",
+        "Type": "BolsaEmpleoUnphu.Data.Models.InformacionesLaboralesModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BolsaEmpleoUnphu.Data.Models.InformacionesLaboralesModel",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.InformacionesLaboralesController",
+    "Method": "GetInformacionLaboral",
+    "RelativePath": "api/InformacionesLaborales/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BolsaEmpleoUnphu.Data.Models.InformacionesLaboralesModel",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.InformacionesLaboralesController",
+    "Method": "PutInformacionLaboral",
+    "RelativePath": "api/InformacionesLaborales/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "informacionLaboral",
+        "Type": "BolsaEmpleoUnphu.Data.Models.InformacionesLaboralesModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.InformacionesLaboralesController",
+    "Method": "DeleteInformacionLaboral",
+    "RelativePath": "api/InformacionesLaborales/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.NotificacionesController",
+    "Method": "GetNotificaciones",
+    "RelativePath": "api/Notificaciones",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[BolsaEmpleoUnphu.Data.Models.NotificacionesModel, BolsaEmpleoUnphu.Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.NotificacionesController",
+    "Method": "PostNotificacion",
+    "RelativePath": "api/Notificaciones",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "notificacion",
+        "Type": "BolsaEmpleoUnphu.Data.Models.NotificacionesModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BolsaEmpleoUnphu.Data.Models.NotificacionesModel",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.NotificacionesController",
+    "Method": "GetNotificacion",
+    "RelativePath": "api/Notificaciones/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BolsaEmpleoUnphu.Data.Models.NotificacionesModel",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.NotificacionesController",
+    "Method": "PutNotificacion",
+    "RelativePath": "api/Notificaciones/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "notificacion",
+        "Type": "BolsaEmpleoUnphu.Data.Models.NotificacionesModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.NotificacionesController",
+    "Method": "DeleteNotificacion",
+    "RelativePath": "api/Notificaciones/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.PerfilesController",
+    "Method": "GetPerfiles",
+    "RelativePath": "api/Perfiles",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[BolsaEmpleoUnphu.Data.Models.PerfilesModel, BolsaEmpleoUnphu.Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.PerfilesController",
+    "Method": "PostPerfil",
+    "RelativePath": "api/Perfiles",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "perfil",
+        "Type": "BolsaEmpleoUnphu.Data.Models.PerfilesModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BolsaEmpleoUnphu.Data.Models.PerfilesModel",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.PerfilesController",
+    "Method": "GetPerfil",
+    "RelativePath": "api/Perfiles/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BolsaEmpleoUnphu.Data.Models.PerfilesModel",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.PerfilesController",
+    "Method": "PutPerfil",
+    "RelativePath": "api/Perfiles/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "perfil",
+        "Type": "BolsaEmpleoUnphu.Data.Models.PerfilesModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.PerfilesController",
+    "Method": "DeletePerfil",
+    "RelativePath": "api/Perfiles/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.PostulacionesController",
+    "Method": "GetPostulaciones",
+    "RelativePath": "api/Postulaciones",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[BolsaEmpleoUnphu.Data.Models.PostulacionesModel, BolsaEmpleoUnphu.Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.PostulacionesController",
+    "Method": "PostPostulacion",
+    "RelativePath": "api/Postulaciones",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "postulacion",
+        "Type": "BolsaEmpleoUnphu.Data.Models.PostulacionesModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BolsaEmpleoUnphu.Data.Models.PostulacionesModel",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.PostulacionesController",
+    "Method": "GetPostulacion",
+    "RelativePath": "api/Postulaciones/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BolsaEmpleoUnphu.Data.Models.PostulacionesModel",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.PostulacionesController",
+    "Method": "PutPostulacion",
+    "RelativePath": "api/Postulaciones/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "postulacion",
+        "Type": "BolsaEmpleoUnphu.Data.Models.PostulacionesModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.PostulacionesController",
+    "Method": "DeletePostulacion",
+    "RelativePath": "api/Postulaciones/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.PreguntasVacantesController",
+    "Method": "GetPreguntasVacantes",
+    "RelativePath": "api/PreguntasVacantes",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[BolsaEmpleoUnphu.Data.Models.PreguntasVacantesModel, BolsaEmpleoUnphu.Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.PreguntasVacantesController",
+    "Method": "PostPreguntaVacante",
+    "RelativePath": "api/PreguntasVacantes",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "preguntaVacante",
+        "Type": "BolsaEmpleoUnphu.Data.Models.PreguntasVacantesModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BolsaEmpleoUnphu.Data.Models.PreguntasVacantesModel",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.PreguntasVacantesController",
+    "Method": "GetPreguntaVacante",
+    "RelativePath": "api/PreguntasVacantes/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BolsaEmpleoUnphu.Data.Models.PreguntasVacantesModel",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.PreguntasVacantesController",
+    "Method": "PutPreguntaVacante",
+    "RelativePath": "api/PreguntasVacantes/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "preguntaVacante",
+        "Type": "BolsaEmpleoUnphu.Data.Models.PreguntasVacantesModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.PreguntasVacantesController",
+    "Method": "DeletePreguntaVacante",
+    "RelativePath": "api/PreguntasVacantes/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.RespuestasPostulacionesController",
+    "Method": "GetRespuestasPostulaciones",
+    "RelativePath": "api/RespuestasPostulaciones",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[BolsaEmpleoUnphu.Data.Models.RespuestasPostulacionesModel, BolsaEmpleoUnphu.Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.RespuestasPostulacionesController",
+    "Method": "PostRespuestaPostulacion",
+    "RelativePath": "api/RespuestasPostulaciones",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "respuestaPostulacion",
+        "Type": "BolsaEmpleoUnphu.Data.Models.RespuestasPostulacionesModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BolsaEmpleoUnphu.Data.Models.RespuestasPostulacionesModel",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.RespuestasPostulacionesController",
+    "Method": "GetRespuestaPostulacion",
+    "RelativePath": "api/RespuestasPostulaciones/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BolsaEmpleoUnphu.Data.Models.RespuestasPostulacionesModel",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.RespuestasPostulacionesController",
+    "Method": "PutRespuestaPostulacion",
+    "RelativePath": "api/RespuestasPostulaciones/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "respuestaPostulacion",
+        "Type": "BolsaEmpleoUnphu.Data.Models.RespuestasPostulacionesModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.RespuestasPostulacionesController",
+    "Method": "DeleteRespuestaPostulacion",
+    "RelativePath": "api/RespuestasPostulaciones/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.RolesController",
+    "Method": "GetRoles",
+    "RelativePath": "api/Roles",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[BolsaEmpleoUnphu.Data.Models.RolesModel, BolsaEmpleoUnphu.Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.RolesController",
+    "Method": "PostRol",
+    "RelativePath": "api/Roles",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "rol",
+        "Type": "BolsaEmpleoUnphu.Data.Models.RolesModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BolsaEmpleoUnphu.Data.Models.RolesModel",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.RolesController",
+    "Method": "GetRol",
+    "RelativePath": "api/Roles/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BolsaEmpleoUnphu.Data.Models.RolesModel",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.RolesController",
+    "Method": "PutRol",
+    "RelativePath": "api/Roles/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "rol",
+        "Type": "BolsaEmpleoUnphu.Data.Models.RolesModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.RolesController",
+    "Method": "DeleteRol",
+    "RelativePath": "api/Roles/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "BolsaEmpleoUnphu.API.Controllers.UsuariosController",
     "Method": "GetUsuarios",
     "RelativePath": "api/Usuarios",
@@ -96,6 +1404,115 @@
     "ContainingType": "BolsaEmpleoUnphu.API.Controllers.UsuariosController",
     "Method": "DeleteUsuario",
     "RelativePath": "api/Usuarios/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.VacantesController",
+    "Method": "GetVacantes",
+    "RelativePath": "api/Vacantes",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[BolsaEmpleoUnphu.Data.Models.VacantesModel, BolsaEmpleoUnphu.Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.VacantesController",
+    "Method": "PostVacante",
+    "RelativePath": "api/Vacantes",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "vacante",
+        "Type": "BolsaEmpleoUnphu.Data.Models.VacantesModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BolsaEmpleoUnphu.Data.Models.VacantesModel",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.VacantesController",
+    "Method": "GetVacante",
+    "RelativePath": "api/Vacantes/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BolsaEmpleoUnphu.Data.Models.VacantesModel",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.VacantesController",
+    "Method": "PutVacante",
+    "RelativePath": "api/Vacantes/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "vacante",
+        "Type": "BolsaEmpleoUnphu.Data.Models.VacantesModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BolsaEmpleoUnphu.API.Controllers.VacantesController",
+    "Method": "DeleteVacante",
+    "RelativePath": "api/Vacantes/{id}",
     "HttpMethod": "DELETE",
     "IsController": true,
     "Order": 0,
