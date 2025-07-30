@@ -1,0 +1,15 @@
+C:\Users\jsuarez\source\repos\bolsa_empleo_unphu\Backend\BolsaEmpleoUnphu.Data\bin\Debug\net8.0\BolsaEmpleoUnphu.Data.deps.json
+C:\Users\jsuarez\source\repos\bolsa_empleo_unphu\Backend\BolsaEmpleoUnphu.Data\bin\Debug\net8.0\BolsaEmpleoUnphu.Data.runtimeconfig.json
+C:\Users\jsuarez\source\repos\bolsa_empleo_unphu\Backend\BolsaEmpleoUnphu.Data\bin\Debug\net8.0\BolsaEmpleoUnphu.Data.dll
+C:\Users\jsuarez\source\repos\bolsa_empleo_unphu\Backend\BolsaEmpleoUnphu.Data\bin\Debug\net8.0\BolsaEmpleoUnphu.Data.pdb
+C:\Users\jsuarez\source\repos\bolsa_empleo_unphu\Backend\BolsaEmpleoUnphu.Data\obj\Debug\net8.0\BolsaEmpleoUnphu.Data.csproj.AssemblyReference.cache
+C:\Users\jsuarez\source\repos\bolsa_empleo_unphu\Backend\BolsaEmpleoUnphu.Data\obj\Debug\net8.0\BolsaEmpleoUnphu.Data.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\jsuarez\source\repos\bolsa_empleo_unphu\Backend\BolsaEmpleoUnphu.Data\obj\Debug\net8.0\BolsaEmpleoUnphu.Data.AssemblyInfoInputs.cache
+C:\Users\jsuarez\source\repos\bolsa_empleo_unphu\Backend\BolsaEmpleoUnphu.Data\obj\Debug\net8.0\BolsaEmpleoUnphu.Data.AssemblyInfo.cs
+C:\Users\jsuarez\source\repos\bolsa_empleo_unphu\Backend\BolsaEmpleoUnphu.Data\obj\Debug\net8.0\BolsaEmpleoUnphu.Data.csproj.CoreCompileInputs.cache
+C:\Users\jsuarez\source\repos\bolsa_empleo_unphu\Backend\BolsaEmpleoUnphu.Data\obj\Debug\net8.0\BolsaEmpleoUnphu.Data.sourcelink.json
+C:\Users\jsuarez\source\repos\bolsa_empleo_unphu\Backend\BolsaEmpleoUnphu.Data\obj\Debug\net8.0\BolsaEmpleoUnphu.Data.dll
+C:\Users\jsuarez\source\repos\bolsa_empleo_unphu\Backend\BolsaEmpleoUnphu.Data\obj\Debug\net8.0\refint\BolsaEmpleoUnphu.Data.dll
+C:\Users\jsuarez\source\repos\bolsa_empleo_unphu\Backend\BolsaEmpleoUnphu.Data\obj\Debug\net8.0\BolsaEmpleoUnphu.Data.pdb
+C:\Users\jsuarez\source\repos\bolsa_empleo_unphu\Backend\BolsaEmpleoUnphu.Data\obj\Debug\net8.0\BolsaEmpleoUnphu.Data.genruntimeconfig.cache
+C:\Users\jsuarez\source\repos\bolsa_empleo_unphu\Backend\BolsaEmpleoUnphu.Data\obj\Debug\net8.0\ref\BolsaEmpleoUnphu.Data.dll
