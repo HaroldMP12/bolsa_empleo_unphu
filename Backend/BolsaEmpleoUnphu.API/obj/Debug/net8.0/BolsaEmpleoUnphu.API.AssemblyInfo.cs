@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BolsaEmpleoUnphu.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8e52d778cfa908a967e1cec68307dc12dee54da4")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0b317c87e78a0455836baaf3b505f8df80bf2969")]
 [assembly: System.Reflection.AssemblyProductAttribute("BolsaEmpleoUnphu.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BolsaEmpleoUnphu.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
