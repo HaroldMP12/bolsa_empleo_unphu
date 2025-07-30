@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35707.178 d17.12
+VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BolsaEmpleoUnphu.API", "BolsaEmpleoUnphu.API.csproj", "{8FCF0A5F-9772-44F8-B683-A18914D37526}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BolsaEmpleoUnphu.Data", "BolsaEmpleoUnphu.Data\BolsaEmpleoUnphu.Data.csproj", "{D53B2F0E-BB98-4A2E-915E-402BC265D13C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{8FCF0A5F-9772-44F8-B683-A18914D37526}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8FCF0A5F-9772-44F8-B683-A18914D37526}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8FCF0A5F-9772-44F8-B683-A18914D37526}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D53B2F0E-BB98-4A2E-915E-402BC265D13C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D53B2F0E-BB98-4A2E-915E-402BC265D13C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D53B2F0E-BB98-4A2E-915E-402BC265D13C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D53B2F0E-BB98-4A2E-915E-402BC265D13C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
