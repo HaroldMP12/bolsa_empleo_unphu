@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "u++z98rFgQw=",
+  "dgSpecHash": "O3vB45vVIgU=",
   "success": true,
-  "projectFilePath": "C:\\Users\\jsuarez\\source\\repos\\bolsa_empleo_unphu\\Backend\\BolsaEmpleoUnphu.API\\BolsaEmpleoUnphu.API.csproj",
+  "projectFilePath": "C:\\Users\\jsuarez\\Source\\Repos\\bolsa_empleo_unphu\\Backend\\BolsaEmpleoUnphu.API\\BolsaEmpleoUnphu.API.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\jsuarez\\.nuget\\packages\\azure.core\\1.25.0\\azure.core.1.25.0.nupkg.sha512",
     "C:\\Users\\jsuarez\\.nuget\\packages\\azure.identity\\1.7.0\\azure.identity.1.7.0.nupkg.sha512",

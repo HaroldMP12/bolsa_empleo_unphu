@@ -4,6 +4,942 @@
     "title": "BolsaEmpleoUnphu.API",
     "version": "1.0"
   },
-  "paths": { },
-  "components": { }
+  "paths": {
+    "/api/Usuarios": {
+      "get": {
+        "tags": [
+          "Usuarios"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UsuariosModel"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UsuariosModel"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UsuariosModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Usuarios"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UsuariosModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UsuariosModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UsuariosModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsuariosModel"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsuariosModel"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsuariosModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Usuarios/{id}": {
+      "get": {
+        "tags": [
+          "Usuarios"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsuariosModel"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsuariosModel"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsuariosModel"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Usuarios"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UsuariosModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UsuariosModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UsuariosModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Usuarios"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BitacoraAccionesModel": {
+        "required": [
+          "descripcion",
+          "entidadAfectada",
+          "tipoAccion"
+        ],
+        "type": "object",
+        "properties": {
+          "registroID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "usuarioID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tipoAccion": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string"
+          },
+          "descripcion": {
+            "maxLength": 150,
+            "minLength": 0,
+            "type": "string"
+          },
+          "fechaAccion": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "entidadAfectada": {
+            "maxLength": 50,
+            "minLength": 0,
+            "type": "string"
+          },
+          "usuario": {
+            "$ref": "#/components/schemas/UsuariosModel"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CarrerasModel": {
+        "required": [
+          "facultad",
+          "nombreCarrera"
+        ],
+        "type": "object",
+        "properties": {
+          "carreraID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "nombreCarrera": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string"
+          },
+          "facultad": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string"
+          },
+          "perfiles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PerfilesModel"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CategoriasModel": {
+        "required": [
+          "nombreCategoria"
+        ],
+        "type": "object",
+        "properties": {
+          "categoriaID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "nombreCategoria": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string"
+          },
+          "categoriaPadreID": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "categoriaPadre": {
+            "$ref": "#/components/schemas/CategoriasModel"
+          },
+          "categoriasHijas": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CategoriasModel"
+            },
+            "nullable": true
+          },
+          "vacantes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VacantesModel"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "EmpresasModel": {
+        "required": [
+          "nombreEmpresa",
+          "rnc"
+        ],
+        "type": "object",
+        "properties": {
+          "empresaID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "usuarioID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "nombreEmpresa": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string"
+          },
+          "rnc": {
+            "maxLength": 20,
+            "minLength": 0,
+            "type": "string"
+          },
+          "sector": {
+            "maxLength": 50,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "telefonoEmpresa": {
+            "maxLength": 20,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "direccion": {
+            "maxLength": 255,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "sitioWeb": {
+            "maxLength": 150,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "descripcion": {
+            "type": "string",
+            "nullable": true
+          },
+          "observaciones": {
+            "type": "string",
+            "nullable": true
+          },
+          "imagenLogo": {
+            "maxLength": 300,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "imagenPortada": {
+            "maxLength": 300,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "cantidadEmpleados": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "usuario": {
+            "$ref": "#/components/schemas/UsuariosModel"
+          },
+          "vacantes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VacantesModel"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "InformacionesAcademicasModel": {
+        "required": [
+          "institucion",
+          "nivelDeFormacion",
+          "tituloObtenido"
+        ],
+        "type": "object",
+        "properties": {
+          "infoAcademicaID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "usuarioID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tituloObtenido": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string"
+          },
+          "institucion": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string"
+          },
+          "fechaInicio": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "fechaFin": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "nivelDeFormacion": {
+            "maxLength": 50,
+            "minLength": 0,
+            "type": "string"
+          },
+          "usuario": {
+            "$ref": "#/components/schemas/UsuariosModel"
+          }
+        },
+        "additionalProperties": false
+      },
+      "InformacionesLaboralesModel": {
+        "required": [
+          "cargo",
+          "empresa"
+        ],
+        "type": "object",
+        "properties": {
+          "infoLaboralID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "usuarioID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "empresa": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string"
+          },
+          "cargo": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string"
+          },
+          "fechaInicio": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "fechaFin": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "actualmenteTrabajando": {
+            "type": "boolean"
+          },
+          "descripcion": {
+            "maxLength": 150,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "usuario": {
+            "$ref": "#/components/schemas/UsuariosModel"
+          }
+        },
+        "additionalProperties": false
+      },
+      "NotificacionesModel": {
+        "required": [
+          "mensaje"
+        ],
+        "type": "object",
+        "properties": {
+          "notificacionID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "usuarioID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "mensaje": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "fechaEnvio": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "estado": {
+            "type": "boolean"
+          },
+          "referenciaTipo": {
+            "maxLength": 50,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "usuario": {
+            "$ref": "#/components/schemas/UsuariosModel"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PerfilesModel": {
+        "required": [
+          "tipoPerfil"
+        ],
+        "type": "object",
+        "properties": {
+          "perfilID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "usuarioID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tipoPerfil": {
+            "maxLength": 20,
+            "minLength": 0,
+            "type": "string"
+          },
+          "matricula": {
+            "maxLength": 20,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "carreraID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "semestre": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "fechaIngreso": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "tituloObtenido": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "fechaEgreso": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "añoGraduacion": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "urlImagen": {
+            "maxLength": 300,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "resumen": {
+            "type": "string",
+            "nullable": true
+          },
+          "redesSociales": {
+            "type": "string",
+            "nullable": true
+          },
+          "usuario": {
+            "$ref": "#/components/schemas/UsuariosModel"
+          },
+          "carrera": {
+            "$ref": "#/components/schemas/CarrerasModel"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PostulacionesModel": {
+        "required": [
+          "estado"
+        ],
+        "type": "object",
+        "properties": {
+          "postulacionID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "vacanteID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "usuarioID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "fechaPostulacion": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "estado": {
+            "maxLength": 30,
+            "minLength": 0,
+            "type": "string"
+          },
+          "observaciones": {
+            "type": "string",
+            "nullable": true
+          },
+          "vacante": {
+            "$ref": "#/components/schemas/VacantesModel"
+          },
+          "usuario": {
+            "$ref": "#/components/schemas/UsuariosModel"
+          },
+          "respuestasPostulaciones": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RespuestasPostulacionesModel"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PreguntasVacantesModel": {
+        "required": [
+          "pregunta"
+        ],
+        "type": "object",
+        "properties": {
+          "preguntaID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "vacanteID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pregunta": {
+            "maxLength": 255,
+            "minLength": 0,
+            "type": "string"
+          },
+          "vacante": {
+            "$ref": "#/components/schemas/VacantesModel"
+          },
+          "respuestasPostulaciones": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RespuestasPostulacionesModel"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "RespuestasPostulacionesModel": {
+        "required": [
+          "respuesta"
+        ],
+        "type": "object",
+        "properties": {
+          "respuestaID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "postulacionID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "preguntaID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "respuesta": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "postulacion": {
+            "$ref": "#/components/schemas/PostulacionesModel"
+          },
+          "pregunta": {
+            "$ref": "#/components/schemas/PreguntasVacantesModel"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RolesModel": {
+        "required": [
+          "nombreRol"
+        ],
+        "type": "object",
+        "properties": {
+          "rolID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "nombreRol": {
+            "maxLength": 50,
+            "minLength": 0,
+            "type": "string"
+          },
+          "usuarios": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UsuariosModel"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UsuariosModel": {
+        "required": [
+          "contraseña",
+          "correo",
+          "nombreCompleto"
+        ],
+        "type": "object",
+        "properties": {
+          "usuarioID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "nombreCompleto": {
+            "maxLength": 150,
+            "minLength": 0,
+            "type": "string"
+          },
+          "correo": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string"
+          },
+          "contraseña": {
+            "maxLength": 255,
+            "minLength": 0,
+            "type": "string"
+          },
+          "telefono": {
+            "maxLength": 20,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "fechaRegistro": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "estado": {
+            "type": "boolean"
+          },
+          "rolID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "fechaCambioUltimaContraseña": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "fechaUltimaActualización": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "rol": {
+            "$ref": "#/components/schemas/RolesModel"
+          },
+          "perfil": {
+            "$ref": "#/components/schemas/PerfilesModel"
+          },
+          "empresa": {
+            "$ref": "#/components/schemas/EmpresasModel"
+          },
+          "bitacoraAcciones": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BitacoraAccionesModel"
+            },
+            "nullable": true
+          },
+          "notificaciones": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NotificacionesModel"
+            },
+            "nullable": true
+          },
+          "postulaciones": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PostulacionesModel"
+            },
+            "nullable": true
+          },
+          "informacionesAcademicas": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InformacionesAcademicasModel"
+            },
+            "nullable": true
+          },
+          "informacionesLaborales": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InformacionesLaboralesModel"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "VacantesModel": {
+        "required": [
+          "descripcion",
+          "requisitos",
+          "tituloVacante"
+        ],
+        "type": "object",
+        "properties": {
+          "vacanteID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "empresaID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tituloVacante": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string"
+          },
+          "descripcion": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "requisitos": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "fechaPublicacion": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "fechaCierre": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "fechaModificacion": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "ubicacion": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "tipoContrato": {
+            "maxLength": 50,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "jornada": {
+            "maxLength": 30,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "modalidad": {
+            "maxLength": 30,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "salario": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "cantidadVacantes": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "categoriaID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "empresa": {
+            "$ref": "#/components/schemas/EmpresasModel"
+          },
+          "categoria": {
+            "$ref": "#/components/schemas/CategoriasModel"
+          },
+          "postulaciones": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PostulacionesModel"
+            },
+            "nullable": true
+          },
+          "preguntasVacantes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PreguntasVacantesModel"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
 }
