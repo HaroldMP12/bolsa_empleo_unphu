@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using BolsaEmpleoUnphu.Data.Context;
 using BolsaEmpleoUnphu.Data.Models;
+using BolsaEmpleoUnphu.API.DTOs;
 
 namespace BolsaEmpleoUnphu.API.Controllers;
 
@@ -49,25 +50,34 @@ public class PostulacionesController : ControllerBase
     // POST: api/postulaciones
     [HttpPost]
     [Authorize(Roles = "Estudiante,Egresado")]
-    public async Task<ActionResult<PostulacionesModel>> PostPostulacion(PostulacionesModel postulacion)
+    public async Task<ActionResult<PostulacionesModel>> PostPostulacion(CreatePostulacionDto postulacionDto)
     {
         // Validación 1: No postularse dos veces
         var existePostulacion = await _context.Postulaciones
-            .AnyAsync(p => p.VacanteID == postulacion.VacanteID && 
-                          p.UsuarioID == postulacion.UsuarioID);
+            .AnyAsync(p => p.VacanteID == postulacionDto.VacanteID && 
+                          p.UsuarioID == postulacionDto.UsuarioID);
         
         if (existePostulacion)
             return BadRequest("Ya te postulaste a esta vacante");
 
         // Validación 2: Vacante no vencida
-        var vacante = await _context.Vacantes.FindAsync(postulacion.VacanteID);
+        var vacante = await _context.Vacantes.FindAsync(postulacionDto.VacanteID);
         if (vacante == null)
             return BadRequest("La vacante no existe");
             
         if (vacante.FechaCierre < DateTime.Now)
             return BadRequest("Esta vacante ya cerró");
 
-        postulacion.FechaPostulacion = DateTime.Now;
+        // Crear el modelo desde el DTO
+        var postulacion = new PostulacionesModel
+        {
+            VacanteID = postulacionDto.VacanteID,
+            UsuarioID = postulacionDto.UsuarioID,
+            Observaciones = postulacionDto.Observaciones,
+            FechaPostulacion = DateTime.Now,
+            Estado = "Pendiente"
+        };
+
         _context.Postulaciones.Add(postulacion);
         await _context.SaveChangesAsync();
 
