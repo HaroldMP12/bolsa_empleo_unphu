@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using BolsaEmpleoUnphu.Data.Context;
 using BolsaEmpleoUnphu.Data.Models;
+using BolsaEmpleoUnphu.API.DTOs;
 using BCrypt.Net;
 
 namespace BolsaEmpleoUnphu.API.Controllers;
@@ -61,15 +62,25 @@ public class UsuariosController : ControllerBase
 
     // PUT: api/usuarios/5
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutUsuario(int id, UsuariosModel usuario)
+    public async Task<IActionResult> PutUsuario(int id, UpdateUsuarioDto usuarioDto)
     {
-        if (id != usuario.UsuarioID)
+        if (id != usuarioDto.UsuarioID)
         {
             return BadRequest();
         }
 
+        // Buscar usuario existente
+        var usuario = await _context.Usuarios.FindAsync(id);
+        if (usuario == null)
+            return NotFound();
+
+        // Actualizar propiedades desde el DTO
+        usuario.NombreCompleto = usuarioDto.NombreCompleto;
+        usuario.Correo = usuarioDto.Correo;
+        usuario.Telefono = usuarioDto.Telefono;
+        usuario.Estado = usuarioDto.Estado;
+        usuario.RolID = usuarioDto.RolID;
         usuario.FechaUltimaActualización = DateTime.Now;
-        _context.Entry(usuario).State = EntityState.Modified;
 
         try
         {

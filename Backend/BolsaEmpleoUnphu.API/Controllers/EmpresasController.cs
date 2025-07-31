@@ -76,14 +76,31 @@ public class EmpresasController : ControllerBase
 
     // PUT: api/empresas/5
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutEmpresa(int id, EmpresasModel empresa)
+    public async Task<IActionResult> PutEmpresa(int id, UpdateEmpresaDto empresaDto)
     {
-        if (id != empresa.EmpresaID)
+        if (id != empresaDto.EmpresaID)
         {
             return BadRequest();
         }
 
-        _context.Entry(empresa).State = EntityState.Modified;
+        // Buscar empresa existente
+        var empresa = await _context.Empresas.FindAsync(id);
+        if (empresa == null)
+            return NotFound();
+
+        // Actualizar propiedades desde el DTO
+        empresa.UsuarioID = empresaDto.UsuarioID;
+        empresa.NombreEmpresa = empresaDto.NombreEmpresa;
+        empresa.RNC = empresaDto.RNC;
+        empresa.Sector = empresaDto.Sector;
+        empresa.TelefonoEmpresa = empresaDto.TelefonoEmpresa;
+        empresa.Direccion = empresaDto.Direccion;
+        empresa.SitioWeb = empresaDto.SitioWeb;
+        empresa.Descripcion = empresaDto.Descripcion;
+        empresa.Observaciones = empresaDto.Observaciones;
+        empresa.ImagenLogo = empresaDto.ImagenLogo;
+        empresa.ImagenPortada = empresaDto.ImagenPortada;
+        empresa.CantidadEmpleados = empresaDto.CantidadEmpleados;
 
         try
         {

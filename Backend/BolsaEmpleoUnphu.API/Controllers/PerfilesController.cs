@@ -76,14 +76,31 @@ public class PerfilesController : ControllerBase
 
     // PUT: api/perfiles/5
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutPerfil(int id, PerfilesModel perfil)
+    public async Task<IActionResult> PutPerfil(int id, UpdatePerfilDto perfilDto)
     {
-        if (id != perfil.PerfilID)
+        if (id != perfilDto.PerfilID)
         {
             return BadRequest();
         }
 
-        _context.Entry(perfil).State = EntityState.Modified;
+        // Buscar perfil existente
+        var perfil = await _context.Perfiles.FindAsync(id);
+        if (perfil == null)
+            return NotFound();
+
+        // Actualizar propiedades desde el DTO
+        perfil.UsuarioID = perfilDto.UsuarioID;
+        perfil.TipoPerfil = perfilDto.TipoPerfil;
+        perfil.Matricula = perfilDto.Matricula;
+        perfil.CarreraID = perfilDto.CarreraID;
+        perfil.Semestre = perfilDto.Semestre;
+        perfil.FechaIngreso = perfilDto.FechaIngreso;
+        perfil.TituloObtenido = perfilDto.TituloObtenido;
+        perfil.FechaEgreso = perfilDto.FechaEgreso;
+        perfil.AñoGraduacion = perfilDto.AñoGraduacion;
+        perfil.UrlImagen = perfilDto.UrlImagen;
+        perfil.Resumen = perfilDto.Resumen;
+        perfil.RedesSociales = perfilDto.RedesSociales;
 
         try
         {

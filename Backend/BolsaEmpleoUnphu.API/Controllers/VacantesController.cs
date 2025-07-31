@@ -81,9 +81,9 @@ public class VacantesController : ControllerBase
     // PUT: api/vacantes/5
     [HttpPut("{id}")]
     [Authorize(Roles = "Empresa,Admin")]
-    public async Task<IActionResult> PutVacante(int id, VacantesModel vacante)
+    public async Task<IActionResult> PutVacante(int id, UpdateVacanteDto vacanteDto)
     {
-        if (id != vacante.VacanteID)
+        if (id != vacanteDto.VacanteID)
         {
             return BadRequest();
         }
@@ -98,12 +98,29 @@ public class VacantesController : ControllerBase
             if (empresa == null)
                 return BadRequest("No tienes una empresa asociada");
                 
-            if (vacante.EmpresaID != empresa.EmpresaID)
+            if (vacanteDto.EmpresaID != empresa.EmpresaID)
                 return Forbid("Solo puedes editar vacantes de tu empresa");
         }
 
+        // Buscar la vacante existente
+        var vacante = await _context.Vacantes.FindAsync(id);
+        if (vacante == null)
+            return NotFound();
+
+        // Actualizar propiedades desde el DTO
+        vacante.EmpresaID = vacanteDto.EmpresaID;
+        vacante.TituloVacante = vacanteDto.TituloVacante;
+        vacante.Descripcion = vacanteDto.Descripcion;
+        vacante.Requisitos = vacanteDto.Requisitos;
+        vacante.FechaCierre = vacanteDto.FechaCierre;
+        vacante.Ubicacion = vacanteDto.Ubicacion;
+        vacante.TipoContrato = vacanteDto.TipoContrato;
+        vacante.Jornada = vacanteDto.Jornada;
+        vacante.Modalidad = vacanteDto.Modalidad;
+        vacante.Salario = vacanteDto.Salario;
+        vacante.CantidadVacantes = vacanteDto.CantidadVacantes;
+        vacante.CategoriaID = vacanteDto.CategoriaID;
         vacante.FechaModificacion = DateTime.Now;
-        _context.Entry(vacante).State = EntityState.Modified;
 
         try
         {
