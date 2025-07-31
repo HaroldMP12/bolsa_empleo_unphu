@@ -99,7 +99,7 @@ public class VacantesController : ControllerBase
                 return BadRequest("No tienes una empresa asociada");
                 
             if (vacanteDto.EmpresaID != empresa.EmpresaID)
-                return Forbid("Solo puedes editar vacantes de tu empresa");
+                return StatusCode(403, "Solo puedes editar vacantes de tu empresa");
         }
 
         // Buscar la vacante existente
@@ -160,7 +160,7 @@ public class VacantesController : ControllerBase
                 return BadRequest("No tienes una empresa asociada");
                 
             if (vacante.EmpresaID != empresa.EmpresaID)
-                return Forbid("Solo puedes eliminar vacantes de tu empresa");
+                return StatusCode(403, "Solo puedes eliminar vacantes de tu empresa");
         }
 
         _context.Vacantes.Remove(vacante);
