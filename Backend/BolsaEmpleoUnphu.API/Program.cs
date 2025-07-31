@@ -38,6 +38,10 @@ namespace BolsaEmpleoUnphu.API
 
             // Servicios
             builder.Services.AddScoped<IJwtService, JwtService>();
+            builder.Services.AddScoped<INotificacionService, NotificacionService>();
+
+            // SignalR
+            builder.Services.AddSignalR();
 
             // Configuración para evitar referencias circulares en JSON
             builder.Services.ConfigureHttpJsonOptions(options =>
@@ -88,10 +92,15 @@ namespace BolsaEmpleoUnphu.API
             }
 
             app.UseHttpsRedirection();
+            
+            // Configurar archivos estáticos
+            app.UseStaticFiles();
+            
             app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();
+            app.MapHub<BolsaEmpleoUnphu.API.Hubs.NotificacionesHub>("/notificacionesHub");
 
             app.Run();
         }

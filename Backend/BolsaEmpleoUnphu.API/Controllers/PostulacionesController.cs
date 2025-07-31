@@ -5,6 +5,7 @@ using BolsaEmpleoUnphu.Data.Context;
 using BolsaEmpleoUnphu.Data.Models;
 using BolsaEmpleoUnphu.API.DTOs;
 using BolsaEmpleoUnphu.API.Extensions;
+using BolsaEmpleoUnphu.API.Services;
 
 namespace BolsaEmpleoUnphu.API.Controllers;
 
@@ -14,10 +15,12 @@ namespace BolsaEmpleoUnphu.API.Controllers;
 public class PostulacionesController : ControllerBase
 {
     private readonly BolsaEmpleoUnphuContext _context;
+    private readonly INotificacionService _notificacionService;
 
-    public PostulacionesController(BolsaEmpleoUnphuContext context)
+    public PostulacionesController(BolsaEmpleoUnphuContext context, INotificacionService notificacionService)
     {
         _context = context;
+        _notificacionService = notificacionService;
     }
 
     // GET: api/postulaciones
@@ -130,6 +133,16 @@ public class PostulacionesController : ControllerBase
 
         _context.Postulaciones.Add(postulacion);
         await _context.SaveChangesAsync();
+
+        // Enviar notificación a la empresa
+        var empresa = await _context.Empresas.FirstOrDefaultAsync(e => e.EmpresaID == vacante.EmpresaID);
+        if (empresa != null)
+        {
+            await _notificacionService.EnviarNotificacionPostulacionAsync(
+                empresa.EmpresaID, 
+                usuario.NombreCompleto, 
+                vacante.TituloVacante);
+        }
 
         return CreatedAtAction(nameof(GetPostulacion), new { id = postulacion.PostulacionID }, postulacion);
     }

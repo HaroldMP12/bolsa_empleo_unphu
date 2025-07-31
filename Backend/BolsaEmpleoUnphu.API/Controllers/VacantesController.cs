@@ -221,6 +221,106 @@ public class VacantesController : ControllerBase
         return NoContent();
     }
 
+    // GET: api/vacantes/activas
+    [HttpGet("activas")]
+    [AllowAnonymous]
+    public async Task<ActionResult<PagedResult<VacanteResponseDto>>> GetVacantesActivas(
+        int page = 1, 
+        int pageSize = 10,
+        int? categoriaId = null,
+        string? ubicacion = null)
+    {
+        var query = _context.Vacantes
+            .Include(v => v.Empresa)
+            .Include(v => v.Categoria)
+            .Where(v => v.FechaCierre > DateTime.Now)
+            .AsQueryable();
+
+        if (categoriaId.HasValue)
+            query = query.Where(v => v.CategoriaID == categoriaId.Value);
+            
+        if (!string.IsNullOrEmpty(ubicacion))
+            query = query.Where(v => v.Ubicacion!.Contains(ubicacion));
+
+        var totalRecords = await query.CountAsync();
+        var vacantes = await query
+            .OrderByDescending(v => v.FechaPublicacion)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return new PagedResult<VacanteResponseDto>
+        {
+            Data = vacantes.Select(v => v.ToResponseDto()),
+            TotalRecords = totalRecords,
+            Page = page,
+            PageSize = pageSize
+        };
+    }
+
+    // GET: api/vacantes/empresa/{empresaId}
+    [HttpGet("empresa/{empresaId}")]
+    [Authorize(Roles = "Empresa,Admin")]
+    public async Task<ActionResult<PagedResult<VacanteResponseDto>>> GetVacantesPorEmpresa(
+        int empresaId,
+        int page = 1, 
+        int pageSize = 10)
+    {
+        var query = _context.Vacantes
+            .Include(v => v.Empresa)
+            .Include(v => v.Categoria)
+            .Where(v => v.EmpresaID == empresaId)
+            .AsQueryable();
+
+        var totalRecords = await query.CountAsync();
+        var vacantes = await query
+            .OrderByDescending(v => v.FechaPublicacion)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return new PagedResult<VacanteResponseDto>
+        {
+            Data = vacantes.Select(v => v.ToResponseDto()),
+            TotalRecords = totalRecords,
+            Page = page,
+            PageSize = pageSize
+        };
+    }
+
+    // GET: api/vacantes/estadisticas
+    [HttpGet("estadisticas")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<object>> GetEstadisticasVacantes()
+    {
+        var totalVacantes = await _context.Vacantes.CountAsync();
+        var vacantesActivas = await _context.Vacantes.CountAsync(v => v.FechaCierre > DateTime.Now);
+        var vacantesVencidas = totalVacantes - vacantesActivas;
+        var totalPostulaciones = await _context.Postulaciones.CountAsync();
+        
+        var vacantesPopulares = await _context.Vacantes
+            .Include(v => v.Empresa)
+            .Include(v => v.Postulaciones)
+            .Where(v => v.FechaCierre > DateTime.Now)
+            .OrderByDescending(v => v.Postulaciones.Count)
+            .Take(5)
+            .Select(v => new {
+                v.VacanteID,
+                v.TituloVacante,
+                NombreEmpresa = v.Empresa.NombreEmpresa,
+                TotalPostulaciones = v.Postulaciones.Count
+            })
+            .ToListAsync();
+
+        return new {
+            TotalVacantes = totalVacantes,
+            VacantesActivas = vacantesActivas,
+            VacantesVencidas = vacantesVencidas,
+            TotalPostulaciones = totalPostulaciones,
+            VacantesPopulares = vacantesPopulares
+        };
+    }
+
     private bool VacanteExists(int id)
     {
         return _context.Vacantes.Any(e => e.VacanteID == id);
