@@ -21,12 +21,45 @@ public class PostulacionesController : ControllerBase
 
     // GET: api/postulaciones
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<PostulacionesModel>>> GetPostulaciones()
+    public async Task<ActionResult<PagedResult<PostulacionesModel>>> GetPostulaciones(
+        int page = 1, 
+        int pageSize = 10,
+        int? vacanteId = null,
+        int? usuarioId = null,
+        string? estado = null)
     {
-        return await _context.Postulaciones
+        var query = _context.Postulaciones
             .Include(p => p.Usuario)
             .Include(p => p.Vacante)
+            .AsQueryable();
+
+        // Filtros
+        if (vacanteId.HasValue)
+            query = query.Where(p => p.VacanteID == vacanteId.Value);
+            
+        if (usuarioId.HasValue)
+            query = query.Where(p => p.UsuarioID == usuarioId.Value);
+            
+        if (!string.IsNullOrEmpty(estado))
+            query = query.Where(p => p.Estado == estado);
+
+        // Contar total
+        var totalRecords = await query.CountAsync();
+
+        // Paginación
+        var postulaciones = await query
+            .OrderByDescending(p => p.FechaPostulacion)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync();
+
+        return new PagedResult<PostulacionesModel>
+        {
+            Data = postulaciones,
+            TotalRecords = totalRecords,
+            Page = page,
+            PageSize = pageSize
+        };
     }
 
     // GET: api/postulaciones/5

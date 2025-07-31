@@ -23,11 +23,45 @@ public class UsuariosController : ControllerBase
     // GET: api/usuarios
     [HttpGet]
     [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<IEnumerable<UsuariosModel>>> GetUsuarios()
+    public async Task<ActionResult<PagedResult<UsuariosModel>>> GetUsuarios(
+        int page = 1, 
+        int pageSize = 10,
+        int? rolId = null,
+        string? search = null,
+        bool? estado = null)
     {
-        return await _context.Usuarios
+        var query = _context.Usuarios
             .Include(u => u.Rol)
+            .AsQueryable();
+
+        // Filtros
+        if (rolId.HasValue)
+            query = query.Where(u => u.RolID == rolId.Value);
+            
+        if (!string.IsNullOrEmpty(search))
+            query = query.Where(u => u.NombreCompleto.Contains(search) || 
+                                   u.Correo.Contains(search));
+                                   
+        if (estado.HasValue)
+            query = query.Where(u => u.Estado == estado.Value);
+
+        // Contar total
+        var totalRecords = await query.CountAsync();
+
+        // Paginación
+        var usuarios = await query
+            .OrderBy(u => u.NombreCompleto)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync();
+
+        return new PagedResult<UsuariosModel>
+        {
+            Data = usuarios,
+            TotalRecords = totalRecords,
+            Page = page,
+            PageSize = pageSize
+        };
     }
 
     // GET: api/usuarios/5

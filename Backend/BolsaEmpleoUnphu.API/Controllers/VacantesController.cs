@@ -22,12 +22,56 @@ public class VacantesController : ControllerBase
     // GET: api/vacantes
     [HttpGet]
     [AllowAnonymous]
-    public async Task<ActionResult<IEnumerable<VacantesModel>>> GetVacantes()
+    public async Task<ActionResult<PagedResult<VacantesModel>>> GetVacantes(
+        int page = 1, 
+        int pageSize = 10,
+        int? categoriaId = null,
+        string? ubicacion = null,
+        string? search = null,
+        decimal? salarioMin = null,
+        decimal? salarioMax = null)
     {
-        return await _context.Vacantes
+        var query = _context.Vacantes
             .Include(v => v.Empresa)
             .Include(v => v.Categoria)
+            .Where(v => v.FechaCierre > DateTime.Now) // Solo vacantes activas
+            .AsQueryable();
+
+        // Filtros
+        if (categoriaId.HasValue)
+            query = query.Where(v => v.CategoriaID == categoriaId.Value);
+            
+        if (!string.IsNullOrEmpty(ubicacion))
+            query = query.Where(v => v.Ubicacion!.Contains(ubicacion));
+            
+        if (!string.IsNullOrEmpty(search))
+            query = query.Where(v => v.TituloVacante.Contains(search) || 
+                                   v.Descripcion.Contains(search) ||
+                                   v.Empresa.NombreEmpresa.Contains(search));
+                                   
+        if (salarioMin.HasValue)
+            query = query.Where(v => v.Salario >= salarioMin.Value);
+            
+        if (salarioMax.HasValue)
+            query = query.Where(v => v.Salario <= salarioMax.Value);
+
+        // Contar total
+        var totalRecords = await query.CountAsync();
+
+        // Paginación
+        var vacantes = await query
+            .OrderByDescending(v => v.FechaPublicacion)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync();
+
+        return new PagedResult<VacantesModel>
+        {
+            Data = vacantes,
+            TotalRecords = totalRecords,
+            Page = page,
+            PageSize = pageSize
+        };
     }
 
     // GET: api/vacantes/5

@@ -23,11 +23,41 @@ public class EmpresasController : ControllerBase
     // GET: api/empresas
     [HttpGet]
     [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<IEnumerable<EmpresasModel>>> GetEmpresas()
+    public async Task<ActionResult<PagedResult<EmpresasModel>>> GetEmpresas(
+        int page = 1, 
+        int pageSize = 10,
+        string? sector = null,
+        string? search = null)
     {
-        return await _context.Empresas
+        var query = _context.Empresas
             .Include(e => e.Usuario)
+            .AsQueryable();
+
+        // Filtros
+        if (!string.IsNullOrEmpty(sector))
+            query = query.Where(e => e.Sector!.Contains(sector));
+            
+        if (!string.IsNullOrEmpty(search))
+            query = query.Where(e => e.NombreEmpresa.Contains(search) || 
+                                   e.RNC.Contains(search));
+
+        // Contar total
+        var totalRecords = await query.CountAsync();
+
+        // Paginación
+        var empresas = await query
+            .OrderBy(e => e.NombreEmpresa)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync();
+
+        return new PagedResult<EmpresasModel>
+        {
+            Data = empresas,
+            TotalRecords = totalRecords,
+            Page = page,
+            PageSize = pageSize
+        };
     }
 
     // GET: api/empresas/5
