@@ -48,8 +48,25 @@ public class PerfilesController : ControllerBase
     // POST: api/perfiles
     [HttpPost]
     [Authorize(Roles = "Estudiante,Egresado,Admin")]
-    public async Task<ActionResult<PerfilesModel>> PostPerfil(PerfilesModel perfil)
+    public async Task<ActionResult<PerfilesModel>> PostPerfil(CreatePerfilDto perfilDto)
     {
+        // Crear el modelo desde el DTO
+        var perfil = new PerfilesModel
+        {
+            UsuarioID = perfilDto.UsuarioID,
+            TipoPerfil = perfilDto.TipoPerfil,
+            Matricula = perfilDto.Matricula,
+            CarreraID = perfilDto.CarreraID,
+            Semestre = perfilDto.Semestre,
+            FechaIngreso = perfilDto.FechaIngreso,
+            TituloObtenido = perfilDto.TituloObtenido,
+            FechaEgreso = perfilDto.FechaEgreso,
+            AñoGraduacion = perfilDto.AñoGraduacion,
+            UrlImagen = perfilDto.UrlImagen,
+            Resumen = perfilDto.Resumen,
+            RedesSociales = perfilDto.RedesSociales
+        };
+
         _context.Perfiles.Add(perfil);
         await _context.SaveChangesAsync();
 

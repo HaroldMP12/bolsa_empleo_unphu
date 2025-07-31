@@ -48,8 +48,25 @@ public class EmpresasController : ControllerBase
     // POST: api/empresas
     [HttpPost]
     [Authorize(Roles = "Empresa,Admin")]
-    public async Task<ActionResult<EmpresasModel>> PostEmpresa(EmpresasModel empresa)
+    public async Task<ActionResult<EmpresasModel>> PostEmpresa(CreateEmpresaDto empresaDto)
     {
+        // Crear el modelo desde el DTO
+        var empresa = new EmpresasModel
+        {
+            UsuarioID = empresaDto.UsuarioID,
+            NombreEmpresa = empresaDto.NombreEmpresa,
+            RNC = empresaDto.RNC,
+            Sector = empresaDto.Sector,
+            TelefonoEmpresa = empresaDto.TelefonoEmpresa,
+            Direccion = empresaDto.Direccion,
+            SitioWeb = empresaDto.SitioWeb,
+            Descripcion = empresaDto.Descripcion,
+            Observaciones = empresaDto.Observaciones,
+            ImagenLogo = empresaDto.ImagenLogo,
+            ImagenPortada = empresaDto.ImagenPortada,
+            CantidadEmpleados = empresaDto.CantidadEmpleados
+        };
+
         _context.Empresas.Add(empresa);
         await _context.SaveChangesAsync();
 

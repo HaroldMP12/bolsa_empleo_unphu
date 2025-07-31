@@ -51,9 +51,26 @@ public class VacantesController : ControllerBase
     // POST: api/vacantes
     [HttpPost]
     [Authorize(Roles = "Empresa,Admin")]
-    public async Task<ActionResult<VacantesModel>> PostVacante(VacantesModel vacante)
+    public async Task<ActionResult<VacantesModel>> PostVacante(CreateVacanteDto vacanteDto)
     {
-        vacante.FechaPublicacion = DateTime.Now;
+        // Crear el modelo desde el DTO
+        var vacante = new VacantesModel
+        {
+            EmpresaID = vacanteDto.EmpresaID,
+            TituloVacante = vacanteDto.TituloVacante,
+            Descripcion = vacanteDto.Descripcion,
+            Requisitos = vacanteDto.Requisitos,
+            FechaCierre = vacanteDto.FechaCierre,
+            Ubicacion = vacanteDto.Ubicacion,
+            TipoContrato = vacanteDto.TipoContrato,
+            Jornada = vacanteDto.Jornada,
+            Modalidad = vacanteDto.Modalidad,
+            Salario = vacanteDto.Salario,
+            CantidadVacantes = vacanteDto.CantidadVacantes,
+            CategoriaID = vacanteDto.CategoriaID,
+            FechaPublicacion = DateTime.Now
+        };
+
         _context.Vacantes.Add(vacante);
         await _context.SaveChangesAsync();
 
