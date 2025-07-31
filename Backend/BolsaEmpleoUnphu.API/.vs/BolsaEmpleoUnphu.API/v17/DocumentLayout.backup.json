@@ -47,8 +47,7 @@
               "RelativeToolTip": "..\\BolsaEmpleoUnphu.Data\\Migrations\\20250730025815_InitialCreate.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-30T03:11:55.428Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-30T03:11:55.428Z"
             },
             {
               "$type": "Document",
@@ -60,8 +59,7 @@
               "RelativeToolTip": "appsettings.json",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-07-30T02:09:28.154Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-30T02:09:28.154Z"
             },
             {
               "$type": "Document",
@@ -71,7 +69,7 @@
               "RelativeDocumentMoniker": "Program.cs",
               "ToolTip": "C:\\Users\\jsuarez\\source\\repos\\bolsa_empleo_unphu\\Backend\\BolsaEmpleoUnphu.API\\Program.cs",
               "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABsAAABjAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADIAAABjAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-07-30T02:09:22.226Z",
               "EditorCaption": ""
@@ -86,8 +84,7 @@
               "RelativeToolTip": "..\\BolsaEmpleoUnphu.Data\\Context\\BolsaEmpleoUnphuContext.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-30T02:05:01.224Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-30T02:05:01.224Z"
             },
             {
               "$type": "Document",
@@ -99,8 +96,7 @@
               "RelativeToolTip": "..\\BolsaEmpleoUnphu.Data\\Models\\BitacoraAccionesModel.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-30T02:02:54.819Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-30T02:02:54.819Z"
             }
           ]
         }

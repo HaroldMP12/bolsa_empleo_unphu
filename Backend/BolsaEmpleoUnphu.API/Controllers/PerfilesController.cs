@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using BolsaEmpleoUnphu.Data.Context;
 using BolsaEmpleoUnphu.Data.Models;
+using BolsaEmpleoUnphu.API.DTOs;
 
 namespace BolsaEmpleoUnphu.API.Controllers;
 
