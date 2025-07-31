@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 using BolsaEmpleoUnphu.Data.Context;
 using BolsaEmpleoUnphu.Data.Models;
 
@@ -7,6 +8,7 @@ namespace BolsaEmpleoUnphu.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class PostulacionesController : ControllerBase
 {
     private readonly BolsaEmpleoUnphuContext _context;
@@ -46,6 +48,7 @@ public class PostulacionesController : ControllerBase
 
     // POST: api/postulaciones
     [HttpPost]
+    [Authorize(Roles = "Estudiante,Egresado")]
     public async Task<ActionResult<PostulacionesModel>> PostPostulacion(PostulacionesModel postulacion)
     {
         postulacion.FechaPostulacion = DateTime.Now;

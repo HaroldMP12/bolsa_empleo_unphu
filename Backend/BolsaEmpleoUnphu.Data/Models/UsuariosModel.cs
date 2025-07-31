@@ -10,22 +10,24 @@ public class UsuariosModel
     [Column("UsuarioID")]
     public int UsuarioID { get; set; }
     
-    [Required]
-    [StringLength(150)]
+    [Required(ErrorMessage = "El nombre completo es requerido")]
+    [StringLength(150, MinimumLength = 2, ErrorMessage = "El nombre debe tener entre 2 y 150 caracteres")]
     [Column("NombreCompleto")]
     public string NombreCompleto { get; set; } = string.Empty;
     
-    [Required]
-    [StringLength(100)]
+    [Required(ErrorMessage = "El correo es requerido")]
+    [EmailAddress(ErrorMessage = "Formato de correo inválido")]
+    [StringLength(100, ErrorMessage = "El correo no puede exceder 100 caracteres")]
     [Column("Correo")]
     public string Correo { get; set; } = string.Empty;
     
-    [Required]
-    [StringLength(255)]
+    [Required(ErrorMessage = "La contraseña es requerida")]
+    [StringLength(255, MinimumLength = 8, ErrorMessage = "La contraseña debe tener al menos 8 caracteres")]
     [Column("Contraseña")]
     public string Contraseña { get; set; } = string.Empty;
     
-    [StringLength(20)]
+    [Phone(ErrorMessage = "Formato de teléfono inválido")]
+    [StringLength(20, ErrorMessage = "El teléfono no puede exceder 20 caracteres")]
     [Column("Telefono")]
     public string? Telefono { get; set; }
     

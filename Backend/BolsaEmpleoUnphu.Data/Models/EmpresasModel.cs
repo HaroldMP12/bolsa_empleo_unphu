@@ -13,13 +13,13 @@ public class EmpresasModel
     [Column("UsuarioID")]
     public int UsuarioID { get; set; }
     
-    [Required]
-    [StringLength(100)]
+    [Required(ErrorMessage = "El nombre de la empresa es requerido")]
+    [StringLength(100, MinimumLength = 2, ErrorMessage = "El nombre debe tener entre 2 y 100 caracteres")]
     [Column("NombreEmpresa")]
     public string NombreEmpresa { get; set; } = string.Empty;
     
-    [Required]
-    [StringLength(20)]
+    [Required(ErrorMessage = "El RNC es requerido")]
+    [RegularExpression(@"^\d{3}-\d{5}-\d{1}$", ErrorMessage = "Formato de RNC inválido (000-00000-0)")]
     [Column("RNC")]
     public string RNC { get; set; } = string.Empty;
     

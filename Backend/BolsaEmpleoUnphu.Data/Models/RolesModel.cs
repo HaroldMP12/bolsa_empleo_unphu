@@ -10,8 +10,8 @@ public class RolesModel
     [Column("RolID")]
     public int RolID { get; set; }
     
-    [Required]
-    [StringLength(50)]
+    [Required(ErrorMessage = "El nombre del rol es requerido")]
+    [StringLength(50, MinimumLength = 3, ErrorMessage = "El nombre del rol debe tener entre 3 y 50 caracteres")]
     [Column("NombreRol")]
     public string NombreRol { get; set; } = string.Empty;
     

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 using BolsaEmpleoUnphu.Data.Context;
 using BolsaEmpleoUnphu.Data.Models;
 
@@ -18,6 +19,7 @@ public class VacantesController : ControllerBase
 
     // GET: api/vacantes
     [HttpGet]
+    [AllowAnonymous]
     public async Task<ActionResult<IEnumerable<VacantesModel>>> GetVacantes()
     {
         return await _context.Vacantes
@@ -47,6 +49,7 @@ public class VacantesController : ControllerBase
 
     // POST: api/vacantes
     [HttpPost]
+    [Authorize(Roles = "Empresa,Admin")]
     public async Task<ActionResult<VacantesModel>> PostVacante(VacantesModel vacante)
     {
         vacante.FechaPublicacion = DateTime.Now;

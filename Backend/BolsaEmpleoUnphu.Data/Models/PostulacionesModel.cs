@@ -19,11 +19,12 @@ public class PostulacionesModel
     [Column("FechaPostulacion")]
     public DateTime FechaPostulacion { get; set; } = DateTime.Now;
     
-    [Required]
-    [StringLength(30)]
+    [Required(ErrorMessage = "El estado es requerido")]
+    [RegularExpression("^(Pendiente|En Revisión|Aceptado|Rechazado)$", ErrorMessage = "Estado inválido")]
     [Column("Estado")]
     public string Estado { get; set; } = "Pendiente";
     
+    [StringLength(500, MinimumLength = 10, ErrorMessage = "Las observaciones deben tener entre 10 y 500 caracteres")]
     [Column("Observaciones", TypeName = "NVARCHAR(MAX)")]
     public string? Observaciones { get; set; }
     

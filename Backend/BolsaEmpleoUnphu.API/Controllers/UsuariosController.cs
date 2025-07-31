@@ -1,12 +1,15 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 using BolsaEmpleoUnphu.Data.Context;
 using BolsaEmpleoUnphu.Data.Models;
+using BCrypt.Net;
 
 namespace BolsaEmpleoUnphu.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class UsuariosController : ControllerBase
 {
     private readonly BolsaEmpleoUnphuContext _context;
@@ -18,6 +21,7 @@ public class UsuariosController : ControllerBase
 
     // GET: api/usuarios
     [HttpGet]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<IEnumerable<UsuariosModel>>> GetUsuarios()
     {
         return await _context.Usuarios
@@ -44,8 +48,10 @@ public class UsuariosController : ControllerBase
 
     // POST: api/usuarios
     [HttpPost]
+    [AllowAnonymous]
     public async Task<ActionResult<UsuariosModel>> PostUsuario(UsuariosModel usuario)
     {
+        usuario.Contraseña = BCrypt.Net.BCrypt.HashPassword(usuario.Contraseña);
         usuario.FechaRegistro = DateTime.Now;
         _context.Usuarios.Add(usuario);
         await _context.SaveChangesAsync();

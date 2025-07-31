@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 using BolsaEmpleoUnphu.Data.Context;
 using BolsaEmpleoUnphu.Data.Models;
 
@@ -7,6 +8,7 @@ namespace BolsaEmpleoUnphu.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class EmpresasController : ControllerBase
 {
     private readonly BolsaEmpleoUnphuContext _context;
@@ -18,6 +20,7 @@ public class EmpresasController : ControllerBase
 
     // GET: api/empresas
     [HttpGet]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<IEnumerable<EmpresasModel>>> GetEmpresas()
     {
         return await _context.Empresas
@@ -44,6 +47,7 @@ public class EmpresasController : ControllerBase
 
     // POST: api/empresas
     [HttpPost]
+    [Authorize(Roles = "Empresa,Admin")]
     public async Task<ActionResult<EmpresasModel>> PostEmpresa(EmpresasModel empresa)
     {
         _context.Empresas.Add(empresa);

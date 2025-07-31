@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 using BolsaEmpleoUnphu.Data.Context;
 using BolsaEmpleoUnphu.Data.Models;
 
@@ -18,6 +19,7 @@ public class CategoriasController : ControllerBase
 
     // GET: api/categorias
     [HttpGet]
+    [AllowAnonymous]
     public async Task<ActionResult<IEnumerable<CategoriasModel>>> GetCategorias()
     {
         return await _context.Categorias
@@ -45,6 +47,7 @@ public class CategoriasController : ControllerBase
 
     // POST: api/categorias
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<CategoriasModel>> PostCategoria(CategoriasModel categoria)
     {
         _context.Categorias.Add(categoria);

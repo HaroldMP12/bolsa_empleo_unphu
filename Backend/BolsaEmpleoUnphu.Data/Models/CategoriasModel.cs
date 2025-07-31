@@ -10,8 +10,8 @@ public class CategoriasModel
     [Column("CategoriaID")]
     public int CategoriaID { get; set; }
     
-    [Required]
-    [StringLength(100)]
+    [Required(ErrorMessage = "El nombre de la categoría es requerido")]
+    [StringLength(100, MinimumLength = 2, ErrorMessage = "El nombre debe tener entre 2 y 100 caracteres")]
     [Column("NombreCategoria")]
     public string NombreCategoria { get; set; } = string.Empty;
     

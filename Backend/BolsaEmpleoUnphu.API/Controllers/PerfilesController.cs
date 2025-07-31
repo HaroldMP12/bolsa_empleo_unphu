@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 using BolsaEmpleoUnphu.Data.Context;
 using BolsaEmpleoUnphu.Data.Models;
 
@@ -7,6 +8,7 @@ namespace BolsaEmpleoUnphu.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class PerfilesController : ControllerBase
 {
     private readonly BolsaEmpleoUnphuContext _context;
@@ -45,6 +47,7 @@ public class PerfilesController : ControllerBase
 
     // POST: api/perfiles
     [HttpPost]
+    [Authorize(Roles = "Estudiante,Egresado,Admin")]
     public async Task<ActionResult<PerfilesModel>> PostPerfil(PerfilesModel perfil)
     {
         _context.Perfiles.Add(perfil);

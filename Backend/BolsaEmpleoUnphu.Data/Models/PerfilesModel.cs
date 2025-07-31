@@ -13,10 +13,10 @@ public class PerfilesModel
     [Column("UsuarioID")]
     public int UsuarioID { get; set; }
     
-    [Required]
-    [StringLength(20)]
+    [Required(ErrorMessage = "El tipo de perfil es requerido")]
+    [RegularExpression("^(Estudiante|Egresado|Ambos)$", ErrorMessage = "Tipo de perfil inválido")]
     [Column("TipoPerfil")]
-    public string TipoPerfil { get; set; } = string.Empty; // 'Estudiante', 'Egresado', 'Ambos'
+    public string TipoPerfil { get; set; } = string.Empty;
     
     [StringLength(20)]
     [Column("Matricula")]
