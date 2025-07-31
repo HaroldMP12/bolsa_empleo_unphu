@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using BolsaEmpleoUnphu.Data.Context;
 using BolsaEmpleoUnphu.Data.Models;
+using BolsaEmpleoUnphu.API.DTOs;
 
 namespace BolsaEmpleoUnphu.API.Controllers;
 
@@ -48,8 +49,15 @@ public class CategoriasController : ControllerBase
     // POST: api/categorias
     [HttpPost]
     [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<CategoriasModel>> PostCategoria(CategoriasModel categoria)
+    public async Task<ActionResult<CategoriasModel>> PostCategoria(CreateCategoriaDto categoriaDto)
     {
+        // Crear el modelo desde el DTO
+        var categoria = new CategoriasModel
+        {
+            NombreCategoria = categoriaDto.NombreCategoria,
+            CategoriaPadreID = categoriaDto.CategoriaPadreID
+        };
+
         _context.Categorias.Add(categoria);
         await _context.SaveChangesAsync();
 

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 using BolsaEmpleoUnphu.Data.Context;
 using BolsaEmpleoUnphu.Data.Models;
 using BolsaEmpleoUnphu.API.DTOs;
@@ -81,6 +82,15 @@ public class PerfilesController : ControllerBase
         if (id != perfilDto.PerfilID)
         {
             return BadRequest();
+        }
+
+        // Validación 9: Solo puedes editar tu propio perfil (excepto Admin)
+        var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+        if (userRole != "Admin")
+        {
+            var usuarioId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            if (perfilDto.UsuarioID != usuarioId)
+                return StatusCode(403, "Solo puedes editar tu propio perfil");
         }
 
         // Buscar perfil existente

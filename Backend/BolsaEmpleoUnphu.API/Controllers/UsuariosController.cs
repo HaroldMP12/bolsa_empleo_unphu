@@ -50,10 +50,25 @@ public class UsuariosController : ControllerBase
     // POST: api/usuarios
     [HttpPost]
     [AllowAnonymous]
-    public async Task<ActionResult<UsuariosModel>> PostUsuario(UsuariosModel usuario)
+    public async Task<ActionResult<UsuariosModel>> PostUsuario(CreateUsuarioDto usuarioDto)
     {
-        usuario.Contraseña = BCrypt.Net.BCrypt.HashPassword(usuario.Contraseña);
-        usuario.FechaRegistro = DateTime.Now;
+        // Validación 10: Email único al registrarse
+        var existeEmail = await _context.Usuarios.AnyAsync(u => u.Correo == usuarioDto.Correo);
+        if (existeEmail)
+            return BadRequest("Ya existe un usuario con este correo electrónico");
+
+        // Crear el modelo desde el DTO
+        var usuario = new UsuariosModel
+        {
+            NombreCompleto = usuarioDto.NombreCompleto,
+            Correo = usuarioDto.Correo,
+            Contraseña = BCrypt.Net.BCrypt.HashPassword(usuarioDto.Contraseña),
+            Telefono = usuarioDto.Telefono,
+            Estado = usuarioDto.Estado,
+            RolID = usuarioDto.RolID,
+            FechaRegistro = DateTime.Now
+        };
+
         _context.Usuarios.Add(usuario);
         await _context.SaveChangesAsync();
 

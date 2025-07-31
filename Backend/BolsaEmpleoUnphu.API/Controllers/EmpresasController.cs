@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 using BolsaEmpleoUnphu.Data.Context;
 using BolsaEmpleoUnphu.Data.Models;
 using BolsaEmpleoUnphu.API.DTOs;
@@ -51,6 +52,27 @@ public class EmpresasController : ControllerBase
     [Authorize(Roles = "Empresa,Admin")]
     public async Task<ActionResult<EmpresasModel>> PostEmpresa(CreateEmpresaDto empresaDto)
     {
+        // Validación 11: RNC único por empresa
+        var existeRNC = await _context.Empresas.AnyAsync(e => e.RNC == empresaDto.RNC);
+        if (existeRNC)
+            return BadRequest("Ya existe una empresa con este RNC");
+
+        // Validación 12: Un usuario solo puede tener una empresa
+        var existeEmpresa = await _context.Empresas.AnyAsync(e => e.UsuarioID == empresaDto.UsuarioID);
+        if (existeEmpresa)
+            return BadRequest("Este usuario ya tiene una empresa asociada");
+
+        // Validación 13: Solo usuarios tipo "Empresa" pueden crear empresas (excepto Admin)
+        var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+        if (userRole != "Admin")
+        {
+            var usuario = await _context.Usuarios.Include(u => u.Rol).FirstOrDefaultAsync(u => u.UsuarioID == empresaDto.UsuarioID);
+            if (usuario == null)
+                return BadRequest("El usuario no existe");
+                
+            if (usuario.Rol.NombreRol != "Empresa")
+                return BadRequest("Solo usuarios tipo Empresa pueden crear empresas");
+        }
         // Crear el modelo desde el DTO
         var empresa = new EmpresasModel
         {

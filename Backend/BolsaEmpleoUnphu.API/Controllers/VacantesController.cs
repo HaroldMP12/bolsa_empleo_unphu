@@ -54,6 +54,13 @@ public class VacantesController : ControllerBase
     [Authorize(Roles = "Empresa,Admin")]
     public async Task<ActionResult<VacantesModel>> PostVacante(CreateVacanteDto vacanteDto)
     {
+        // Validación 7: Solo empresas activas pueden crear vacantes
+        var empresa = await _context.Empresas.Include(e => e.Usuario).FirstOrDefaultAsync(e => e.EmpresaID == vacanteDto.EmpresaID);
+        if (empresa == null)
+            return BadRequest("La empresa no existe");
+            
+        if (!empresa.Usuario.Estado)
+            return BadRequest("Solo empresas activas pueden crear vacantes");
         // Crear el modelo desde el DTO
         var vacante = new VacantesModel
         {

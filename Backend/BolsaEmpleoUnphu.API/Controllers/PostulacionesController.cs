@@ -68,6 +68,22 @@ public class PostulacionesController : ControllerBase
         if (vacante.FechaCierre < DateTime.Now)
             return BadRequest("Esta vacante ya cerró");
 
+        // Validación 4: Solo estudiantes/egresados pueden postularse
+        var usuario = await _context.Usuarios.Include(u => u.Rol).FirstOrDefaultAsync(u => u.UsuarioID == postulacionDto.UsuarioID);
+        if (usuario == null)
+            return BadRequest("El usuario no existe");
+            
+        if (usuario.Rol.NombreRol != "Estudiante" && usuario.Rol.NombreRol != "Egresado")
+            return BadRequest("Solo estudiantes y egresados pueden postularse");
+
+        // Validación 5: Usuario debe tener perfil completo
+        var perfil = await _context.Perfiles.FirstOrDefaultAsync(p => p.UsuarioID == postulacionDto.UsuarioID);
+        if (perfil == null)
+            return BadRequest("Debes completar tu perfil antes de postularte");
+            
+        if (string.IsNullOrEmpty(perfil.Resumen))
+            return BadRequest("Tu perfil debe tener un resumen antes de postularte");
+
         // Crear el modelo desde el DTO
         var postulacion = new PostulacionesModel
         {

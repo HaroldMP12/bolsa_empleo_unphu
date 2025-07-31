@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using BolsaEmpleoUnphu.Data.Context;
 using BolsaEmpleoUnphu.Data.Models;
+using BolsaEmpleoUnphu.API.DTOs;
 
 namespace BolsaEmpleoUnphu.API.Controllers;
 
@@ -43,8 +44,14 @@ public class RolesController : ControllerBase
 
     // POST: api/roles
     [HttpPost]
-    public async Task<ActionResult<RolesModel>> PostRol(RolesModel rol)
+    public async Task<ActionResult<RolesModel>> PostRol(CreateRolDto rolDto)
     {
+        // Crear el modelo desde el DTO
+        var rol = new RolesModel
+        {
+            NombreRol = rolDto.NombreRol
+        };
+
         _context.Roles.Add(rol);
         await _context.SaveChangesAsync();
 
