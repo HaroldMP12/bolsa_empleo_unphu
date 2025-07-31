@@ -5,6 +5,7 @@ using System.Security.Claims;
 using BolsaEmpleoUnphu.Data.Context;
 using BolsaEmpleoUnphu.Data.Models;
 using BolsaEmpleoUnphu.API.DTOs;
+using BolsaEmpleoUnphu.API.Extensions;
 
 namespace BolsaEmpleoUnphu.API.Controllers;
 
@@ -23,7 +24,7 @@ public class EmpresasController : ControllerBase
     // GET: api/empresas
     [HttpGet]
     [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<PagedResult<EmpresasModel>>> GetEmpresas(
+    public async Task<ActionResult<PagedResult<EmpresaResponseDto>>> GetEmpresas(
         int page = 1, 
         int pageSize = 10,
         string? sector = null,
@@ -51,9 +52,9 @@ public class EmpresasController : ControllerBase
             .Take(pageSize)
             .ToListAsync();
 
-        return new PagedResult<EmpresasModel>
+        return new PagedResult<EmpresaResponseDto>
         {
-            Data = empresas,
+            Data = empresas.Select(e => e.ToResponseDto()),
             TotalRecords = totalRecords,
             Page = page,
             PageSize = pageSize

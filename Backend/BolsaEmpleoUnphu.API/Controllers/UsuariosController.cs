@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using BolsaEmpleoUnphu.Data.Context;
 using BolsaEmpleoUnphu.Data.Models;
 using BolsaEmpleoUnphu.API.DTOs;
+using BolsaEmpleoUnphu.API.Extensions;
 using BCrypt.Net;
 
 namespace BolsaEmpleoUnphu.API.Controllers;
@@ -23,7 +24,7 @@ public class UsuariosController : ControllerBase
     // GET: api/usuarios
     [HttpGet]
     [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<PagedResult<UsuariosModel>>> GetUsuarios(
+    public async Task<ActionResult<PagedResult<UsuarioResponseDto>>> GetUsuarios(
         int page = 1, 
         int pageSize = 10,
         int? rolId = null,
@@ -55,9 +56,9 @@ public class UsuariosController : ControllerBase
             .Take(pageSize)
             .ToListAsync();
 
-        return new PagedResult<UsuariosModel>
+        return new PagedResult<UsuarioResponseDto>
         {
-            Data = usuarios,
+            Data = usuarios.Select(u => u.ToResponseDto()),
             TotalRecords = totalRecords,
             Page = page,
             PageSize = pageSize

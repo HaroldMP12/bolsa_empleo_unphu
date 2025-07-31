@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using BolsaEmpleoUnphu.Data.Context;
 using BolsaEmpleoUnphu.Data.Models;
 using BolsaEmpleoUnphu.API.DTOs;
+using BolsaEmpleoUnphu.API.Extensions;
 
 namespace BolsaEmpleoUnphu.API.Controllers;
 
@@ -21,7 +22,7 @@ public class PostulacionesController : ControllerBase
 
     // GET: api/postulaciones
     [HttpGet]
-    public async Task<ActionResult<PagedResult<PostulacionesModel>>> GetPostulaciones(
+    public async Task<ActionResult<PagedResult<PostulacionResponseDto>>> GetPostulaciones(
         int page = 1, 
         int pageSize = 10,
         int? vacanteId = null,
@@ -53,9 +54,9 @@ public class PostulacionesController : ControllerBase
             .Take(pageSize)
             .ToListAsync();
 
-        return new PagedResult<PostulacionesModel>
+        return new PagedResult<PostulacionResponseDto>
         {
-            Data = postulaciones,
+            Data = postulaciones.Select(p => p.ToResponseDto()),
             TotalRecords = totalRecords,
             Page = page,
             PageSize = pageSize
