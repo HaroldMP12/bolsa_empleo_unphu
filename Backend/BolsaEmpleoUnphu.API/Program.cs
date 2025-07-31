@@ -1,5 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using BolsaEmpleoUnphu.Data.Context;
+using BolsaEmpleoUnphu.API.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using System.Text.Json.Serialization;
 
 namespace BolsaEmpleoUnphu.API
@@ -10,11 +14,30 @@ namespace BolsaEmpleoUnphu.API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-
             // Configuración de la conexión a la base de datos
             builder.Services.AddDbContext<BolsaEmpleoUnphuContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            // Configuración JWT
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                        ValidAudience = builder.Configuration["Jwt:Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+                    };
+                });
+
+            builder.Services.AddAuthorization();
+
+            // Servicios
+            builder.Services.AddScoped<IJwtService, JwtService>();
 
             // Configuración para evitar referencias circulares en JSON
             builder.Services.ConfigureHttpJsonOptions(options =>
@@ -28,13 +51,11 @@ namespace BolsaEmpleoUnphu.API
                     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
                 });
 
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -42,7 +63,7 @@ namespace BolsaEmpleoUnphu.API
             }
 
             app.UseHttpsRedirection();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();
