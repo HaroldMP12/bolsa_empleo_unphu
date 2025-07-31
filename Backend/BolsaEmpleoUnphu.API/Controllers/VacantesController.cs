@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 using BolsaEmpleoUnphu.Data.Context;
 using BolsaEmpleoUnphu.Data.Models;
 
@@ -61,11 +62,26 @@ public class VacantesController : ControllerBase
 
     // PUT: api/vacantes/5
     [HttpPut("{id}")]
+    [Authorize(Roles = "Empresa,Admin")]
     public async Task<IActionResult> PutVacante(int id, VacantesModel vacante)
     {
         if (id != vacante.VacanteID)
         {
             return BadRequest();
+        }
+
+        // Validación 3: Solo tu empresa puede editar sus vacantes (excepto Admin)
+        var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+        if (userRole != "Admin")
+        {
+            var usuarioId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            var empresa = await _context.Empresas.FirstOrDefaultAsync(e => e.UsuarioID == usuarioId);
+            
+            if (empresa == null)
+                return BadRequest("No tienes una empresa asociada");
+                
+            if (vacante.EmpresaID != empresa.EmpresaID)
+                return Forbid("Solo puedes editar vacantes de tu empresa");
         }
 
         vacante.FechaModificacion = DateTime.Now;
@@ -89,12 +105,27 @@ public class VacantesController : ControllerBase
 
     // DELETE: api/vacantes/5
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Empresa,Admin")]
     public async Task<IActionResult> DeleteVacante(int id)
     {
         var vacante = await _context.Vacantes.FindAsync(id);
         if (vacante == null)
         {
             return NotFound();
+        }
+
+        // Validación 3: Solo tu empresa puede eliminar sus vacantes (excepto Admin)
+        var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+        if (userRole != "Admin")
+        {
+            var usuarioId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            var empresa = await _context.Empresas.FirstOrDefaultAsync(e => e.UsuarioID == usuarioId);
+            
+            if (empresa == null)
+                return BadRequest("No tienes una empresa asociada");
+                
+            if (vacante.EmpresaID != empresa.EmpresaID)
+                return Forbid("Solo puedes eliminar vacantes de tu empresa");
         }
 
         _context.Vacantes.Remove(vacante);

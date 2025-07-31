@@ -51,6 +51,22 @@ public class PostulacionesController : ControllerBase
     [Authorize(Roles = "Estudiante,Egresado")]
     public async Task<ActionResult<PostulacionesModel>> PostPostulacion(PostulacionesModel postulacion)
     {
+        // Validación 1: No postularse dos veces
+        var existePostulacion = await _context.Postulaciones
+            .AnyAsync(p => p.VacanteID == postulacion.VacanteID && 
+                          p.UsuarioID == postulacion.UsuarioID);
+        
+        if (existePostulacion)
+            return BadRequest("Ya te postulaste a esta vacante");
+
+        // Validación 2: Vacante no vencida
+        var vacante = await _context.Vacantes.FindAsync(postulacion.VacanteID);
+        if (vacante == null)
+            return BadRequest("La vacante no existe");
+            
+        if (vacante.FechaCierre < DateTime.Now)
+            return BadRequest("Esta vacante ya cerró");
+
         postulacion.FechaPostulacion = DateTime.Now;
         _context.Postulaciones.Add(postulacion);
         await _context.SaveChangesAsync();
