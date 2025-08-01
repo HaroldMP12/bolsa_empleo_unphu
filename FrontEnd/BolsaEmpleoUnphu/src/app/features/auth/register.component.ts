@@ -226,6 +226,7 @@ export class RegisterComponent {
         rolID: parseInt(formValue.rolID)
       };
 
+      console.log('Datos enviados:', userData);
       this.apiService.post('usuarios', userData).subscribe({
         next: () => {
           this.successMessage = 'Usuario registrado exitosamente';
