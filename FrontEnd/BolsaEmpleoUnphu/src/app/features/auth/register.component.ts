@@ -26,6 +26,9 @@ import { CreateUsuarioDto } from '../../core/models/auth.models';
             formControlName="nombreCompleto" 
             placeholder="Nombre completo"
             class="form-control">
+          <div *ngIf="registerForm.get('nombreCompleto')?.invalid && registerForm.get('nombreCompleto')?.touched" class="error">
+            Nombre completo requerido (2-150 caracteres)
+          </div>
         </div>
 
         <div class="form-group">
@@ -34,14 +37,20 @@ import { CreateUsuarioDto } from '../../core/models/auth.models';
             formControlName="correo" 
             placeholder="Correo electrónico"
             class="form-control">
+          <div *ngIf="registerForm.get('correo')?.invalid && registerForm.get('correo')?.touched" class="error">
+            Correo electrónico válido requerido
+          </div>
         </div>
 
         <div class="form-group">
           <input 
             type="password" 
             formControlName="contraseña" 
-            placeholder="Contraseña"
+            placeholder="Contraseña (mínimo 8 caracteres)"
             class="form-control">
+          <div *ngIf="registerForm.get('contraseña')?.invalid && registerForm.get('contraseña')?.touched" class="error">
+            Contraseña requerida (mínimo 8 caracteres)
+          </div>
         </div>
 
         <div class="form-group">
@@ -59,6 +68,9 @@ import { CreateUsuarioDto } from '../../core/models/auth.models';
             <option value="2">Egresado</option>
             <option value="3">Empresa</option>
           </select>
+          <div *ngIf="registerForm.get('rolID')?.invalid && registerForm.get('rolID')?.touched" class="error">
+            Selecciona un tipo de usuario
+          </div>
         </div>
 
         <button type="submit" [disabled]="registerForm.invalid || loading" class="btn-primary">
@@ -204,7 +216,7 @@ export class RegisterComponent {
     this.registerForm = this.fb.group({
       nombreCompleto: ['', Validators.required],
       correo: ['', [Validators.required, Validators.email]],
-      contraseña: ['', [Validators.required, Validators.minLength(6)]],
+      contraseña: ['', [Validators.required, Validators.minLength(8)]],
       telefono: [''],
       rolID: ['', Validators.required]
     });
