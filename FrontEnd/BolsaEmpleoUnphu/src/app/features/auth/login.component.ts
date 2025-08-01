@@ -60,56 +60,73 @@ import { AuthService } from '../../core/services/auth.service';
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      background: linear-gradient(135deg, var(--unphu-blue-dark) 0%, var(--unphu-green-primary) 100%);
+      background: linear-gradient(135deg, rgba(15, 56, 90, 0.8) 0%, rgba(67, 148, 65, 0.8) 100%),
+                  url('assets/images/login-background.jpg') center/cover;
       padding: 1rem;
     }
     .login-card {
       background: white;
-      border-radius: 12px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
       overflow: hidden;
       width: 100%;
-      max-width: 400px;
+      max-width: 500px;
+      backdrop-filter: blur(10px);
     }
     .login-header {
       background: var(--unphu-blue-dark);
       color: white;
-      padding: 2rem;
+      padding: 2.5rem;
       text-align: center;
     }
     .login-header h1 {
-      margin: 0 0 0.5rem 0;
-      font-size: 1.75rem;
+      margin: 0 0 0.75rem 0;
+      font-size: 2.2rem;
+      font-weight: 700;
     }
     .login-header p {
       margin: 0;
-      opacity: 0.9;
-      font-size: 0.95rem;
+      opacity: 0.95;
+      font-size: 1.1rem;
+      font-weight: 300;
     }
     .login-form {
-      padding: 2rem;
+      padding: 2.5rem;
+    }
+    .login-form h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 2rem;
     }
     .form-group {
       margin-bottom: 1rem;
     }
     .form-control {
       width: 100%;
-      padding: 0.75rem;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 1rem;
+      padding: 1rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      transition: border-color 0.3s ease;
+    }
+    .form-control:focus {
+      outline: none;
+      border-color: var(--unphu-green-primary);
+      box-shadow: 0 0 0 3px rgba(67, 148, 65, 0.1);
     }
     .btn-primary {
       width: 100%;
-      padding: 0.75rem;
+      padding: 1rem;
       background: linear-gradient(45deg, var(--unphu-green-primary), var(--unphu-green-light));
       color: white;
       border: none;
-      border-radius: 6px;
-      font-size: 1rem;
-      font-weight: 500;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 600;
       cursor: pointer;
       transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
     .btn-primary:hover:not(:disabled) {
       transform: translateY(-1px);
@@ -132,15 +149,18 @@ import { AuthService } from '../../core/services/auth.service';
     }
     .register-link {
       text-align: center;
-      margin-top: 1rem;
+      margin-top: 1.5rem;
+      font-size: 1rem;
     }
     .register-link a {
       color: var(--unphu-green-primary);
       text-decoration: none;
-      font-weight: 500;
+      font-weight: 600;
+      transition: color 0.3s ease;
     }
     .register-link a:hover {
       color: var(--unphu-green-secondary);
+      text-decoration: underline;
     }
   `]
 })
