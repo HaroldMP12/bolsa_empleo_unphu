@@ -1,0 +1,30 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch Backend",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "Run Backend",
+            "program": "${workspaceFolder}/Backend/BolsaEmpleoUnphu.API/bin/Debug/net8.0/BolsaEmpleoUnphu.API.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/Backend/BolsaEmpleoUnphu.API",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            }
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Launch Full Stack",
+            "configurations": ["Launch Backend"],
+            "preLaunchTask": "Run Both",
+            "stopAll": true
+        }
+    ]
+}

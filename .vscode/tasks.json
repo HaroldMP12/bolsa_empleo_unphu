@@ -1,0 +1,56 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Run Backend",
+            "type": "shell",
+            "command": "dotnet",
+            "args": ["run", "--launch-profile", "https"],
+            "options": {
+                "cwd": "${workspaceFolder}/Backend/BolsaEmpleoUnphu.API"
+            },
+            "group": "build",
+            "isBackground": true,
+            "problemMatcher": {
+                "owner": "dotnet",
+                "pattern": {
+                    "regexp": "^(.*)$",
+                    "file": 1
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": "^.*Building.*$",
+                    "endsPattern": "^.*Application started.*$"
+                }
+            }
+        },
+        {
+            "label": "Run Frontend",
+            "type": "shell",
+            "command": "ng",
+            "args": ["serve", "--port", "3000"],
+            "options": {
+                "cwd": "${workspaceFolder}/FrontEnd/BolsaEmpleoUnphu"
+            },
+            "group": "build",
+            "isBackground": true,
+            "problemMatcher": {
+                "owner": "angular",
+                "pattern": {
+                    "regexp": "^(.*)$",
+                    "file": 1
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": "^.*Local:.*$",
+                    "endsPattern": "^.*compiled successfully.*$"
+                }
+            }
+        },
+        {
+            "label": "Run Both",
+            "dependsOn": ["Run Backend", "Run Frontend"],
+            "group": "build"
+        }
+    ]
+}
