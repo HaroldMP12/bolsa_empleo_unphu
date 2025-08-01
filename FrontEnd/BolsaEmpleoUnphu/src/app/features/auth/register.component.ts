@@ -228,7 +228,8 @@ export class RegisterComponent {
           setTimeout(() => this.router.navigate(['/auth/login']), 2000);
         },
         error: (error) => {
-          this.errorMessage = error.error?.message || 'Error al registrar usuario';
+          console.error('Error de registro:', error);
+          this.errorMessage = error.error?.message || error.message || 'Error al registrar usuario';
           this.loading = false;
         }
       });
