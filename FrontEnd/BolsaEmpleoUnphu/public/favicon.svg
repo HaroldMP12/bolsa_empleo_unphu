@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <rect width="100" height="100" fill="#0F385A"/>
+  <text x="50" y="35" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="white">UNPHU</text>
+  <text x="50" y="55" font-family="Arial, sans-serif" font-size="8" text-anchor="middle" fill="#4394A1">Bolsa de</text>
+  <text x="50" y="68" font-family="Arial, sans-serif" font-size="8" text-anchor="middle" fill="#4394A1">Empleo</text>
+</svg>
