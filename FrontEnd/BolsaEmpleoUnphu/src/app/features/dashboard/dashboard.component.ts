@@ -10,14 +10,10 @@ import { AuthResponse } from '../../core/models/auth.models';
   imports: [CommonModule],
   template: `
     <div class="dashboard">
-      <header class="header">
-        <h1>Bolsa de Empleo UNPHU</h1>
-        <div class="user-info">
-          <span>Bienvenido, {{ currentUser?.nombreCompleto }}</span>
-          <span class="role">{{ currentUser?.rol }}</span>
-          <button (click)="logout()" class="btn-logout">Cerrar Sesión</button>
-        </div>
-      </header>
+      <div class="dashboard-header">
+        <h1>Dashboard</h1>
+        <p>Bienvenido, {{ currentUser?.nombreCompleto }}</p>
+      </div>
       
       <main class="main-content">
         <div class="dashboard-cards">
@@ -46,36 +42,21 @@ import { AuthResponse } from '../../core/models/auth.models';
   `,
   styles: [`
     .dashboard {
-      min-height: 100vh;
-      background-color: #f8f9fa;
+      padding: 2rem;
     }
-    .header {
-      background: white;
-      padding: 1rem 2rem;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    .dashboard-header {
+      margin-bottom: 2rem;
     }
-    .user-info {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
+    .dashboard-header h1 {
+      color: var(--unphu-blue-dark);
+      margin: 0 0 0.5rem 0;
+      font-size: 2rem;
+      font-weight: 600;
     }
-    .role {
-      background: #007bff;
-      color: white;
-      padding: 0.25rem 0.5rem;
-      border-radius: 4px;
-      font-size: 0.875rem;
-    }
-    .btn-logout {
-      background: #dc3545;
-      color: white;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 4px;
-      cursor: pointer;
+    .dashboard-header p {
+      color: #666;
+      margin: 0;
+      font-size: 1.1rem;
     }
     .main-content {
       padding: 2rem;
@@ -101,8 +82,9 @@ import { AuthResponse } from '../../core/models/auth.models';
       margin: 0;
     }
     h3 {
-      color: #007bff;
+      color: var(--unphu-green-primary);
       margin-top: 0;
+      font-weight: 600;
     }
   `]
 })

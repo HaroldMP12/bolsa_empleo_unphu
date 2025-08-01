@@ -1,1 +1,23 @@
-/* You can add global styles to this file, and also import other style files */
+/* UNPHU Official Color Palette */
+:root {
+  --unphu-green-primary: #439441;
+  --unphu-green-secondary: #006837;
+  --unphu-green-light: #8CC63E;
+  --unphu-blue-dark: #0F385A;
+  --unphu-gray-medium: #9A999E;
+  --unphu-white: #ffffff;
+  --unphu-background: #f8f9fa;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--unphu-background);
+  color: #333;
+  line-height: 1.6;
+}
