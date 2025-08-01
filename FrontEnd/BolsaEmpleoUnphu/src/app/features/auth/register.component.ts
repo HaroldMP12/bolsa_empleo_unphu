@@ -216,10 +216,14 @@ export class RegisterComponent {
       this.errorMessage = '';
       this.successMessage = '';
       
+      const formValue = this.registerForm.value;
       const userData: CreateUsuarioDto = {
-        ...this.registerForm.value,
+        nombreCompleto: formValue.nombreCompleto,
+        correo: formValue.correo,
+        contraseña: formValue.contraseña,
+        telefono: formValue.telefono || null,
         estado: true,
-        rolID: parseInt(this.registerForm.value.rolID)
+        rolID: parseInt(formValue.rolID)
       };
 
       this.apiService.post('usuarios', userData).subscribe({
