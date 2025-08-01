@@ -1,0 +1,2 @@
+C:\Users\jsuarez\Source\Repos\bolsa_empleo_unphu\Backend\BolsaEmpleoUnphu.API\wwwroot\index.html
+C:\Users\jsuarez\Source\Repos\bolsa_empleo_unphu\Backend\BolsaEmpleoUnphu.API\wwwroot\test-cors.html

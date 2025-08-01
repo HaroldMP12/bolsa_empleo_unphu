@@ -40,6 +40,33 @@ namespace BolsaEmpleoUnphu.API
             builder.Services.AddScoped<IJwtService, JwtService>();
             builder.Services.AddScoped<INotificacionService, NotificacionService>();
 
+            // CORS
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowFrontend", policy =>
+                {
+                    if (builder.Environment.IsDevelopment())
+                    {
+                        policy.WithOrigins(
+                                "http://localhost:3000",
+                                "http://localhost:3001", 
+                                "https://localhost:3000",
+                                "https://localhost:3001")
+                              .AllowAnyHeader()
+                              .AllowAnyMethod()
+                              .AllowCredentials();
+                    }
+                    else
+                    {
+                        var corsOrigins = builder.Configuration.GetSection("CorsOrigins").Get<string[]>() ?? new[] { "*" };
+                        policy.WithOrigins(corsOrigins)
+                              .AllowAnyHeader()
+                              .AllowAnyMethod()
+                              .AllowCredentials();
+                    }
+                });
+            });
+
             // SignalR
             builder.Services.AddSignalR();
 
@@ -92,6 +119,9 @@ namespace BolsaEmpleoUnphu.API
             }
 
             app.UseHttpsRedirection();
+            
+            // CORS debe ir antes de UseAuthentication
+            app.UseCors("AllowFrontend");
             
             // Configurar archivos estáticos
             app.UseStaticFiles();

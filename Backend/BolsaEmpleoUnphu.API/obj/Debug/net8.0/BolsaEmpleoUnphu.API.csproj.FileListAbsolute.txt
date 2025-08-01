@@ -281,3 +281,5 @@ C:\bolsa_empleo_unphu\Backend\BolsaEmpleoUnphu.API\obj\Debug\net8.0\ref\BolsaEmp
 C:\Users\jsuarez\Source\Repos\bolsa_empleo_unphu\Backend\BolsaEmpleoUnphu.API\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 C:\Users\jsuarez\Source\Repos\bolsa_empleo_unphu\Backend\BolsaEmpleoUnphu.API\bin\Debug\net8.0\BCrypt.Net-Next.dll
 C:\Users\jsuarez\Source\Repos\bolsa_empleo_unphu\Backend\BolsaEmpleoUnphu.API\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\jsuarez\Source\Repos\bolsa_empleo_unphu\Backend\BolsaEmpleoUnphu.API\bin\Debug\net8.0\appsettings.Production.json
+C:\Users\jsuarez\Source\Repos\bolsa_empleo_unphu\Backend\BolsaEmpleoUnphu.API\bin\Debug\net8.0\BolsaEmpleoUnphu.API.staticwebassets.runtime.json

@@ -5,6 +5,180 @@
     "version": "1.0"
   },
   "paths": {
+    "/api/Archivos/cv": {
+      "post": {
+        "tags": [
+          "Archivos"
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "archivo": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "archivo": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Archivos/imagen-perfil": {
+      "post": {
+        "tags": [
+          "Archivos"
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "imagen": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "imagen": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Archivos/logo-empresa": {
+      "post": {
+        "tags": [
+          "Archivos"
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "logo": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "logo": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Archivos/{tipo}/{nombreArchivo}": {
+      "delete": {
+        "tags": [
+          "Archivos"
+        ],
+        "parameters": [
+          {
+            "name": "tipo",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "nombreArchivo",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Auth/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/BitacoraAcciones": {
       "get": {
         "tags": [
@@ -420,17 +594,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CategoriasModel"
+                "$ref": "#/components/schemas/CreateCategoriaDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/CategoriasModel"
+                "$ref": "#/components/schemas/CreateCategoriaDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/CategoriasModel"
+                "$ref": "#/components/schemas/CreateCategoriaDto"
               }
             }
           }
@@ -565,32 +739,57 @@
         "tags": [
           "Empresas"
         ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          },
+          {
+            "name": "sector",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/EmpresasModel"
-                  }
+                  "$ref": "#/components/schemas/EmpresaResponseDtoPagedResult"
                 }
               },
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/EmpresasModel"
-                  }
+                  "$ref": "#/components/schemas/EmpresaResponseDtoPagedResult"
                 }
               },
               "text/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/EmpresasModel"
-                  }
+                  "$ref": "#/components/schemas/EmpresaResponseDtoPagedResult"
                 }
               }
             }
@@ -605,17 +804,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/EmpresasModel"
+                "$ref": "#/components/schemas/CreateEmpresaDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/EmpresasModel"
+                "$ref": "#/components/schemas/CreateEmpresaDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/EmpresasModel"
+                "$ref": "#/components/schemas/CreateEmpresaDto"
               }
             }
           }
@@ -702,17 +901,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/EmpresasModel"
+                "$ref": "#/components/schemas/UpdateEmpresaDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/EmpresasModel"
+                "$ref": "#/components/schemas/UpdateEmpresaDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/EmpresasModel"
+                "$ref": "#/components/schemas/UpdateEmpresaDto"
               }
             }
           }
@@ -1199,6 +1398,56 @@
         }
       }
     },
+    "/api/Notificaciones/no-leidas": {
+      "get": {
+        "tags": [
+          "Notificaciones"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NotificacionesModel"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NotificacionesModel"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NotificacionesModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Notificaciones/contador": {
+      "get": {
+        "tags": [
+          "Notificaciones"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/Notificaciones/{id}": {
       "get": {
         "tags": [
@@ -1238,6 +1487,29 @@
           }
         }
       },
+      "delete": {
+        "tags": [
+          "Notificaciones"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Notificaciones/{id}/marcar-leida": {
       "put": {
         "tags": [
           "Notificaciones"
@@ -1253,45 +1525,17 @@
             }
           }
         ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NotificacionesModel"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NotificacionesModel"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/NotificacionesModel"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "description": "OK"
           }
         }
-      },
-      "delete": {
+      }
+    },
+    "/api/Notificaciones/marcar-todas-leidas": {
+      "put": {
         "tags": [
           "Notificaciones"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
         ],
         "responses": {
           "200": {
@@ -1345,17 +1589,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/PerfilesModel"
+                "$ref": "#/components/schemas/CreatePerfilDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/PerfilesModel"
+                "$ref": "#/components/schemas/CreatePerfilDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/PerfilesModel"
+                "$ref": "#/components/schemas/CreatePerfilDto"
               }
             }
           }
@@ -1442,17 +1686,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/PerfilesModel"
+                "$ref": "#/components/schemas/UpdatePerfilDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/PerfilesModel"
+                "$ref": "#/components/schemas/UpdatePerfilDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/PerfilesModel"
+                "$ref": "#/components/schemas/UpdatePerfilDto"
               }
             }
           }
@@ -1490,32 +1734,66 @@
         "tags": [
           "Postulaciones"
         ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          },
+          {
+            "name": "vacanteId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "usuarioId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "estado",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/PostulacionesModel"
-                  }
+                  "$ref": "#/components/schemas/PostulacionResponseDtoPagedResult"
                 }
               },
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/PostulacionesModel"
-                  }
+                  "$ref": "#/components/schemas/PostulacionResponseDtoPagedResult"
                 }
               },
               "text/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/PostulacionesModel"
-                  }
+                  "$ref": "#/components/schemas/PostulacionResponseDtoPagedResult"
                 }
               }
             }
@@ -1530,17 +1808,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/PostulacionesModel"
+                "$ref": "#/components/schemas/CreatePostulacionDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/PostulacionesModel"
+                "$ref": "#/components/schemas/CreatePostulacionDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/PostulacionesModel"
+                "$ref": "#/components/schemas/CreatePostulacionDto"
               }
             }
           }
@@ -2085,17 +2363,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/RolesModel"
+                "$ref": "#/components/schemas/CreateRolDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/RolesModel"
+                "$ref": "#/components/schemas/CreateRolDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/RolesModel"
+                "$ref": "#/components/schemas/CreateRolDto"
               }
             }
           }
@@ -2230,32 +2508,65 @@
         "tags": [
           "Usuarios"
         ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          },
+          {
+            "name": "rolId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "estado",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/UsuariosModel"
-                  }
+                  "$ref": "#/components/schemas/UsuarioResponseDtoPagedResult"
                 }
               },
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/UsuariosModel"
-                  }
+                  "$ref": "#/components/schemas/UsuarioResponseDtoPagedResult"
                 }
               },
               "text/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/UsuariosModel"
-                  }
+                  "$ref": "#/components/schemas/UsuarioResponseDtoPagedResult"
                 }
               }
             }
@@ -2270,17 +2581,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UsuariosModel"
+                "$ref": "#/components/schemas/CreateUsuarioDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/UsuariosModel"
+                "$ref": "#/components/schemas/CreateUsuarioDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/UsuariosModel"
+                "$ref": "#/components/schemas/CreateUsuarioDto"
               }
             }
           }
@@ -2367,17 +2678,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UsuariosModel"
+                "$ref": "#/components/schemas/UpdateUsuarioDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/UsuariosModel"
+                "$ref": "#/components/schemas/UpdateUsuarioDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/UsuariosModel"
+                "$ref": "#/components/schemas/UpdateUsuarioDto"
               }
             }
           }
@@ -2415,32 +2726,81 @@
         "tags": [
           "Vacantes"
         ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          },
+          {
+            "name": "categoriaId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "ubicacion",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "salarioMin",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "salarioMax",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/VacantesModel"
-                  }
+                  "$ref": "#/components/schemas/VacanteResponseDtoPagedResult"
                 }
               },
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/VacantesModel"
-                  }
+                  "$ref": "#/components/schemas/VacanteResponseDtoPagedResult"
                 }
               },
               "text/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/VacantesModel"
-                  }
+                  "$ref": "#/components/schemas/VacanteResponseDtoPagedResult"
                 }
               }
             }
@@ -2455,17 +2815,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/VacantesModel"
+                "$ref": "#/components/schemas/CreateVacanteDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/VacantesModel"
+                "$ref": "#/components/schemas/CreateVacanteDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/VacantesModel"
+                "$ref": "#/components/schemas/CreateVacanteDto"
               }
             }
           }
@@ -2552,17 +2912,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/VacantesModel"
+                "$ref": "#/components/schemas/UpdateVacanteDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/VacantesModel"
+                "$ref": "#/components/schemas/UpdateVacanteDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/VacantesModel"
+                "$ref": "#/components/schemas/UpdateVacanteDto"
               }
             }
           }
@@ -2594,10 +2954,174 @@
           }
         }
       }
+    },
+    "/api/Vacantes/activas": {
+      "get": {
+        "tags": [
+          "Vacantes"
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          },
+          {
+            "name": "categoriaId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "ubicacion",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/VacanteResponseDtoPagedResult"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VacanteResponseDtoPagedResult"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VacanteResponseDtoPagedResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Vacantes/empresa/{empresaId}": {
+      "get": {
+        "tags": [
+          "Vacantes"
+        ],
+        "parameters": [
+          {
+            "name": "empresaId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/VacanteResponseDtoPagedResult"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VacanteResponseDtoPagedResult"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VacanteResponseDtoPagedResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Vacantes/estadisticas": {
+      "get": {
+        "tags": [
+          "Vacantes"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "AuthResponseDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "nullable": true
+          },
+          "usuarioID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "nombreCompleto": {
+            "type": "string",
+            "nullable": true
+          },
+          "correo": {
+            "type": "string",
+            "nullable": true
+          },
+          "rol": {
+            "type": "string",
+            "nullable": true
+          },
+          "expiracion": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
       "BitacoraAccionesModel": {
         "required": [
           "descripcion",
@@ -2682,7 +3206,7 @@
           },
           "nombreCategoria": {
             "maxLength": 100,
-            "minLength": 0,
+            "minLength": 2,
             "type": "string"
           },
           "categoriaPadreID": {
@@ -2710,6 +3234,417 @@
         },
         "additionalProperties": false
       },
+      "CreateCategoriaDto": {
+        "required": [
+          "nombreCategoria"
+        ],
+        "type": "object",
+        "properties": {
+          "nombreCategoria": {
+            "maxLength": 100,
+            "minLength": 2,
+            "type": "string"
+          },
+          "categoriaPadreID": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateEmpresaDto": {
+        "required": [
+          "nombreEmpresa",
+          "rnc",
+          "usuarioID"
+        ],
+        "type": "object",
+        "properties": {
+          "usuarioID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "nombreEmpresa": {
+            "maxLength": 100,
+            "minLength": 2,
+            "type": "string"
+          },
+          "rnc": {
+            "minLength": 1,
+            "pattern": "^\\d{3}-\\d{5}-\\d{1}$",
+            "type": "string"
+          },
+          "sector": {
+            "maxLength": 50,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "telefonoEmpresa": {
+            "maxLength": 20,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "direccion": {
+            "maxLength": 255,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "sitioWeb": {
+            "maxLength": 150,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "descripcion": {
+            "type": "string",
+            "nullable": true
+          },
+          "observaciones": {
+            "type": "string",
+            "nullable": true
+          },
+          "imagenLogo": {
+            "maxLength": 300,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "imagenPortada": {
+            "maxLength": 300,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "cantidadEmpleados": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreatePerfilDto": {
+        "required": [
+          "carreraID",
+          "tipoPerfil",
+          "usuarioID"
+        ],
+        "type": "object",
+        "properties": {
+          "usuarioID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tipoPerfil": {
+            "minLength": 1,
+            "pattern": "^(Estudiante|Egresado|Ambos)$",
+            "type": "string"
+          },
+          "matricula": {
+            "maxLength": 20,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "carreraID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "semestre": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "fechaIngreso": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "tituloObtenido": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "fechaEgreso": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "añoGraduacion": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "urlImagen": {
+            "maxLength": 300,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "resumen": {
+            "type": "string",
+            "nullable": true
+          },
+          "redesSociales": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreatePostulacionDto": {
+        "required": [
+          "usuarioID",
+          "vacanteID"
+        ],
+        "type": "object",
+        "properties": {
+          "vacanteID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "usuarioID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "observaciones": {
+            "maxLength": 500,
+            "minLength": 10,
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateRolDto": {
+        "required": [
+          "nombreRol"
+        ],
+        "type": "object",
+        "properties": {
+          "nombreRol": {
+            "maxLength": 50,
+            "minLength": 3,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateUsuarioDto": {
+        "required": [
+          "contraseña",
+          "correo",
+          "nombreCompleto",
+          "rolID"
+        ],
+        "type": "object",
+        "properties": {
+          "nombreCompleto": {
+            "maxLength": 150,
+            "minLength": 2,
+            "type": "string"
+          },
+          "correo": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string",
+            "format": "email"
+          },
+          "contraseña": {
+            "maxLength": 255,
+            "minLength": 8,
+            "type": "string"
+          },
+          "telefono": {
+            "maxLength": 20,
+            "minLength": 0,
+            "type": "string",
+            "format": "tel",
+            "nullable": true
+          },
+          "estado": {
+            "type": "boolean"
+          },
+          "rolID": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateVacanteDto": {
+        "required": [
+          "categoriaID",
+          "descripcion",
+          "empresaID",
+          "fechaCierre",
+          "requisitos",
+          "tituloVacante"
+        ],
+        "type": "object",
+        "properties": {
+          "empresaID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tituloVacante": {
+            "maxLength": 100,
+            "minLength": 5,
+            "type": "string"
+          },
+          "descripcion": {
+            "maxLength": 2000,
+            "minLength": 20,
+            "type": "string"
+          },
+          "requisitos": {
+            "maxLength": 1500,
+            "minLength": 10,
+            "type": "string"
+          },
+          "fechaCierre": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "ubicacion": {
+            "type": "string",
+            "nullable": true
+          },
+          "tipoContrato": {
+            "type": "string",
+            "nullable": true
+          },
+          "jornada": {
+            "type": "string",
+            "nullable": true
+          },
+          "modalidad": {
+            "type": "string",
+            "nullable": true
+          },
+          "salario": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "cantidadVacantes": {
+            "maximum": 50,
+            "minimum": 1,
+            "type": "integer",
+            "format": "int32"
+          },
+          "categoriaID": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "EmpresaResponseDto": {
+        "type": "object",
+        "properties": {
+          "empresaID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "nombreEmpresa": {
+            "type": "string",
+            "nullable": true
+          },
+          "sector": {
+            "type": "string",
+            "nullable": true
+          },
+          "telefonoEmpresa": {
+            "type": "string",
+            "nullable": true
+          },
+          "direccion": {
+            "type": "string",
+            "nullable": true
+          },
+          "sitioWeb": {
+            "type": "string",
+            "nullable": true
+          },
+          "descripcion": {
+            "type": "string",
+            "nullable": true
+          },
+          "imagenLogo": {
+            "type": "string",
+            "nullable": true
+          },
+          "imagenPortada": {
+            "type": "string",
+            "nullable": true
+          },
+          "cantidadEmpleados": {
+            "type": "string",
+            "nullable": true
+          },
+          "nombreContacto": {
+            "type": "string",
+            "nullable": true
+          },
+          "correoContacto": {
+            "type": "string",
+            "nullable": true
+          },
+          "empresaActiva": {
+            "type": "boolean"
+          },
+          "totalVacantesActivas": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "EmpresaResponseDtoPagedResult": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EmpresaResponseDto"
+            },
+            "nullable": true
+          },
+          "totalRecords": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "hasNextPage": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "hasPreviousPage": {
+            "type": "boolean",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
       "EmpresasModel": {
         "required": [
           "nombreEmpresa",
@@ -2727,12 +3662,12 @@
           },
           "nombreEmpresa": {
             "maxLength": 100,
-            "minLength": 0,
+            "minLength": 2,
             "type": "string"
           },
           "rnc": {
-            "maxLength": 20,
-            "minLength": 0,
+            "minLength": 1,
+            "pattern": "^\\d{3}-\\d{5}-\\d{1}$",
             "type": "string"
           },
           "sector": {
@@ -2892,6 +3827,25 @@
         },
         "additionalProperties": false
       },
+      "LoginDto": {
+        "required": [
+          "contraseña",
+          "correo"
+        ],
+        "type": "object",
+        "properties": {
+          "correo": {
+            "minLength": 1,
+            "type": "string",
+            "format": "email"
+          },
+          "contraseña": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
       "NotificacionesModel": {
         "required": [
           "mensaje"
@@ -2944,8 +3898,8 @@
             "format": "int32"
           },
           "tipoPerfil": {
-            "maxLength": 20,
-            "minLength": 0,
+            "minLength": 1,
+            "pattern": "^(Estudiante|Egresado|Ambos)$",
             "type": "string"
           },
           "matricula": {
@@ -3007,6 +3961,94 @@
         },
         "additionalProperties": false
       },
+      "PostulacionResponseDto": {
+        "type": "object",
+        "properties": {
+          "postulacionID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "fechaPostulacion": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "estado": {
+            "type": "string",
+            "nullable": true
+          },
+          "observaciones": {
+            "type": "string",
+            "nullable": true
+          },
+          "vacanteID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tituloVacante": {
+            "type": "string",
+            "nullable": true
+          },
+          "nombreEmpresa": {
+            "type": "string",
+            "nullable": true
+          },
+          "fechaCierreVacante": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "usuarioID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "nombreCompleto": {
+            "type": "string",
+            "nullable": true
+          },
+          "correoUsuario": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PostulacionResponseDtoPagedResult": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PostulacionResponseDto"
+            },
+            "nullable": true
+          },
+          "totalRecords": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "hasNextPage": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "hasPreviousPage": {
+            "type": "boolean",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
       "PostulacionesModel": {
         "required": [
           "estado"
@@ -3030,11 +4072,13 @@
             "format": "date-time"
           },
           "estado": {
-            "maxLength": 30,
-            "minLength": 0,
+            "minLength": 1,
+            "pattern": "^(Pendiente|En Revisión|Aceptado|Rechazado)$",
             "type": "string"
           },
           "observaciones": {
+            "maxLength": 500,
+            "minLength": 10,
             "type": "string",
             "nullable": true
           },
@@ -3129,7 +4173,7 @@
           },
           "nombreRol": {
             "maxLength": 50,
-            "minLength": 0,
+            "minLength": 3,
             "type": "string"
           },
           "usuarios": {
@@ -3138,6 +4182,355 @@
               "$ref": "#/components/schemas/UsuariosModel"
             },
             "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateEmpresaDto": {
+        "required": [
+          "empresaID",
+          "nombreEmpresa",
+          "rnc",
+          "usuarioID"
+        ],
+        "type": "object",
+        "properties": {
+          "empresaID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "usuarioID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "nombreEmpresa": {
+            "maxLength": 100,
+            "minLength": 2,
+            "type": "string"
+          },
+          "rnc": {
+            "minLength": 1,
+            "pattern": "^\\d{3}-\\d{5}-\\d{1}$",
+            "type": "string"
+          },
+          "sector": {
+            "maxLength": 50,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "telefonoEmpresa": {
+            "maxLength": 20,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "direccion": {
+            "maxLength": 255,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "sitioWeb": {
+            "maxLength": 150,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "descripcion": {
+            "type": "string",
+            "nullable": true
+          },
+          "observaciones": {
+            "type": "string",
+            "nullable": true
+          },
+          "imagenLogo": {
+            "maxLength": 300,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "imagenPortada": {
+            "maxLength": 300,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "cantidadEmpleados": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdatePerfilDto": {
+        "required": [
+          "carreraID",
+          "perfilID",
+          "tipoPerfil",
+          "usuarioID"
+        ],
+        "type": "object",
+        "properties": {
+          "perfilID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "usuarioID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tipoPerfil": {
+            "minLength": 1,
+            "pattern": "^(Estudiante|Egresado|Ambos)$",
+            "type": "string"
+          },
+          "matricula": {
+            "maxLength": 20,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "carreraID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "semestre": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "fechaIngreso": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "tituloObtenido": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "fechaEgreso": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "añoGraduacion": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "urlImagen": {
+            "maxLength": 300,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "resumen": {
+            "type": "string",
+            "nullable": true
+          },
+          "redesSociales": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateUsuarioDto": {
+        "required": [
+          "correo",
+          "nombreCompleto",
+          "rolID",
+          "usuarioID"
+        ],
+        "type": "object",
+        "properties": {
+          "usuarioID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "nombreCompleto": {
+            "maxLength": 150,
+            "minLength": 2,
+            "type": "string"
+          },
+          "correo": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string",
+            "format": "email"
+          },
+          "telefono": {
+            "maxLength": 20,
+            "minLength": 0,
+            "type": "string",
+            "format": "tel",
+            "nullable": true
+          },
+          "estado": {
+            "type": "boolean"
+          },
+          "rolID": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateVacanteDto": {
+        "required": [
+          "categoriaID",
+          "descripcion",
+          "empresaID",
+          "fechaCierre",
+          "requisitos",
+          "tituloVacante",
+          "vacanteID"
+        ],
+        "type": "object",
+        "properties": {
+          "vacanteID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "empresaID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tituloVacante": {
+            "maxLength": 100,
+            "minLength": 5,
+            "type": "string"
+          },
+          "descripcion": {
+            "maxLength": 2000,
+            "minLength": 20,
+            "type": "string"
+          },
+          "requisitos": {
+            "maxLength": 1500,
+            "minLength": 10,
+            "type": "string"
+          },
+          "fechaCierre": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "ubicacion": {
+            "type": "string",
+            "nullable": true
+          },
+          "tipoContrato": {
+            "type": "string",
+            "nullable": true
+          },
+          "jornada": {
+            "type": "string",
+            "nullable": true
+          },
+          "modalidad": {
+            "type": "string",
+            "nullable": true
+          },
+          "salario": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "cantidadVacantes": {
+            "maximum": 50,
+            "minimum": 1,
+            "type": "integer",
+            "format": "int32"
+          },
+          "categoriaID": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UsuarioResponseDto": {
+        "type": "object",
+        "properties": {
+          "usuarioID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "nombreCompleto": {
+            "type": "string",
+            "nullable": true
+          },
+          "correo": {
+            "type": "string",
+            "nullable": true
+          },
+          "telefono": {
+            "type": "string",
+            "nullable": true
+          },
+          "fechaRegistro": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "estado": {
+            "type": "boolean"
+          },
+          "rolID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "nombreRol": {
+            "type": "string",
+            "nullable": true
+          },
+          "fechaUltimaActualización": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UsuarioResponseDtoPagedResult": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UsuarioResponseDto"
+            },
+            "nullable": true
+          },
+          "totalRecords": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "hasNextPage": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "hasPreviousPage": {
+            "type": "boolean",
+            "readOnly": true
           }
         },
         "additionalProperties": false
@@ -3156,23 +4549,25 @@
           },
           "nombreCompleto": {
             "maxLength": 150,
-            "minLength": 0,
+            "minLength": 2,
             "type": "string"
           },
           "correo": {
             "maxLength": 100,
             "minLength": 0,
-            "type": "string"
+            "type": "string",
+            "format": "email"
           },
           "contraseña": {
             "maxLength": 255,
-            "minLength": 0,
+            "minLength": 8,
             "type": "string"
           },
           "telefono": {
             "maxLength": 20,
             "minLength": 0,
             "type": "string",
+            "format": "tel",
             "nullable": true
           },
           "fechaRegistro": {
@@ -3243,9 +4638,128 @@
         },
         "additionalProperties": false
       },
+      "VacanteResponseDto": {
+        "type": "object",
+        "properties": {
+          "vacanteID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tituloVacante": {
+            "type": "string",
+            "nullable": true
+          },
+          "descripcion": {
+            "type": "string",
+            "nullable": true
+          },
+          "requisitos": {
+            "type": "string",
+            "nullable": true
+          },
+          "fechaPublicacion": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "fechaCierre": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "fechaModificacion": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "ubicacion": {
+            "type": "string",
+            "nullable": true
+          },
+          "tipoContrato": {
+            "type": "string",
+            "nullable": true
+          },
+          "jornada": {
+            "type": "string",
+            "nullable": true
+          },
+          "modalidad": {
+            "type": "string",
+            "nullable": true
+          },
+          "salario": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "cantidadVacantes": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "nombreEmpresa": {
+            "type": "string",
+            "nullable": true
+          },
+          "sectorEmpresa": {
+            "type": "string",
+            "nullable": true
+          },
+          "sitioWebEmpresa": {
+            "type": "string",
+            "nullable": true
+          },
+          "nombreCategoria": {
+            "type": "string",
+            "nullable": true
+          },
+          "totalPostulaciones": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "VacanteResponseDtoPagedResult": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VacanteResponseDto"
+            },
+            "nullable": true
+          },
+          "totalRecords": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "hasNextPage": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "hasPreviousPage": {
+            "type": "boolean",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
       "VacantesModel": {
         "required": [
           "descripcion",
+          "fechaCierre",
           "requisitos",
           "tituloVacante"
         ],
@@ -3261,15 +4775,17 @@
           },
           "tituloVacante": {
             "maxLength": 100,
-            "minLength": 0,
+            "minLength": 5,
             "type": "string"
           },
           "descripcion": {
-            "minLength": 1,
+            "maxLength": 2000,
+            "minLength": 20,
             "type": "string"
           },
           "requisitos": {
-            "minLength": 1,
+            "maxLength": 1500,
+            "minLength": 10,
             "type": "string"
           },
           "fechaPublicacion": {
@@ -3315,6 +4831,8 @@
             "nullable": true
           },
           "cantidadVacantes": {
+            "maximum": 50,
+            "minimum": 1,
             "type": "integer",
             "format": "int32"
           },
@@ -3345,6 +4863,19 @@
         },
         "additionalProperties": false
       }
+    },
+    "securitySchemes": {
+      "Bearer": {
+        "type": "apiKey",
+        "description": "JWT Authorization header using the Bearer scheme",
+        "name": "Authorization",
+        "in": "header"
+      }
     }
-  }
+  },
+  "security": [
+    {
+      "Bearer": [ ]
+    }
+  ]
 }
