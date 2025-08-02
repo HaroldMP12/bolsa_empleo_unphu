@@ -595,8 +595,8 @@ export class PerfilComponent implements OnInit {
     });
 
     this.academicForm = this.fb.group({
-      carrera: ['', Validators.required],
-      matricula: ['', Validators.required],
+      carrera: ['1'],
+      matricula: [''],
       semestre: [''],
       anoIngreso: [''],
       promedio: ['']
@@ -677,11 +677,12 @@ export class PerfilComponent implements OnInit {
   }
 
   private guardarPerfilEstudiante(): void {
-    if (!this.personalForm.valid || !this.academicForm.valid) {
-      this.showModalMessage('warning', 'Formulario Incompleto', 'Por favor completa todos los campos requeridos');
-      return;
-    }
-
+    console.log('Iniciando guardado de perfil estudiante');
+    // Remover validaciones temporalmente para testing
+    // console.log('Personal form valid:', this.personalForm.valid);
+    // console.log('Academic form valid:', this.academicForm.valid);
+    console.log('Academic form values:', this.academicForm.value);
+    
     this.guardando = true;
     const semestreValue = this.academicForm.get('semestre')?.value;
     const anoIngresoValue = this.academicForm.get('anoIngreso')?.value;
@@ -700,31 +701,38 @@ export class PerfilComponent implements OnInit {
       fechaEgreso: null,
       añoGraduacion: null
     };
+    
+    console.log('Datos a enviar:', perfilData);
 
     // Verificar si ya existe un perfil
     this.perfilService.obtenerPerfilEstudiante(this.currentUser!.usuarioID).subscribe({
       next: (perfilExistente) => {
+        console.log('Respuesta del servidor:', perfilExistente);
         if (perfilExistente && perfilExistente.perfilID) {
-          // Actualizar perfil existente
+          console.log('Actualizando perfil existente ID:', perfilExistente.perfilID);
           perfilData.perfilID = perfilExistente.perfilID;
           this.perfilService.actualizarPerfilEstudiante(perfilExistente.perfilID, perfilData).subscribe({
-            next: () => {
+            next: (response) => {
+              console.log('Perfil actualizado exitosamente:', response);
               this.guardando = false;
               this.showModalMessage('success', '¡Perfil Actualizado!', 'Tu perfil ha sido actualizado correctamente');
             },
             error: (error) => {
+              console.error('Error al actualizar perfil:', error);
               this.guardando = false;
               this.showModalMessage('error', 'Error al Guardar', 'No se pudo actualizar el perfil. Inténtalo nuevamente.');
             }
           });
         } else {
-          // Crear nuevo perfil
+          console.log('Creando nuevo perfil');
           this.perfilService.crearPerfilEstudiante(perfilData).subscribe({
-            next: () => {
+            next: (response) => {
+              console.log('Perfil creado exitosamente:', response);
               this.guardando = false;
               this.showModalMessage('success', '¡Perfil Creado!', 'Tu perfil ha sido creado correctamente');
             },
             error: (error) => {
+              console.error('Error al crear perfil:', error);
               this.guardando = false;
               this.showModalMessage('error', 'Error al Guardar', 'No se pudo crear el perfil. Inténtalo nuevamente.');
             }
