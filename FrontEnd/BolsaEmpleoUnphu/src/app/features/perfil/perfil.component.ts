@@ -561,12 +561,15 @@ export class PerfilComponent implements OnInit {
   }
 
   private populateStudentForm(perfil: any): void {
+    console.log('Cargando datos del perfil:', perfil);
     this.academicForm.patchValue({
-      carrera: perfil.carreraID?.toString(),
-      matricula: perfil.matricula,
+      carrera: perfil.carreraID?.toString() || '1',
+      matricula: perfil.matricula || '',
       semestre: perfil.semestre?.toString() || '',
-      anoIngreso: perfil.fechaIngreso ? new Date(perfil.fechaIngreso).getFullYear() : ''
+      anoIngreso: perfil.fechaIngreso ? new Date(perfil.fechaIngreso).getFullYear() : '',
+      promedio: ''
     });
+    console.log('Formulario actualizado:', this.academicForm.value);
   }
 
   private populateCompanyForm(empresa: any): void {
@@ -715,6 +718,8 @@ export class PerfilComponent implements OnInit {
             next: (response) => {
               console.log('Perfil actualizado exitosamente:', response);
               this.guardando = false;
+              // Recargar el perfil actualizado
+              this.loadExistingProfile();
               this.showModalMessage('success', '¡Perfil Actualizado!', 'Tu perfil ha sido actualizado correctamente');
             },
             error: (error) => {
@@ -729,6 +734,8 @@ export class PerfilComponent implements OnInit {
             next: (response) => {
               console.log('Perfil creado exitosamente:', response);
               this.guardando = false;
+              // Recargar el perfil creado
+              this.loadExistingProfile();
               this.showModalMessage('success', '¡Perfil Creado!', 'Tu perfil ha sido creado correctamente');
             },
             error: (error) => {
