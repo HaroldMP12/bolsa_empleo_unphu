@@ -32,19 +32,14 @@ public class PerfilesController : ControllerBase
 
     // GET: api/perfiles/usuario/5
     [HttpGet("usuario/{usuarioId}")]
-    public async Task<ActionResult<PerfilesModel>> GetPerfilByUsuario(int usuarioId)
+    public async Task<ActionResult<PerfilesModel?>> GetPerfilByUsuario(int usuarioId)
     {
         var perfil = await _context.Perfiles
             .Include(p => p.Usuario)
             .Include(p => p.Carrera)
             .FirstOrDefaultAsync(p => p.UsuarioID == usuarioId);
 
-        if (perfil == null)
-        {
-            return NotFound();
-        }
-
-        return perfil;
+        return Ok(perfil); // Devuelve null si no existe, no 404
     }
 
     // GET: api/perfiles/5

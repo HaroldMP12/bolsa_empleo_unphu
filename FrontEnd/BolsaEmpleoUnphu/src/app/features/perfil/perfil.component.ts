@@ -643,31 +643,36 @@ export class PerfilComponent implements OnInit {
     // Verificar si ya existe un perfil
     this.perfilService.obtenerPerfilEstudiante(this.currentUser!.usuarioID).subscribe({
       next: (perfilExistente) => {
-        // Actualizar perfil existente
-        perfilData.perfilID = perfilExistente.perfilID;
-        this.perfilService.actualizarPerfilEstudiante(perfilExistente.perfilID!, perfilData).subscribe({
-          next: () => {
-            this.guardando = false;
-            this.showModalMessage('success', '¡Perfil Actualizado!', 'Tu perfil ha sido actualizado correctamente');
-          },
-          error: (error) => {
-            this.guardando = false;
-            this.showModalMessage('error', 'Error al Guardar', 'No se pudo actualizar el perfil. Inténtalo nuevamente.');
-          }
-        });
+        if (perfilExistente && perfilExistente.perfilID) {
+          // Actualizar perfil existente
+          perfilData.perfilID = perfilExistente.perfilID;
+          this.perfilService.actualizarPerfilEstudiante(perfilExistente.perfilID, perfilData).subscribe({
+            next: () => {
+              this.guardando = false;
+              this.showModalMessage('success', '¡Perfil Actualizado!', 'Tu perfil ha sido actualizado correctamente');
+            },
+            error: (error) => {
+              this.guardando = false;
+              this.showModalMessage('error', 'Error al Guardar', 'No se pudo actualizar el perfil. Inténtalo nuevamente.');
+            }
+          });
+        } else {
+          // Crear nuevo perfil
+          this.perfilService.crearPerfilEstudiante(perfilData).subscribe({
+            next: () => {
+              this.guardando = false;
+              this.showModalMessage('success', '¡Perfil Creado!', 'Tu perfil ha sido creado correctamente');
+            },
+            error: (error) => {
+              this.guardando = false;
+              this.showModalMessage('error', 'Error al Guardar', 'No se pudo crear el perfil. Inténtalo nuevamente.');
+            }
+          });
+        }
       },
-      error: () => {
-        // Crear nuevo perfil
-        this.perfilService.crearPerfilEstudiante(perfilData).subscribe({
-          next: () => {
-            this.guardando = false;
-            this.showModalMessage('success', '¡Perfil Creado!', 'Tu perfil ha sido creado correctamente');
-          },
-          error: (error) => {
-            this.guardando = false;
-            this.showModalMessage('error', 'Error al Guardar', 'No se pudo crear el perfil. Inténtalo nuevamente.');
-          }
-        });
+      error: (error) => {
+        this.guardando = false;
+        this.showModalMessage('error', 'Error', 'Error al verificar el perfil existente.');
       }
     });
   }
@@ -694,31 +699,36 @@ export class PerfilComponent implements OnInit {
     // Verificar si ya existe un perfil de empresa
     this.perfilService.obtenerPerfilEmpresa(this.currentUser!.usuarioID).subscribe({
       next: (empresaExistente) => {
-        // Actualizar empresa existente
-        empresaData.empresaID = empresaExistente.empresaID;
-        this.perfilService.actualizarPerfilEmpresa(empresaExistente.empresaID!, empresaData).subscribe({
-          next: () => {
-            this.guardando = false;
-            this.showModalMessage('success', '¡Perfil Actualizado!', 'El perfil de tu empresa ha sido actualizado correctamente');
-          },
-          error: (error) => {
-            this.guardando = false;
-            this.showModalMessage('error', 'Error al Guardar', 'No se pudo actualizar el perfil. Inténtalo nuevamente.');
-          }
-        });
+        if (empresaExistente && empresaExistente.empresaID) {
+          // Actualizar empresa existente
+          empresaData.empresaID = empresaExistente.empresaID;
+          this.perfilService.actualizarPerfilEmpresa(empresaExistente.empresaID, empresaData).subscribe({
+            next: () => {
+              this.guardando = false;
+              this.showModalMessage('success', '¡Perfil Actualizado!', 'El perfil de tu empresa ha sido actualizado correctamente');
+            },
+            error: (error) => {
+              this.guardando = false;
+              this.showModalMessage('error', 'Error al Guardar', 'No se pudo actualizar el perfil. Inténtalo nuevamente.');
+            }
+          });
+        } else {
+          // Crear nueva empresa
+          this.perfilService.crearPerfilEmpresa(empresaData).subscribe({
+            next: () => {
+              this.guardando = false;
+              this.showModalMessage('success', '¡Perfil Creado!', 'El perfil de tu empresa ha sido creado correctamente');
+            },
+            error: (error) => {
+              this.guardando = false;
+              this.showModalMessage('error', 'Error al Guardar', 'No se pudo crear el perfil. Inténtalo nuevamente.');
+            }
+          });
+        }
       },
-      error: () => {
-        // Crear nueva empresa
-        this.perfilService.crearPerfilEmpresa(empresaData).subscribe({
-          next: () => {
-            this.guardando = false;
-            this.showModalMessage('success', '¡Perfil Creado!', 'El perfil de tu empresa ha sido creado correctamente');
-          },
-          error: (error) => {
-            this.guardando = false;
-            this.showModalMessage('error', 'Error al Guardar', 'No se pudo crear el perfil. Inténtalo nuevamente.');
-          }
-        });
+      error: (error) => {
+        this.guardando = false;
+        this.showModalMessage('error', 'Error', 'Error al verificar el perfil existente.');
       }
     });
   }

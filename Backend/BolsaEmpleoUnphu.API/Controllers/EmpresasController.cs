@@ -63,18 +63,13 @@ public class EmpresasController : ControllerBase
 
     // GET: api/empresas/usuario/5
     [HttpGet("usuario/{usuarioId}")]
-    public async Task<ActionResult<EmpresasModel>> GetEmpresaByUsuario(int usuarioId)
+    public async Task<ActionResult<EmpresasModel?>> GetEmpresaByUsuario(int usuarioId)
     {
         var empresa = await _context.Empresas
             .Include(e => e.Usuario)
             .FirstOrDefaultAsync(e => e.UsuarioID == usuarioId);
 
-        if (empresa == null)
-        {
-            return NotFound();
-        }
-
-        return empresa;
+        return Ok(empresa); // Devuelve null si no existe, no 404
     }
 
     // GET: api/empresas/5

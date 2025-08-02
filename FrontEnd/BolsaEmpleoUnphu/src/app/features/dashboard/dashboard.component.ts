@@ -581,8 +581,14 @@ export class DashboardComponent implements OnInit {
   private loadStudentProfileProgress(): void {
     this.perfilService.obtenerPerfilEstudiante(this.currentUser!.usuarioID).subscribe({
       next: (perfil) => {
-        this.perfilProgreso = this.perfilService.calcularProgresoEstudiante(perfil);
-        this.perfilCompleto = this.perfilProgreso >= 80;
+        if (perfil && perfil.perfilID) {
+          this.perfilProgreso = this.perfilService.calcularProgresoEstudiante(perfil);
+          this.perfilCompleto = this.perfilProgreso >= 80;
+        } else {
+          // Usuario sin perfil completo, pero con datos básicos
+          this.perfilProgreso = 20;
+          this.perfilCompleto = false;
+        }
       },
       error: () => {
         // Usuario sin perfil completo, pero con datos básicos
@@ -595,8 +601,14 @@ export class DashboardComponent implements OnInit {
   private loadCompanyProfileProgress(): void {
     this.perfilService.obtenerPerfilEmpresa(this.currentUser!.usuarioID).subscribe({
       next: (empresa) => {
-        this.perfilProgreso = this.perfilService.calcularProgresoEmpresa(empresa);
-        this.perfilCompleto = this.perfilProgreso >= 80;
+        if (empresa && empresa.empresaID) {
+          this.perfilProgreso = this.perfilService.calcularProgresoEmpresa(empresa);
+          this.perfilCompleto = this.perfilProgreso >= 80;
+        } else {
+          // Empresa sin perfil completo, pero con datos básicos
+          this.perfilProgreso = 20;
+          this.perfilCompleto = false;
+        }
       },
       error: () => {
         // Empresa sin perfil completo, pero con datos básicos
