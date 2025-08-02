@@ -1,15 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { AuthResponse } from '../../core/models/auth.models';
 import { Vacante, VacanteFiltros, CreateVacanteDto, PreguntaVacante } from '../../core/models/vacante.models';
+import { CreatePostulacionDto } from '../../core/models/postulacion.models';
+import { ModalPostulacionComponent } from '../postulaciones/modal-postulacion.component';
 
 @Component({
   selector: 'app-vacantes',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, ModalPostulacionComponent],
   template: `
     <div class="vacantes-page">
       <div class="page-header">
@@ -238,6 +240,14 @@ import { Vacante, VacanteFiltros, CreateVacanteDto, PreguntaVacante } from '../.
         </div>
       </div>
     </div>
+
+    <!-- MODAL POSTULACIÓN -->
+    <app-modal-postulacion
+      *ngIf="mostrarModalPostulacion"
+      [vacante]="vacanteSeleccionada"
+      (cerrarModal)="cerrarModalPostulacion()"
+      (postulacionEnviada)="procesarPostulacion($event)">
+    </app-modal-postulacion>
   `,
   styles: [`
     .vacantes-page {
@@ -557,7 +567,9 @@ export class VacantesComponent implements OnInit {
   filtros: VacanteFiltros = {};
   
   mostrarModal = false;
+  mostrarModalPostulacion = false;
   vacanteEditando: Vacante | null = null;
+  vacanteSeleccionada: Vacante | null = null;
   nuevaVacante: CreateVacanteDto = {
     titulo: '',
     descripcion: '',
@@ -569,7 +581,10 @@ export class VacantesComponent implements OnInit {
     preguntas: []
   };
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.authService.currentUser$.subscribe(user => {
@@ -600,7 +615,31 @@ export class VacantesComponent implements OnInit {
         fechaPublicacion: new Date(),
         fechaVencimiento: new Date('2024-02-15'),
         estado: true,
-        postulaciones: 12
+        postulaciones: 12,
+        preguntas: [
+          {
+            preguntaID: 1,
+            vacanteID: 1,
+            pregunta: '¿Cuántos años de experiencia tienes con React?',
+            tipo: 'opcion_multiple',
+            opciones: ['Menos de 1 año', '1-2 años', '3-5 años', 'Más de 5 años'],
+            requerida: true
+          },
+          {
+            preguntaID: 2,
+            vacanteID: 1,
+            pregunta: '¿Tienes experiencia con TypeScript?',
+            tipo: 'si_no',
+            requerida: true
+          },
+          {
+            preguntaID: 3,
+            vacanteID: 1,
+            pregunta: 'Describe un proyecto en el que hayas trabajado con React',
+            tipo: 'texto',
+            requerida: false
+          }
+        ]
       },
       {
         vacanteID: 2,
@@ -617,7 +656,24 @@ export class VacantesComponent implements OnInit {
         fechaPublicacion: new Date(),
         fechaVencimiento: new Date('2024-02-20'),
         estado: true,
-        postulaciones: 8
+        postulaciones: 8,
+        preguntas: [
+          {
+            preguntaID: 4,
+            vacanteID: 2,
+            pregunta: '¿Tienes certificaciones en Google Ads o Facebook Ads?',
+            tipo: 'si_no',
+            requerida: true
+          },
+          {
+            preguntaID: 5,
+            vacanteID: 2,
+            pregunta: '¿Cuál es tu nivel de experiencia en marketing digital?',
+            tipo: 'opcion_multiple',
+            opciones: ['Principiante', 'Intermedio', 'Avanzado', 'Experto'],
+            requerida: true
+          }
+        ]
       },
       {
         vacanteID: 3,
@@ -633,7 +689,17 @@ export class VacantesComponent implements OnInit {
         fechaPublicacion: new Date(),
         fechaVencimiento: new Date('2024-02-25'),
         estado: true,
-        postulaciones: 15
+        postulaciones: 15,
+        preguntas: [
+          {
+            preguntaID: 6,
+            vacanteID: 3,
+            pregunta: '¿Tienes experiencia con software contable como SAP o QuickBooks?',
+            tipo: 'opcion_multiple',
+            opciones: ['SAP', 'QuickBooks', 'Contpaq', 'Aspel', 'Ninguno'],
+            requerida: true
+          }
+        ]
       }
     ];
 
@@ -709,8 +775,7 @@ export class VacantesComponent implements OnInit {
   }
 
   verPostulaciones(vacante: Vacante): void {
-    console.log('Ver postulaciones para:', vacante.titulo);
-    // TODO: Navigate to postulaciones page
+    this.router.navigate(['/candidatos', vacante.vacanteID]);
   }
 
   verDetalles(vacante: Vacante): void {
@@ -719,8 +784,22 @@ export class VacantesComponent implements OnInit {
   }
 
   postularse(vacante: Vacante): void {
-    console.log('Postularse a:', vacante.titulo);
-    // TODO: Show application modal
+    this.vacanteSeleccionada = vacante;
+    this.mostrarModalPostulacion = true;
+  }
+  
+  cerrarModalPostulacion(): void {
+    this.mostrarModalPostulacion = false;
+    this.vacanteSeleccionada = null;
+  }
+  
+  procesarPostulacion(postulacionDto: CreatePostulacionDto): void {
+    console.log('Procesando postulación:', postulacionDto);
+    // TODO: Call API to create postulacion
+    
+    // Simulación de éxito
+    alert('¡Postulación enviada exitosamente! Recibirás una notificación cuando sea revisada.');
+    this.cerrarModalPostulacion();
   }
 
   agregarPregunta(): void {
