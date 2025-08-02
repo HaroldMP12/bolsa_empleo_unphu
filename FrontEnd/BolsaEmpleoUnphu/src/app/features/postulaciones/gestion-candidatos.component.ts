@@ -536,65 +536,47 @@ export class GestionCandidatosComponent implements OnInit {
   }
 
   cargarCandidatos(): void {
-    // Obtener título de la vacante (mock)
-    const vacantes = [
+    // Obtener título de la vacante desde localStorage o mock
+    const vacantesGuardadas = JSON.parse(localStorage.getItem('vacantes') || '[]');
+    const vacantesMock = [
       { vacanteID: 1, titulo: 'Desarrollador Frontend React' },
       { vacanteID: 2, titulo: 'Analista de Marketing Digital' },
       { vacanteID: 3, titulo: 'Contador Senior' }
     ];
     
-    const vacante = vacantes.find(v => v.vacanteID === this.vacanteId);
+    const todasVacantes = [...vacantesMock, ...vacantesGuardadas];
+    const vacante = todasVacantes.find(v => v.vacanteID === this.vacanteId);
     this.vacanteTitulo = vacante?.titulo || 'Vacante';
     
     // Cargar postulaciones reales del localStorage
     const postulacionesGuardadas = JSON.parse(localStorage.getItem('postulaciones') || '[]');
-    
-    // Mock data inicial
-    const hoy = new Date();
-    const postulacionesMock = [
-      {
-        postulacionID: 1,
-        vacanteID: this.vacanteId,
-        usuarioID: 1,
-        fechaPostulacion: new Date(hoy.getTime() - 1 * 24 * 60 * 60 * 1000),
-        estado: 'Pendiente',
-        respuestas: [
-          {
-            postulacionID: 1,
-            preguntaID: 1,
-            pregunta: '¿Cuántos años de experiencia tienes con React?',
-            respuesta: '3-5 años'
-          }
-        ],
-        usuario: {
-          nombreCompleto: 'Juan Carlos Pérez',
-          correo: 'juan.perez@email.com',
-          telefono: '809-555-0123',
-          carrera: 'Ingeniería en Sistemas'
-        }
-      }
-    ];
+    const usuariosGuardados = JSON.parse(localStorage.getItem('usuarios') || '[]');
     
     // Convertir postulaciones guardadas al formato correcto
     const postulacionesReales = postulacionesGuardadas
       .filter((p: any) => p.vacanteID === this.vacanteId)
-      .map((p: any) => ({
-        postulacionID: p.postulacionID,
-        vacanteID: p.vacanteID,
-        usuarioID: p.usuarioID,
-        fechaPostulacion: new Date(p.fechaPostulacion),
-        estado: p.estado,
-        respuestas: p.respuestas,
-        usuario: {
-          nombreCompleto: 'Usuario UNPHU', // Mock user data
+      .map((p: any) => {
+        // Buscar datos del usuario real
+        const usuario = usuariosGuardados.find((u: any) => u.usuarioID === p.usuarioID) || {
+          nombreCompleto: 'Usuario UNPHU',
           correo: 'usuario@unphu.edu.do',
           telefono: '809-555-0000',
           carrera: 'Ingeniería en Sistemas'
-        }
-      }));
+        };
+        
+        return {
+          postulacionID: p.postulacionID,
+          vacanteID: p.vacanteID,
+          usuarioID: p.usuarioID,
+          fechaPostulacion: new Date(p.fechaPostulacion),
+          estado: p.estado,
+          respuestas: p.respuestas,
+          usuario: usuario
+        };
+      });
     
-    // Combinar mock + postulaciones reales
-    this.postulaciones = [...postulacionesMock, ...postulacionesReales];
+    // Solo postulaciones reales, sin mock
+    this.postulaciones = postulacionesReales;
     this.postulacionesFiltradas = [...this.postulaciones];
   }
 

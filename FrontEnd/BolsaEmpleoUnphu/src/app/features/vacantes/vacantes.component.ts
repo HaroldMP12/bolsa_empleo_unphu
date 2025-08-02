@@ -683,6 +683,7 @@ export class VacantesComponent implements OnInit {
   cargarVacantes(): void {
     // Cargar vacantes guardadas del localStorage
     const vacantesGuardadas = JSON.parse(localStorage.getItem('vacantes') || '[]');
+    const postulacionesGuardadas = JSON.parse(localStorage.getItem('postulaciones') || '[]');
     
     // Mock data inicial
     const vacantesMock = [
@@ -701,7 +702,7 @@ export class VacantesComponent implements OnInit {
         fechaPublicacion: new Date(),
         fechaVencimiento: new Date(new Date().getTime() + 15 * 24 * 60 * 60 * 1000),
         estado: true,
-        postulaciones: 12,
+        postulaciones: 0,
         preguntas: [
           {
             preguntaID: 1,
@@ -712,29 +713,17 @@ export class VacantesComponent implements OnInit {
             requerida: true
           }
         ]
-      },
-      {
-        vacanteID: 2,
-        titulo: 'Analista de Marketing Digital',
-        descripcion: 'Únete a nuestro equipo de marketing para desarrollar estrategias digitales innovadoras.',
-        requisitos: 'Licenciatura en Marketing, Google Ads, Facebook Ads',
-        salario: 35000,
-        modalidad: 'Presencial' as const,
-        ubicacion: 'Santiago',
-        categoriaID: 4,
-        categoria: 'Mercadeo',
-        empresaID: 2,
-        empresa: 'MarketPro',
-        fechaPublicacion: new Date(),
-        fechaVencimiento: new Date(new Date().getTime() + 10 * 24 * 60 * 60 * 1000),
-        estado: true,
-        postulaciones: 8,
-        preguntas: []
       }
     ];
     
     // Combinar mock + vacantes guardadas
     this.vacantes = [...vacantesMock, ...vacantesGuardadas];
+    
+    // Actualizar contador de postulaciones para cada vacante
+    this.vacantes = this.vacantes.map(vacante => ({
+      ...vacante,
+      postulaciones: postulacionesGuardadas.filter((p: any) => p.vacanteID === vacante.vacanteID).length
+    }));
 
     if (this.isCompany()) {
       // Filter only company's vacantes
@@ -833,10 +822,11 @@ export class VacantesComponent implements OnInit {
     console.log('Procesando postulación:', postulacionDto);
     
     // Simular creación de postulación
+    const usuarioID = this.currentUser?.usuarioID || Date.now();
     const nuevaPostulacion = {
       postulacionID: Date.now(), // ID temporal
       vacanteID: postulacionDto.vacanteID,
-      usuarioID: 1, // ID del usuario actual
+      usuarioID: usuarioID,
       fechaPostulacion: new Date(), // Fecha actual real
       estado: 'Pendiente' as const,
       respuestas: postulacionDto.respuestas.map(r => ({
@@ -852,6 +842,22 @@ export class VacantesComponent implements OnInit {
         ubicacion: this.vacanteSeleccionada?.ubicacion || ''
       }
     };
+    
+    // Guardar datos del usuario actual para que la empresa los vea
+    const usuariosGuardados = JSON.parse(localStorage.getItem('usuarios') || '[]');
+    const usuarioExistente = usuariosGuardados.find((u: any) => u.usuarioID === usuarioID);
+    
+    if (!usuarioExistente && this.currentUser) {
+      const datosUsuario = {
+        usuarioID: usuarioID,
+        nombreCompleto: this.currentUser.nombreCompleto,
+        correo: this.currentUser.correo,
+        telefono: '809-555-0000', // Mock data
+        carrera: 'Ingeniería en Sistemas' // Mock data
+      };
+      usuariosGuardados.push(datosUsuario);
+      localStorage.setItem('usuarios', JSON.stringify(usuariosGuardados));
+    }
     
     // Guardar en localStorage para persistencia temporal
     const postulacionesExistentes = JSON.parse(localStorage.getItem('postulaciones') || '[]');
