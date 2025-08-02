@@ -96,7 +96,7 @@ import { AuthResponse } from '../core/models/auth.models';
       font-weight: 500;
     }
     .logout-btn {
-      background: var(--unphu-blue-dark);
+      background: #dc3545;
       color: white;
       border: none;
       padding: 0.5rem 1rem;
@@ -106,7 +106,7 @@ import { AuthResponse } from '../core/models/auth.models';
       transition: background 0.3s;
     }
     .logout-btn:hover {
-      background: #0a2a3f;
+      background: #c82333;
     }
   `]
 })
