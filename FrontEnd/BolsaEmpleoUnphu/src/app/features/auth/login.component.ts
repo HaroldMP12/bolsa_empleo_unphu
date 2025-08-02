@@ -210,7 +210,8 @@ export class LoginComponent {
           this.router.navigate(['/dashboard']);
         },
         error: (error) => {
-          this.errorMessage = 'Credenciales inválidas';
+          // Mostrar el mensaje específico del backend
+          this.errorMessage = error.error || error.message || 'Credenciales inválidas';
           this.loading = false;
         }
       });

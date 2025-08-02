@@ -247,7 +247,11 @@ export class RegisterComponent {
         },
         error: (error) => {
           console.error('Error de registro:', error);
-          this.errorMessage = error.error?.message || error.message || 'Error al registrar usuario';
+          if (error.error && typeof error.error === 'string' && error.error.includes('Ya existe un usuario')) {
+            this.errorMessage = 'Ya existe un usuario registrado con este correo electrónico';
+          } else {
+            this.errorMessage = error.error?.message || error.message || 'Error al registrar usuario';
+          }
           this.loading = false;
         }
       });
