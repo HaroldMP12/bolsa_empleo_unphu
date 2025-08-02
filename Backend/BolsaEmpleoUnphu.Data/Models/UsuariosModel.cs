@@ -37,6 +37,9 @@ public class UsuariosModel
     [Column("Estado")]
     public bool Estado { get; set; } = true;
     
+    [Column("EstadoAprobacion")]
+    public string EstadoAprobacion { get; set; } = "Pendiente"; // Pendiente, Aprobado, Rechazado
+    
     [Column("RolID")]
     public int RolID { get; set; }
     

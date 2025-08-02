@@ -107,7 +107,7 @@ import { CreateUsuarioDto } from '../../core/models/auth.models';
       backdrop-filter: blur(10px);
     }
     .register-header {
-      background: var(--unphu-blue-dark);
+      background: var(--unphu-green-primary);
       color: white;
       padding: 2.5rem;
       text-align: center;
@@ -152,7 +152,7 @@ import { CreateUsuarioDto } from '../../core/models/auth.models';
     .btn-primary {
       width: 100%;
       padding: 1rem;
-      background: var(--unphu-green-primary);
+      background: var(--unphu-blue-dark);
       color: white;
       border: none;
       border-radius: 8px;
@@ -164,9 +164,9 @@ import { CreateUsuarioDto } from '../../core/models/auth.models';
       letter-spacing: 0.5px;
     }
     .btn-primary:hover:not(:disabled) {
-      background: #3a7f39;
+      background: #0a2a3f;
       transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(67, 148, 65, 0.3);
+      box-shadow: 0 4px 12px rgba(15, 56, 90, 0.3);
     }
     .btn-primary:disabled {
       background: #ccc;
@@ -192,13 +192,13 @@ import { CreateUsuarioDto } from '../../core/models/auth.models';
       font-size: 1rem;
     }
     .login-link a {
-      color: var(--unphu-green-primary);
+      color: var(--unphu-blue-dark);
       text-decoration: none;
       font-weight: 600;
       transition: color 0.3s ease;
     }
     .login-link a:hover {
-      color: #3a7f39;
+      color: #0a2a3f;
       text-decoration: underline;
     }
   `]

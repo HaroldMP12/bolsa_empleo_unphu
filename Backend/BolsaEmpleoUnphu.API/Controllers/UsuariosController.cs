@@ -92,6 +92,17 @@ public class UsuariosController : ControllerBase
         if (existeEmail)
             return BadRequest("Ya existe un usuario con este correo electrónico");
 
+        // Determinar estado inicial según el rol
+        string estadoAprobacion = "Aprobado"; // Por defecto aprobado
+        bool estadoActivo = true;
+        
+        // Si es empresa (RolID = 3), requiere aprobación
+        if (usuarioDto.RolID == 3)
+        {
+            estadoAprobacion = "Pendiente";
+            estadoActivo = false; // Inactivo hasta aprobación
+        }
+
         // Crear el modelo desde el DTO
         var usuario = new UsuariosModel
         {
@@ -99,13 +110,21 @@ public class UsuariosController : ControllerBase
             Correo = usuarioDto.Correo,
             Contraseña = BCrypt.Net.BCrypt.HashPassword(usuarioDto.Contraseña),
             Telefono = usuarioDto.Telefono,
-            Estado = usuarioDto.Estado,
+            Estado = estadoActivo,
+            EstadoAprobacion = estadoAprobacion,
             RolID = usuarioDto.RolID,
             FechaRegistro = DateTime.Now
         };
 
         _context.Usuarios.Add(usuario);
         await _context.SaveChangesAsync();
+        
+        // Simulación de notificaciones
+        if (usuarioDto.RolID == 3)
+        {
+            Console.WriteLine($"[SIMULACIÓN] Email enviado a admin: Nueva empresa pendiente de aprobación");
+            Console.WriteLine($"[SIMULACIÓN] Empresa: {usuario.NombreCompleto} ({usuario.Correo})");
+        }
 
         return CreatedAtAction(nameof(GetUsuario), new { id = usuario.UsuarioID }, usuario);
     }
@@ -162,6 +181,61 @@ public class UsuariosController : ControllerBase
         await _context.SaveChangesAsync();
 
         return NoContent();
+    }
+
+    // POST: api/usuarios/5/aprobar
+    [HttpPost("{id}/aprobar")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> AprobarEmpresa(int id)
+    {
+        var usuario = await _context.Usuarios.FindAsync(id);
+        if (usuario == null)
+            return NotFound();
+            
+        if (usuario.RolID != 3)
+            return BadRequest("Solo se pueden aprobar empresas");
+            
+        if (usuario.EstadoAprobacion == "Aprobado")
+            return BadRequest("La empresa ya está aprobada");
+
+        usuario.EstadoAprobacion = "Aprobado";
+        usuario.Estado = true;
+        usuario.FechaUltimaActualización = DateTime.Now;
+        
+        await _context.SaveChangesAsync();
+        
+        // Simulación de email de aprobación
+        Console.WriteLine($"[SIMULACIÓN] Email enviado a: {usuario.Correo}");
+        Console.WriteLine($"[SIMULACIÓN] Asunto: Cuenta de empresa aprobada - Bolsa de Empleo UNPHU");
+        Console.WriteLine($"[SIMULACIÓN] Mensaje: Su cuenta ha sido aprobada. Ya puede iniciar sesión.");
+        
+        return Ok(new { message = "Empresa aprobada exitosamente" });
+    }
+    
+    // POST: api/usuarios/5/rechazar
+    [HttpPost("{id}/rechazar")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> RechazarEmpresa(int id, [FromBody] string motivo = "")
+    {
+        var usuario = await _context.Usuarios.FindAsync(id);
+        if (usuario == null)
+            return NotFound();
+            
+        if (usuario.RolID != 3)
+            return BadRequest("Solo se pueden rechazar empresas");
+
+        usuario.EstadoAprobacion = "Rechazado";
+        usuario.Estado = false;
+        usuario.FechaUltimaActualización = DateTime.Now;
+        
+        await _context.SaveChangesAsync();
+        
+        // Simulación de email de rechazo
+        Console.WriteLine($"[SIMULACIÓN] Email enviado a: {usuario.Correo}");
+        Console.WriteLine($"[SIMULACIÓN] Asunto: Solicitud de cuenta rechazada - Bolsa de Empleo UNPHU");
+        Console.WriteLine($"[SIMULACIÓN] Motivo: {motivo}");
+        
+        return Ok(new { message = "Empresa rechazada" });
     }
 
     private bool UsuarioExists(int id)

@@ -27,11 +27,27 @@ public class AuthController : ControllerBase
     {
         var usuario = await _context.Usuarios
             .Include(u => u.Rol)
-            .FirstOrDefaultAsync(u => u.Correo == loginDto.Correo && u.Estado);
+            .FirstOrDefaultAsync(u => u.Correo == loginDto.Correo);
 
         if (usuario == null || !BCrypt.Net.BCrypt.Verify(loginDto.Contraseña, usuario.Contraseña))
         {
             return Unauthorized("Credenciales inválidas");
+        }
+        
+        // Validar estado de aprobación para empresas
+        if (usuario.RolID == 3 && usuario.EstadoAprobacion == "Pendiente")
+        {
+            return Unauthorized("Su cuenta está pendiente de aprobación por un administrador");
+        }
+        
+        if (usuario.RolID == 3 && usuario.EstadoAprobacion == "Rechazado")
+        {
+            return Unauthorized("Su solicitud de cuenta ha sido rechazada");
+        }
+        
+        if (!usuario.Estado)
+        {
+            return Unauthorized("Su cuenta está inactiva");
         }
 
         var token = _jwtService.GenerateToken(usuario);
@@ -75,10 +91,9 @@ public class AuthController : ControllerBase
             _context.PasswordResetTokens.Add(passwordResetToken);
             await _context.SaveChangesAsync();
             
-            // Enviar email
-            await _emailService.SendPasswordResetEmailAsync(usuario.Correo, resetToken, usuario.NombreCompleto);
-            
-            Console.WriteLine($"Email enviado exitosamente a: {usuario.Correo}");
+            // SIMULACIÓN: Email enviado exitosamente
+            Console.WriteLine($"[SIMULACIÓN] Email de recuperación enviado a: {usuario.Correo}");
+            Console.WriteLine($"[SIMULACIÓN] Token generado: {resetToken}");
             
             return Ok(new { message = "Si el correo existe, recibirás un enlace de recuperación" });
         }
