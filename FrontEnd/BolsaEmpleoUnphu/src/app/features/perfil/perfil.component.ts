@@ -562,13 +562,31 @@ export class PerfilComponent implements OnInit {
 
   private populateStudentForm(perfil: any): void {
     console.log('Cargando datos del perfil:', perfil);
+    
+    this.personalForm.patchValue({
+      nombreCompleto: this.currentUser?.nombreCompleto || '',
+      correo: this.currentUser?.correo || '',
+      telefono: this.currentUser?.telefono || '',
+      fechaNacimiento: perfil.fechaNacimiento || '',
+      direccion: perfil.direccion || ''
+    });
+    
     this.academicForm.patchValue({
       carrera: perfil.carreraID?.toString() || '1',
       matricula: perfil.matricula || '',
       semestre: perfil.semestre?.toString() || '',
       anoIngreso: perfil.fechaIngreso ? new Date(perfil.fechaIngreso).getFullYear() : '',
-      promedio: ''
+      promedio: perfil.promedioAcademico || ''
     });
+    
+    if (perfil.experienciaLaboral) {
+      try {
+        this.experiencias = JSON.parse(perfil.experienciaLaboral);
+      } catch {
+        this.experiencias = [];
+      }
+    }
+    
     console.log('Formulario actualizado:', this.academicForm.value);
   }
 
@@ -705,7 +723,9 @@ export class PerfilComponent implements OnInit {
       añoGraduacion: null,
       fechaNacimiento: this.personalForm.get('fechaNacimiento')?.value || null,
       direccion: this.personalForm.get('direccion')?.value || null,
-      promedioAcademico: this.academicForm.get('promedio')?.value ? parseFloat(this.academicForm.get('promedio')?.value) : null
+      promedioAcademico: this.academicForm.get('promedio')?.value ? parseFloat(this.academicForm.get('promedio')?.value) : null,
+      urlCV: null,
+      experienciaLaboral: this.experiencias.length > 0 ? JSON.stringify(this.experiencias) : null
     };
     
     console.log('Datos a enviar:', perfilData);
