@@ -89,6 +89,48 @@ interface Postulacion {
         </div>
       </div>
     </div>
+
+    <!-- MODAL DETALLES POSTULACIÓN -->
+    <div *ngIf="mostrarModalDetalles" class="modal-overlay" (click)="cerrarModalDetalles()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>Detalles de Postulación</h2>
+          <button class="btn-close" (click)="cerrarModalDetalles()">×</button>
+        </div>
+        
+        <div class="modal-body" *ngIf="postulacionSeleccionada">
+          <div class="postulacion-info">
+            <h3>{{ postulacionSeleccionada.vacanteTitulo }}</h3>
+            <p class="empresa">{{ postulacionSeleccionada.empresa }}</p>
+            
+            <div class="detalles-grid">
+              <div class="detalle-item">
+                <span class="label">Estado:</span>
+                <span class="estado-badge estado-{{ postulacionSeleccionada.estado.toLowerCase().replace(' ', '-') }}">
+                  {{ postulacionSeleccionada.estado }}
+                </span>
+              </div>
+              <div class="detalle-item">
+                <span class="label">Fecha de Postulación:</span>
+                <span>{{ postulacionSeleccionada.fechaPostulacion | date:'dd/MM/yyyy HH:mm' }}</span>
+              </div>
+              <div class="detalle-item">
+                <span class="label">Modalidad:</span>
+                <span>{{ postulacionSeleccionada.modalidad }}</span>
+              </div>
+              <div class="detalle-item">
+                <span class="label">Ubicación:</span>
+                <span>{{ postulacionSeleccionada.ubicacion }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="modal-footer">
+          <button class="btn-secondary" (click)="cerrarModalDetalles()">Cerrar</button>
+        </div>
+      </div>
+    </div>
   `,
   styles: [`
     .postulaciones-page {
@@ -267,6 +309,87 @@ interface Postulacion {
       color: var(--unphu-blue-dark);
       margin-bottom: 1rem;
     }
+    
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .modal-content {
+      background: white;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-header h2 {
+      margin: 0;
+      color: var(--unphu-blue-dark);
+    }
+    .btn-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+    .modal-body {
+      padding: 2rem;
+    }
+    .postulacion-info h3 {
+      color: var(--unphu-blue-dark);
+      margin: 0 0 0.5rem 0;
+    }
+    .empresa {
+      color: #666;
+      margin: 0 0 1.5rem 0;
+      font-weight: 500;
+    }
+    .detalles-grid {
+      display: grid;
+      gap: 1rem;
+    }
+    .detalle-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem;
+      background: #f8f9fa;
+      border-radius: 6px;
+    }
+    .label {
+      font-weight: 500;
+      color: var(--unphu-blue-dark);
+    }
+    .modal-footer {
+      padding: 1.5rem;
+      border-top: 1px solid #eee;
+      display: flex;
+      justify-content: flex-end;
+    }
+    .btn-secondary {
+      background: #f8f9fa;
+      color: var(--unphu-blue-dark);
+      border: 1px solid #dee2e6;
+      padding: 0.75rem 2rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
   `]
 })
 export class PostulacionesComponent implements OnInit {
@@ -275,6 +398,8 @@ export class PostulacionesComponent implements OnInit {
   postulacionesFiltradas: Postulacion[] = [];
   estadoSeleccionado = 'Todas';
   estadosDisponibles = ['Todas', 'Pendiente', 'En Revisión', 'Aceptado', 'Rechazado'];
+  mostrarModalDetalles = false;
+  postulacionSeleccionada: Postulacion | null = null;
 
   constructor(private authService: AuthService) {}
 
@@ -286,8 +411,11 @@ export class PostulacionesComponent implements OnInit {
   }
 
   cargarPostulaciones(): void {
-    // Mock data - replace with real API call
-    this.postulaciones = [
+    // Cargar postulaciones desde localStorage
+    const postulacionesGuardadas = JSON.parse(localStorage.getItem('postulaciones') || '[]');
+    
+    // Mock data inicial + postulaciones guardadas
+    const postulacionesMock = [
       {
         postulacionID: 1,
         vacanteID: 1,
@@ -329,7 +457,20 @@ export class PostulacionesComponent implements OnInit {
         ubicacion: 'Santo Domingo'
       }
     ];
-
+    
+    // Convertir postulaciones guardadas al formato correcto
+    const postulacionesConvertidas = postulacionesGuardadas.map((p: any) => ({
+      postulacionID: p.postulacionID,
+      vacanteID: p.vacanteID,
+      vacanteTitulo: p.vacante.titulo,
+      empresa: p.vacante.empresa,
+      fechaPostulacion: new Date(p.fechaPostulacion),
+      estado: p.estado,
+      modalidad: p.vacante.modalidad,
+      ubicacion: p.vacante.ubicacion
+    }));
+    
+    this.postulaciones = [...postulacionesMock, ...postulacionesConvertidas];
     this.postulacionesFiltradas = [...this.postulaciones];
   }
 
@@ -350,8 +491,13 @@ export class PostulacionesComponent implements OnInit {
   }
 
   verDetalles(postulacion: Postulacion): void {
-    console.log('Ver detalles de postulación:', postulacion.postulacionID);
-    // TODO: Show details modal or navigate
+    this.postulacionSeleccionada = postulacion;
+    this.mostrarModalDetalles = true;
+  }
+  
+  cerrarModalDetalles(): void {
+    this.mostrarModalDetalles = false;
+    this.postulacionSeleccionada = null;
   }
 
   cancelarPostulacion(postulacion: Postulacion): void {

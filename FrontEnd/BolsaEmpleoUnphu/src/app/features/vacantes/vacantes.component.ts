@@ -795,9 +795,33 @@ export class VacantesComponent implements OnInit {
   
   procesarPostulacion(postulacionDto: CreatePostulacionDto): void {
     console.log('Procesando postulación:', postulacionDto);
-    // TODO: Call API to create postulacion
     
-    // Simulación de éxito
+    // Simular creación de postulación
+    const nuevaPostulacion = {
+      postulacionID: Date.now(), // ID temporal
+      vacanteID: postulacionDto.vacanteID,
+      usuarioID: 1, // ID del usuario actual
+      fechaPostulacion: new Date(),
+      estado: 'Pendiente' as const,
+      respuestas: postulacionDto.respuestas.map(r => ({
+        postulacionID: Date.now(),
+        preguntaID: r.preguntaID,
+        pregunta: this.vacanteSeleccionada?.preguntas?.find(p => p.preguntaID === r.preguntaID)?.pregunta || '',
+        respuesta: r.respuesta
+      })),
+      vacante: {
+        titulo: this.vacanteSeleccionada?.titulo || '',
+        empresa: this.vacanteSeleccionada?.empresa || '',
+        modalidad: this.vacanteSeleccionada?.modalidad || '',
+        ubicacion: this.vacanteSeleccionada?.ubicacion || ''
+      }
+    };
+    
+    // Guardar en localStorage para persistencia temporal
+    const postulacionesExistentes = JSON.parse(localStorage.getItem('postulaciones') || '[]');
+    postulacionesExistentes.push(nuevaPostulacion);
+    localStorage.setItem('postulaciones', JSON.stringify(postulacionesExistentes));
+    
     alert('¡Postulación enviada exitosamente! Recibirás una notificación cuando sea revisada.');
     this.cerrarModalPostulacion();
   }
