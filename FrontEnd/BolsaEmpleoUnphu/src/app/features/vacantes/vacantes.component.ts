@@ -921,8 +921,8 @@ export class VacantesComponent implements OnInit {
     // Disparar evento personalizado para notificar cambios
     window.dispatchEvent(new CustomEvent('postulacionesChanged'));
     
-    alert('¡Postulación enviada exitosamente! Recibirás una notificación cuando sea revisada.');
     this.cerrarModalPostulacion();
+    this.mostrarConfirmacion('Postulación Enviada', '¡Tu postulación ha sido enviada exitosamente! Recibirás una notificación cuando sea revisada.');
   }
 
   agregarPregunta(): void {
