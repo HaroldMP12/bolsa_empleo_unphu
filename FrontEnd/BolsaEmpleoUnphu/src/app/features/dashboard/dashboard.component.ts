@@ -10,12 +10,9 @@ import { AuthResponse } from '../../core/models/auth.models';
   imports: [CommonModule, RouterModule],
   template: `
     <div class="dashboard">
-      <!-- Header -->
-      <div class="dashboard-header">
-        <div class="welcome-section">
-          <h1>¡Bienvenido, {{ currentUser?.nombreCompleto }}!</h1>
-          <p class="role-badge">{{ getRoleDisplayName() }}</p>
-        </div>
+      <!-- Welcome Section -->
+      <div class="welcome-section">
+        <h1>¡Bienvenido, {{ currentUser?.nombreCompleto }}!</h1>
         <div class="quick-stats">
           <div class="stat-item" *ngIf="isStudent()">
             <span class="stat-number">{{ stats.postulaciones }}</span>
@@ -109,8 +106,8 @@ import { AuthResponse } from '../../core/models/auth.models';
                     <p>{{ vacante.postulaciones }} postulaciones</p>
                   </div>
                   <div class="vacante-actions">
-                    <button class="btn-secondary">Editar</button>
-                    <button class="btn-secondary">Ver</button>
+                    <button class="btn-action">Editar</button>
+                    <button class="btn-action">Ver</button>
                   </div>
                 </div>
                 <div *ngIf="misVacantes.length === 0" class="empty-state">
@@ -225,28 +222,22 @@ import { AuthResponse } from '../../core/models/auth.models';
       background: var(--unphu-background);
     }
     
-    /* Header */
-    .dashboard-header {
+    /* Welcome Section */
+    .welcome-section {
       background: white;
       padding: 2rem;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
     .welcome-section h1 {
       color: var(--unphu-blue-dark);
-      margin: 0 0 0.5rem 0;
+      margin: 0;
       font-size: 2rem;
       font-weight: 600;
-    }
-    .role-badge {
-      background: var(--unphu-blue-dark);
-      color: white;
-      padding: 0.25rem 0.75rem;
-      border-radius: 20px;
-      font-size: 0.875rem;
-      font-weight: 500;
     }
     .quick-stats {
       display: flex;
@@ -329,6 +320,23 @@ import { AuthResponse } from '../../core/models/auth.models';
       border-radius: 4px;
       font-size: 0.875rem;
       cursor: pointer;
+    }
+    .btn-action {
+      background: var(--unphu-blue-dark);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      font-size: 0.875rem;
+      cursor: pointer;
+      margin-left: 0.5rem;
+      transition: background 0.3s;
+    }
+    .btn-action:hover {
+      background: #0a2a3f;
+    }
+    .btn-action:first-child {
+      margin-left: 0;
     }
     .btn-success {
       background: var(--unphu-green-primary);

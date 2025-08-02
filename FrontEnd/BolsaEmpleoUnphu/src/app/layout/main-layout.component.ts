@@ -23,7 +23,7 @@ import { HeaderComponent } from './header.component';
     }
     .content {
       flex: 1;
-      background: #f5f5f5;
+      background: var(--unphu-background);
     }
   `]
 })

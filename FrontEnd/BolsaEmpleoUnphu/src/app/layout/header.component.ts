@@ -75,8 +75,8 @@ import { AuthResponse } from '../core/models/auth.models';
       transition: all 0.2s;
     }
     .nav a:hover, .nav a.active {
-      background: rgba(67, 148, 65, 0.1);
-      color: var(--unphu-green-primary);
+      background: rgba(15, 56, 90, 0.1);
+      color: var(--unphu-blue-dark);
     }
     .user-menu {
       display: flex;
@@ -88,7 +88,7 @@ import { AuthResponse } from '../core/models/auth.models';
       color: #333;
     }
     .user-role {
-      background: var(--unphu-green-primary);
+      background: var(--unphu-blue-dark);
       color: white;
       padding: 0.25rem 0.75rem;
       border-radius: 12px;
@@ -96,16 +96,17 @@ import { AuthResponse } from '../core/models/auth.models';
       font-weight: 500;
     }
     .logout-btn {
-      background: #f44336;
+      background: var(--unphu-blue-dark);
       color: white;
       border: none;
       padding: 0.5rem 1rem;
       border-radius: 4px;
       cursor: pointer;
       font-size: 0.875rem;
+      transition: background 0.3s;
     }
     .logout-btn:hover {
-      background: #d32f2f;
+      background: #0a2a3f;
     }
   `]
 })
