@@ -8,11 +8,11 @@ export interface PerfilEstudiante {
   tipoPerfil: string;
   matricula?: string;
   carreraID: number;
-  semestre?: number;
-  fechaIngreso?: Date;
+  semestre?: number | null;
+  fechaIngreso?: Date | null;
   tituloObtenido?: string;
-  fechaEgreso?: Date;
-  añoGraduacion?: number;
+  fechaEgreso?: Date | null;
+  añoGraduacion?: number | null;
   urlImagen?: string;
   resumen?: string;
   redesSociales?: string;
@@ -76,7 +76,7 @@ export class PerfilService {
     ];
     
     const camposCompletos = campos.filter(campo => 
-      campo !== null && campo !== undefined && campo !== ''
+      campo !== null && campo !== undefined && campo !== '' && campo !== 0
     ).length;
     
     return Math.round((camposCompletos / campos.length) * 100);

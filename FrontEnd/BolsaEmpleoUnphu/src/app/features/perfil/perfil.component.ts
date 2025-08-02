@@ -65,11 +65,16 @@ import { Router } from '@angular/router';
                   <label>Carrera</label>
                   <select formControlName="carrera" class="form-control">
                     <option value="">Seleccionar carrera</option>
-                    <option value="ingenieria-sistemas">Ingeniería en Sistemas</option>
-                    <option value="administracion">Administración de Empresas</option>
-                    <option value="contabilidad">Contabilidad</option>
-                    <option value="mercadeo">Mercadeo</option>
-                    <option value="derecho">Derecho</option>
+                    <option value="1">Ingeniería en Sistemas</option>
+                    <option value="2">Ingeniería Civil</option>
+                    <option value="3">Medicina</option>
+                    <option value="4">Enfermería</option>
+                    <option value="5">Administración de Empresas</option>
+                    <option value="6">Contabilidad</option>
+                    <option value="7">Derecho</option>
+                    <option value="8">Psicología</option>
+                    <option value="9">Comunicación Social</option>
+                    <option value="10">Arquitectura</option>
                   </select>
                 </div>
                 <div class="form-group">
@@ -603,13 +608,16 @@ export class PerfilComponent implements OnInit {
       return;
     }
 
+    const semestreValue = this.academicForm.get('semestre')?.value;
+    const anoIngresoValue = this.academicForm.get('anoIngreso')?.value;
+    
     const perfilData: PerfilEstudiante = {
       usuarioID: this.currentUser!.usuarioID,
-      tipoPerfil: this.academicForm.get('semestre')?.value === 'graduado' ? 'Egresado' : 'Estudiante',
-      matricula: this.academicForm.get('matricula')?.value,
-      carreraID: parseInt(this.academicForm.get('carrera')?.value) || 1, // Default carrera
-      semestre: this.academicForm.get('semestre')?.value !== 'graduado' ? parseInt(this.academicForm.get('semestre')?.value) : null,
-      fechaIngreso: this.academicForm.get('anoIngreso')?.value ? new Date(this.academicForm.get('anoIngreso')?.value, 0, 1) : null,
+      tipoPerfil: semestreValue === 'graduado' ? 'Egresado' : 'Estudiante',
+      matricula: this.academicForm.get('matricula')?.value || undefined,
+      carreraID: parseInt(this.academicForm.get('carrera')?.value) || 1,
+      semestre: semestreValue !== 'graduado' && semestreValue ? parseInt(semestreValue) : null,
+      fechaIngreso: anoIngresoValue ? new Date(anoIngresoValue, 0, 1) : null,
       resumen: this.buildResumenEstudiante()
     };
 
@@ -692,10 +700,23 @@ export class PerfilComponent implements OnInit {
   }
 
   private buildResumenEstudiante(): string {
-    const personal = this.personalForm.value;
     const academic = this.academicForm.value;
+    const carreraNames: { [key: string]: string } = {
+      '1': 'Ingeniería en Sistemas',
+      '2': 'Ingeniería Civil', 
+      '3': 'Medicina',
+      '4': 'Enfermería',
+      '5': 'Administración de Empresas',
+      '6': 'Contabilidad',
+      '7': 'Derecho',
+      '8': 'Psicología',
+      '9': 'Comunicación Social',
+      '10': 'Arquitectura'
+    };
     
-    let resumen = `Estudiante de ${academic.carrera || 'carrera no especificada'}`;
+    const carreraNombre = carreraNames[academic.carrera] || 'carrera no especificada';
+    let resumen = `Estudiante de ${carreraNombre}`;
+    
     if (academic.semestre && academic.semestre !== 'graduado') {
       resumen += ` en ${academic.semestre}° semestre`;
     } else if (academic.semestre === 'graduado') {
