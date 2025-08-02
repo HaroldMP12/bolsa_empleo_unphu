@@ -152,7 +152,7 @@ import { CreateUsuarioDto } from '../../core/models/auth.models';
     .btn-primary {
       width: 100%;
       padding: 1rem;
-      background: linear-gradient(45deg, var(--unphu-green-primary), var(--unphu-green-light));
+      background: var(--unphu-green-primary);
       color: white;
       border: none;
       border-radius: 8px;
@@ -164,6 +164,7 @@ import { CreateUsuarioDto } from '../../core/models/auth.models';
       letter-spacing: 0.5px;
     }
     .btn-primary:hover:not(:disabled) {
+      background: #3a7f39;
       transform: translateY(-1px);
       box-shadow: 0 4px 12px rgba(67, 148, 65, 0.3);
     }
@@ -197,7 +198,7 @@ import { CreateUsuarioDto } from '../../core/models/auth.models';
       transition: color 0.3s ease;
     }
     .login-link a:hover {
-      color: var(--unphu-green-secondary);
+      color: #3a7f39;
       text-decoration: underline;
     }
   `]

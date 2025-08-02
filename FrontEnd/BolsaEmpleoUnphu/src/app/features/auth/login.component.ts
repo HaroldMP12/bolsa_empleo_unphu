@@ -47,9 +47,13 @@ import { AuthService } from '../../core/services/auth.service';
 
         <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
         
-          <p class="register-link">
-            ¿No tienes cuenta? <a routerLink="/auth/register">Regístrate aquí</a>
-          </p>
+        <div class="forgot-password-link">
+          <a routerLink="/auth/forgot-password">¿Olvidaste tu contraseña?</a>
+        </div>
+        
+        <p class="register-link">
+          ¿No tienes cuenta? <a routerLink="/auth/register">Regístrate aquí</a>
+        </p>
         </form>
       </div>
     </div>
@@ -117,7 +121,7 @@ import { AuthService } from '../../core/services/auth.service';
     .btn-primary {
       width: 100%;
       padding: 1rem;
-      background: linear-gradient(45deg, var(--unphu-green-primary), var(--unphu-green-light));
+      background: var(--unphu-green-primary);
       color: white;
       border: none;
       border-radius: 8px;
@@ -129,6 +133,7 @@ import { AuthService } from '../../core/services/auth.service';
       letter-spacing: 0.5px;
     }
     .btn-primary:hover:not(:disabled) {
+      background: #3a7f39;
       transform: translateY(-1px);
       box-shadow: 0 4px 12px rgba(67, 148, 65, 0.3);
     }
@@ -159,7 +164,22 @@ import { AuthService } from '../../core/services/auth.service';
       transition: color 0.3s ease;
     }
     .register-link a:hover {
-      color: var(--unphu-green-secondary);
+      color: #3a7f39;
+      text-decoration: underline;
+    }
+    .forgot-password-link {
+      text-align: center;
+      margin-top: 1rem;
+    }
+    .forgot-password-link a {
+      color: var(--unphu-green-primary);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+    .forgot-password-link a:hover {
+      color: #3a7f39;
       text-decoration: underline;
     }
   `]
