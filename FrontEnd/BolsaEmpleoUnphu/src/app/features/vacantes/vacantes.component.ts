@@ -248,6 +248,21 @@ import { ModalPostulacionComponent } from '../postulaciones/modal-postulacion.co
       (cerrarModal)="cerrarModalPostulacion()"
       (postulacionEnviada)="procesarPostulacion($event)">
     </app-modal-postulacion>
+
+    <!-- MODAL CONFIRMACIÓN -->
+    <div *ngIf="mostrarConfirmacionModal" class="modal-overlay" (click)="cerrarConfirmacion()">
+      <div class="confirmation-modal" (click)="$event.stopPropagation()">
+        <div class="confirmation-header">
+          <h3>{{ confirmacionTitulo }}</h3>
+        </div>
+        <div class="confirmation-body">
+          <p>{{ confirmacionMensaje }}</p>
+        </div>
+        <div class="confirmation-footer">
+          <button class="btn-confirm" (click)="cerrarConfirmacion()">Aceptar</button>
+        </div>
+      </div>
+    </div>
   `,
   styles: [`
     .vacantes-page {
@@ -558,6 +573,55 @@ import { ModalPostulacionComponent } from '../postulaciones/modal-postulacion.co
       color: var(--unphu-blue-dark);
       margin-bottom: 1rem;
     }
+    
+    /* Modal de Confirmación */
+    .confirmation-modal {
+      background: white;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+    .confirmation-header {
+      background: var(--unphu-green-primary);
+      color: white;
+      padding: 1.5rem;
+      border-radius: 12px 12px 0 0;
+      text-align: center;
+    }
+    .confirmation-header h3 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .confirmation-body {
+      padding: 2rem;
+      text-align: center;
+    }
+    .confirmation-body p {
+      margin: 0;
+      color: #666;
+      line-height: 1.5;
+      font-size: 1rem;
+    }
+    .confirmation-footer {
+      padding: 1.5rem;
+      display: flex;
+      justify-content: center;
+    }
+    .btn-confirm {
+      background: var(--unphu-blue-dark);
+      color: white;
+      border: none;
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    .btn-confirm:hover {
+      background: #0a2a3f;
+    }
   `]
 })
 export class VacantesComponent implements OnInit {
@@ -570,6 +634,9 @@ export class VacantesComponent implements OnInit {
   mostrarModalPostulacion = false;
   vacanteEditando: Vacante | null = null;
   vacanteSeleccionada: Vacante | null = null;
+  mostrarConfirmacionModal = false;
+  confirmacionTitulo = '';
+  confirmacionMensaje = '';
   nuevaVacante: CreateVacanteDto = {
     titulo: '',
     descripcion: '',
@@ -591,6 +658,11 @@ export class VacantesComponent implements OnInit {
       this.currentUser = user;
       this.cargarVacantes();
     });
+    
+    // Escuchar cuando se crean nuevas vacantes
+    window.addEventListener('vacantesChanged', () => {
+      this.cargarVacantes();
+    });
   }
 
   isCompany(): boolean {
@@ -598,22 +670,25 @@ export class VacantesComponent implements OnInit {
   }
 
   cargarVacantes(): void {
-    // Mock data - replace with real API call
-    this.vacantes = [
+    // Cargar vacantes guardadas del localStorage
+    const vacantesGuardadas = JSON.parse(localStorage.getItem('vacantes') || '[]');
+    
+    // Mock data inicial
+    const vacantesMock = [
       {
         vacanteID: 1,
         titulo: 'Desarrollador Frontend React',
         descripcion: 'Buscamos desarrollador frontend con experiencia en React, TypeScript y CSS. Trabajarás en proyectos innovadores con tecnologías modernas.',
         requisitos: 'Experiencia mínima 2 años, React, TypeScript, Git',
         salario: 45000,
-        modalidad: 'Híbrido',
+        modalidad: 'Híbrido' as const,
         ubicacion: 'Santo Domingo',
         categoriaID: 1,
         categoria: 'Tecnología',
         empresaID: 1,
         empresa: 'TechCorp',
         fechaPublicacion: new Date(),
-        fechaVencimiento: new Date(new Date().getTime() + 15 * 24 * 60 * 60 * 1000), // En 15 días
+        fechaVencimiento: new Date(new Date().getTime() + 15 * 24 * 60 * 60 * 1000),
         estado: true,
         postulaciones: 12,
         preguntas: [
@@ -624,88 +699,35 @@ export class VacantesComponent implements OnInit {
             tipo: 'opcion_multiple',
             opciones: ['Menos de 1 año', '1-2 años', '3-5 años', 'Más de 5 años'],
             requerida: true
-          },
-          {
-            preguntaID: 2,
-            vacanteID: 1,
-            pregunta: '¿Tienes experiencia con TypeScript?',
-            tipo: 'si_no',
-            requerida: true
-          },
-          {
-            preguntaID: 3,
-            vacanteID: 1,
-            pregunta: 'Describe un proyecto en el que hayas trabajado con React',
-            tipo: 'texto',
-            requerida: false
           }
         ]
       },
       {
         vacanteID: 2,
         titulo: 'Analista de Marketing Digital',
-        descripcion: 'Únete a nuestro equipo de marketing para desarrollar estrategias digitales innovadoras y gestionar campañas en redes sociales.',
+        descripcion: 'Únete a nuestro equipo de marketing para desarrollar estrategias digitales innovadoras.',
         requisitos: 'Licenciatura en Marketing, Google Ads, Facebook Ads',
         salario: 35000,
-        modalidad: 'Presencial',
+        modalidad: 'Presencial' as const,
         ubicacion: 'Santiago',
         categoriaID: 4,
         categoria: 'Mercadeo',
         empresaID: 2,
         empresa: 'MarketPro',
         fechaPublicacion: new Date(),
-        fechaVencimiento: new Date(new Date().getTime() + 10 * 24 * 60 * 60 * 1000), // En 10 días
+        fechaVencimiento: new Date(new Date().getTime() + 10 * 24 * 60 * 60 * 1000),
         estado: true,
         postulaciones: 8,
-        preguntas: [
-          {
-            preguntaID: 4,
-            vacanteID: 2,
-            pregunta: '¿Tienes certificaciones en Google Ads o Facebook Ads?',
-            tipo: 'si_no',
-            requerida: true
-          },
-          {
-            preguntaID: 5,
-            vacanteID: 2,
-            pregunta: '¿Cuál es tu nivel de experiencia en marketing digital?',
-            tipo: 'opcion_multiple',
-            opciones: ['Principiante', 'Intermedio', 'Avanzado', 'Experto'],
-            requerida: true
-          }
-        ]
-      },
-      {
-        vacanteID: 3,
-        titulo: 'Contador Senior',
-        descripcion: 'Posición para contador con experiencia en estados financieros, impuestos y auditorías. Excelente oportunidad de crecimiento.',
-        requisitos: 'CPA, 3+ años experiencia, conocimiento NIIF',
-        modalidad: 'Presencial',
-        ubicacion: 'Santo Domingo',
-        categoriaID: 3,
-        categoria: 'Contabilidad',
-        empresaID: 3,
-        empresa: 'ContaPlus',
-        fechaPublicacion: new Date(),
-        fechaVencimiento: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000), // En 7 días
-        estado: true,
-        postulaciones: 15,
-        preguntas: [
-          {
-            preguntaID: 6,
-            vacanteID: 3,
-            pregunta: '¿Tienes experiencia con software contable como SAP o QuickBooks?',
-            tipo: 'opcion_multiple',
-            opciones: ['SAP', 'QuickBooks', 'Contpaq', 'Aspel', 'Ninguno'],
-            requerida: true
-          }
-        ]
+        preguntas: []
       }
     ];
+    
+    // Combinar mock + vacantes guardadas
+    this.vacantes = [...vacantesMock, ...vacantesGuardadas];
 
     if (this.isCompany()) {
       // Filter only company's vacantes
-      this.vacantes = this.vacantes.filter(v => v.empresaID === 1); // Mock company ID
+      this.vacantes = this.vacantes.filter(v => v.empresaID === 1);
     }
 
     this.vacantesFiltradas = [...this.vacantes];
@@ -869,17 +891,34 @@ export class VacantesComponent implements OnInit {
       }))
     };
     
+    // Guardar en localStorage
+    const vacantesGuardadas = JSON.parse(localStorage.getItem('vacantes') || '[]');
+    
     if (this.vacanteEditando) {
       // Editar vacante existente
       const index = this.vacantes.findIndex(v => v.vacanteID === this.vacanteEditando!.vacanteID);
       if (index !== -1) {
         this.vacantes[index] = vacante;
       }
-      alert('Vacante actualizada exitosamente');
+      
+      // Actualizar en localStorage
+      const indexGuardada = vacantesGuardadas.findIndex((v: any) => v.vacanteID === this.vacanteEditando!.vacanteID);
+      if (indexGuardada !== -1) {
+        vacantesGuardadas[indexGuardada] = vacante;
+      }
+      localStorage.setItem('vacantes', JSON.stringify(vacantesGuardadas));
+      
+      this.mostrarConfirmacion('Vacante Actualizada', 'La vacante ha sido actualizada exitosamente.');
     } else {
       // Agregar nueva vacante
       this.vacantes.push(vacante);
-      alert('Vacante creada exitosamente');
+      vacantesGuardadas.push(vacante);
+      localStorage.setItem('vacantes', JSON.stringify(vacantesGuardadas));
+      
+      // Disparar evento para que estudiantes vean la nueva vacante
+      window.dispatchEvent(new CustomEvent('vacantesChanged'));
+      
+      this.mostrarConfirmacion('Vacante Creada', 'La vacante ha sido creada exitosamente y ya está visible para los estudiantes.');
     }
     
     this.cerrarModal();
@@ -900,5 +939,17 @@ export class VacantesComponent implements OnInit {
   cerrarModal(): void {
     this.mostrarModal = false;
     this.vacanteEditando = null;
+  }
+  
+  mostrarConfirmacion(titulo: string, mensaje: string): void {
+    this.confirmacionTitulo = titulo;
+    this.confirmacionMensaje = mensaje;
+    this.mostrarConfirmacionModal = true;
+  }
+  
+  cerrarConfirmacion(): void {
+    this.mostrarConfirmacionModal = false;
+    this.confirmacionTitulo = '';
+    this.confirmacionMensaje = '';
   }
 }
