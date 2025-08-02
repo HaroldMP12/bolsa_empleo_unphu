@@ -23,6 +23,7 @@ export interface PreguntaVacante {
   pregunta: string;
   tipo: 'texto' | 'opcion_multiple' | 'si_no';
   opciones?: string[];
+  opcionesTexto?: string;
   requerida: boolean;
 }
 

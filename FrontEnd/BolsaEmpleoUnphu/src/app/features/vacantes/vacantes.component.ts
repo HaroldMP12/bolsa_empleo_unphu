@@ -728,7 +728,8 @@ export class VacantesComponent implements OnInit {
       vacanteID: 0,
       pregunta: '',
       tipo: 'texto',
-      requerida: false
+      requerida: false,
+      opcionesTexto: ''
     });
   }
 
