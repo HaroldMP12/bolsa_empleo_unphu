@@ -138,13 +138,13 @@ import { ApiService } from '../../core/services/api.service';
       margin-top: 1.5rem;
     }
     .back-link a {
-      color: var(--unphu-green-primary);
+      color: var(--unphu-blue-dark);
       text-decoration: none;
       font-weight: 500;
       transition: color 0.3s ease;
     }
     .back-link a:hover {
-      color: #3a7f39;
+      color: #0a2a3f;
       text-decoration: underline;
     }
   `]

@@ -29,7 +29,12 @@ public class AuthController : ControllerBase
             .Include(u => u.Rol)
             .FirstOrDefaultAsync(u => u.Correo == loginDto.Correo);
 
-        if (usuario == null || !BCrypt.Net.BCrypt.Verify(loginDto.Contraseña, usuario.Contraseña))
+        if (usuario == null)
+        {
+            return Unauthorized("Credenciales inválidas");
+        }
+        
+        if (!BCrypt.Net.BCrypt.Verify(loginDto.Contraseña, usuario.Contraseña))
         {
             return Unauthorized("Credenciales inválidas");
         }
@@ -37,17 +42,17 @@ public class AuthController : ControllerBase
         // Validar estado de aprobación para empresas
         if (usuario.RolID == 3 && usuario.EstadoAprobacion == "Pendiente")
         {
-            return Unauthorized("Su cuenta está pendiente de aprobación por un administrador");
+            return Unauthorized("Su solicitud está pendiente de aprobación. Recibirá un correo cuando sea aprobada.");
         }
         
         if (usuario.RolID == 3 && usuario.EstadoAprobacion == "Rechazado")
         {
-            return Unauthorized("Su solicitud de cuenta ha sido rechazada");
+            return Unauthorized("Su solicitud de cuenta ha sido rechazada. Contacte al administrador.");
         }
         
         if (!usuario.Estado)
         {
-            return Unauthorized("Su cuenta está inactiva");
+            return Unauthorized("Su cuenta está inactiva. Contacte al administrador.");
         }
 
         var token = _jwtService.GenerateToken(usuario);
