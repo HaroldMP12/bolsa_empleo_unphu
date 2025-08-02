@@ -218,7 +218,6 @@ import { AuthResponse } from '../../core/models/auth.models';
   `,
   styles: [`
     .dashboard {
-      min-height: 100vh;
       background: var(--unphu-background);
     }
     
