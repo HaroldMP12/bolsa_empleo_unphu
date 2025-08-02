@@ -266,6 +266,17 @@ import { AuthResponse } from '../../core/models/auth.models';
       gap: 1.5rem;
     }
     
+    /* Company Dashboard Specific */
+    .company-dashboard .dashboard-grid {
+      grid-template-columns: 2fr 1fr 1fr;
+    }
+    
+    @media (max-width: 1200px) {
+      .company-dashboard .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
     /* Widgets */
     .widget {
       background: white;
@@ -355,17 +366,17 @@ import { AuthResponse } from '../../core/models/auth.models';
     }
     
     /* Vacantes */
-    .vacantes-list {
+    .vacantes-list, .vacantes-empresa {
       padding: 1.5rem;
     }
-    .vacante-item {
+    .vacante-item, .vacante-empresa-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 1rem 0;
       border-bottom: 1px solid #eee;
     }
-    .vacante-item:last-child {
+    .vacante-item:last-child, .vacante-empresa-item:last-child {
       border-bottom: none;
     }
     .vacante-info h4 {
@@ -388,6 +399,10 @@ import { AuthResponse } from '../../core/models/auth.models';
       padding: 0.5rem 1rem;
       border-radius: 4px;
       cursor: pointer;
+    }
+    .vacante-actions {
+      display: flex;
+      gap: 0.5rem;
     }
     
     /* Empty States */
@@ -416,23 +431,54 @@ import { AuthResponse } from '../../core/models/auth.models';
     }
     
     /* Stats */
-    .postulaciones-summary {
+    .postulaciones-summary, .stats-grid {
       display: flex;
       padding: 1.5rem;
       gap: 2rem;
+      justify-content: space-around;
     }
-    .status-item {
+    .status-item, .stat-card {
       text-align: center;
+      flex: 1;
     }
-    .status-count {
+    .status-count, .stat-card .stat-number {
       display: block;
       font-size: 1.5rem;
       font-weight: 600;
       color: var(--unphu-blue-dark);
     }
-    .status-label {
+    .status-label, .stat-card .stat-label {
       font-size: 0.875rem;
       color: #666;
+    }
+    
+    /* Postulaciones Recibidas */
+    .postulaciones-recibidas {
+      padding: 1.5rem;
+    }
+    .postulacion-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 0;
+      border-bottom: 1px solid #eee;
+    }
+    .postulacion-item:last-child {
+      border-bottom: none;
+    }
+    .candidato-info h5 {
+      margin: 0 0 0.25rem 0;
+      color: var(--unphu-blue-dark);
+      font-size: 1rem;
+    }
+    .candidato-info p {
+      margin: 0;
+      color: #666;
+      font-size: 0.875rem;
+    }
+    .fecha {
+      color: #666;
+      font-size: 0.875rem;
     }
     
     /* Admin specific */

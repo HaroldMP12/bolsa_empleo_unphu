@@ -1,35 +1,48 @@
-export interface VacanteResponse {
+export interface Vacante {
   vacanteID: number;
-  tituloVacante: string;
+  titulo: string;
   descripcion: string;
   requisitos: string;
-  fechaPublicacion: Date;
-  fechaCierre: Date;
-  fechaModificacion?: Date;
-  ubicacion?: string;
-  tipoContrato?: string;
-  jornada?: string;
-  modalidad?: string;
   salario?: number;
-  cantidadVacantes: number;
-  nombreEmpresa: string;
-  sectorEmpresa?: string;
-  sitioWebEmpresa?: string;
-  nombreCategoria: string;
-  totalPostulaciones: number;
+  modalidad: 'Presencial' | 'Remoto' | 'Híbrido';
+  ubicacion: string;
+  categoriaID: number;
+  categoria?: string;
+  empresaID: number;
+  empresa?: string;
+  fechaPublicacion: Date;
+  fechaVencimiento: Date;
+  estado: boolean;
+  preguntas?: PreguntaVacante[];
+  postulaciones?: number;
+}
+
+export interface PreguntaVacante {
+  preguntaID?: number;
+  vacanteID: number;
+  pregunta: string;
+  tipo: 'texto' | 'opcion_multiple' | 'si_no';
+  opciones?: string[];
+  requerida: boolean;
 }
 
 export interface CreateVacanteDto {
-  empresaID: number;
-  tituloVacante: string;
+  titulo: string;
   descripcion: string;
   requisitos: string;
-  fechaCierre: Date;
-  ubicacion?: string;
-  tipoContrato?: string;
-  jornada?: string;
-  modalidad?: string;
   salario?: number;
-  cantidadVacantes: number;
+  modalidad: string;
+  ubicacion: string;
   categoriaID: number;
+  fechaVencimiento: string;
+  preguntas: PreguntaVacante[];
+}
+
+export interface VacanteFiltros {
+  categoria?: number;
+  modalidad?: string;
+  ubicacion?: string;
+  salarioMin?: number;
+  salarioMax?: number;
+  search?: string;
 }
