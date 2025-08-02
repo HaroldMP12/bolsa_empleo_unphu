@@ -7,6 +7,17 @@ export const routes: Routes = [
   { path: 'auth/login', loadComponent: () => import('./features/auth/login.component').then(m => m.LoginComponent) },
   { path: 'auth/register', loadComponent: () => import('./features/auth/register.component').then(m => m.RegisterComponent) },
   { path: 'auth/forgot-password', loadComponent: () => import('./features/auth/forgot-password.component').then(m => m.ForgotPasswordComponent) },
-  { path: 'dashboard', loadComponent: () => import('./layout/main-layout.component').then(m => m.MainLayoutComponent), canActivate: [AuthGuard] },
+  {
+    path: '',
+    component: MainLayoutComponent,
+    canActivate: [AuthGuard],
+    children: [
+      { path: 'dashboard', loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent) },
+      { path: 'vacantes', loadComponent: () => import('./features/vacantes/vacantes.component').then(m => m.VacantesComponent) },
+      { path: 'postulaciones', loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent) },
+      { path: 'mis-vacantes', loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent) },
+      { path: 'perfil', loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent) }
+    ]
+  },
   { path: '**', redirectTo: '/dashboard' }
 ];

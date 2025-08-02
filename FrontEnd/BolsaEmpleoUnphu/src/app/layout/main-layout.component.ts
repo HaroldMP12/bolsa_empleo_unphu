@@ -1,17 +1,17 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './header.component';
-import { DashboardComponent } from '../features/dashboard/dashboard.component';
 
 @Component({
   selector: 'app-main-layout',
   standalone: true,
-  imports: [CommonModule, HeaderComponent, DashboardComponent],
+  imports: [CommonModule, RouterOutlet, HeaderComponent],
   template: `
     <div class="main-layout">
       <app-header></app-header>
       <main class="content">
-        <app-dashboard></app-dashboard>
+        <router-outlet></router-outlet>
       </main>
     </div>
   `,
