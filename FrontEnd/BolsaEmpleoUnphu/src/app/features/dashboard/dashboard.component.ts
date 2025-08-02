@@ -97,7 +97,7 @@ import { AuthResponse } from '../../core/models/auth.models';
             <div class="widget large">
               <div class="widget-header">
                 <h3>Mis Vacantes</h3>
-                <button class="btn-primary">+ Nueva Vacante</button>
+                <button class="btn-primary" routerLink="/mis-vacantes">+ Nueva Vacante</button>
               </div>
               <div class="vacantes-empresa">
                 <div class="vacante-empresa-item" *ngFor="let vacante of misVacantes">
@@ -106,13 +106,12 @@ import { AuthResponse } from '../../core/models/auth.models';
                     <p>{{ vacante.postulaciones }} postulaciones</p>
                   </div>
                   <div class="vacante-actions">
-                    <button class="btn-action">Editar</button>
-                    <button class="btn-action">Ver</button>
+                    <button class="btn-action" routerLink="/mis-vacantes">Ver Todas</button>
                   </div>
                 </div>
                 <div *ngIf="misVacantes.length === 0" class="empty-state">
                   <p>No tienes vacantes publicadas</p>
-                  <button class="btn-primary">Crear Primera Vacante</button>
+                  <button class="btn-primary" routerLink="/mis-vacantes">Crear Primera Vacante</button>
                 </div>
               </div>
             </div>

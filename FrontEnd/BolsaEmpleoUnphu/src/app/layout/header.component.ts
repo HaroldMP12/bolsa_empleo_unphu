@@ -17,7 +17,8 @@ import { AuthResponse } from '../core/models/auth.models';
         
         <nav class="nav" *ngIf="currentUser">
           <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
-          <a routerLink="/vacantes" routerLinkActive="active">Vacantes</a>
+          
+          <a *ngIf="currentUser.rol !== 'Empresa'" routerLink="/vacantes" routerLinkActive="active">Vacantes</a>
           
           <a *ngIf="currentUser.rol !== 'Empresa'" routerLink="/postulaciones" routerLinkActive="active">
             Mis Postulaciones
