@@ -64,7 +64,7 @@ import { AuthService } from '../../core/services/auth.service';
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      background: linear-gradient(135deg, rgba(67, 148, 65, 0.8) 0%, rgba(67, 148, 65, 0.8) 100%),
+      background: linear-gradient(135deg, rgba(15, 56, 90, 0.8) 0%, rgba(67, 148, 65, 0.8) 100%),
                   url('/images/login-background.jpg') center/cover;
       padding: 1rem;
     }
