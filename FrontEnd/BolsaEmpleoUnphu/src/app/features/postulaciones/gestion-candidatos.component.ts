@@ -48,7 +48,7 @@ import { Postulacion, UpdateEstadoPostulacionDto } from '../../core/models/postu
                 <div class="candidato-meta">
                   <span class="email">{{ postulacion.usuario?.correo }}</span>
                   <span class="telefono">{{ postulacion.usuario?.telefono }}</span>
-                  <span class="carrera" *ngIf="postulacion.usuario?.carrera">{{ postulacion.usuario?.carrera }}</span>
+                  <span class="carrera" *ngIf="postulacion.usuario?.carrera">{{ postulacion.usuario!.carrera }}</span>
                 </div>
               </div>
               <div class="estado-section">
