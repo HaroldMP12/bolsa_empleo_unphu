@@ -526,6 +526,62 @@ export class PerfilComponent implements OnInit {
     this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
       this.initializeForms();
+      if (user) {
+        this.loadExistingProfile();
+      }
+    });
+  }
+
+  private loadExistingProfile(): void {
+    if (!this.currentUser) return;
+
+    if (this.isStudent()) {
+      this.perfilService.obtenerPerfilEstudiante(this.currentUser.usuarioID).subscribe({
+        next: (perfil) => {
+          if (perfil && perfil.perfilID) {
+            this.populateStudentForm(perfil);
+          }
+        },
+        error: () => {
+          // No hay perfil existente, mantener formulario vacío
+        }
+      });
+    } else if (this.isCompany()) {
+      this.perfilService.obtenerPerfilEmpresa(this.currentUser.usuarioID).subscribe({
+        next: (empresa) => {
+          if (empresa && empresa.empresaID) {
+            this.populateCompanyForm(empresa);
+          }
+        },
+        error: () => {
+          // No hay perfil existente, mantener formulario vacío
+        }
+      });
+    }
+  }
+
+  private populateStudentForm(perfil: any): void {
+    this.academicForm.patchValue({
+      carrera: perfil.carreraID?.toString(),
+      matricula: perfil.matricula,
+      semestre: perfil.semestre?.toString() || '',
+      anoIngreso: perfil.fechaIngreso ? new Date(perfil.fechaIngreso).getFullYear() : ''
+    });
+  }
+
+  private populateCompanyForm(empresa: any): void {
+    this.empresaForm.patchValue({
+      nombreEmpresa: empresa.nombreEmpresa,
+      rnc: empresa.rnc,
+      sector: empresa.sector,
+      sitioWeb: empresa.sitioWeb,
+      descripcion: empresa.descripcion,
+      tamano: empresa.cantidadEmpleados
+    });
+
+    this.contactoForm.patchValue({
+      telefono: empresa.telefonoEmpresa,
+      direccion: empresa.direccion
     });
   }
 
@@ -630,14 +686,19 @@ export class PerfilComponent implements OnInit {
     const semestreValue = this.academicForm.get('semestre')?.value;
     const anoIngresoValue = this.academicForm.get('anoIngreso')?.value;
     
-    const perfilData: PerfilEstudiante = {
+    const perfilData: any = {
       usuarioID: this.currentUser!.usuarioID,
       tipoPerfil: semestreValue === 'graduado' ? 'Egresado' : 'Estudiante',
-      matricula: this.academicForm.get('matricula')?.value || undefined,
+      matricula: this.academicForm.get('matricula')?.value || null,
       carreraID: parseInt(this.academicForm.get('carrera')?.value) || 1,
       semestre: semestreValue !== 'graduado' && semestreValue ? parseInt(semestreValue) : null,
-      fechaIngreso: anoIngresoValue ? new Date(anoIngresoValue, 0, 1) : null,
-      resumen: this.buildResumenEstudiante()
+      fechaIngreso: anoIngresoValue ? new Date(anoIngresoValue + '-01-01') : null,
+      resumen: this.buildResumenEstudiante(),
+      urlImagen: null,
+      redesSociales: null,
+      tituloObtenido: null,
+      fechaEgreso: null,
+      añoGraduacion: null
     };
 
     // Verificar si ya existe un perfil
@@ -684,16 +745,19 @@ export class PerfilComponent implements OnInit {
     }
 
     this.guardando = true;
-    const empresaData: PerfilEmpresa = {
+    const empresaData: any = {
       usuarioID: this.currentUser!.usuarioID,
       nombreEmpresa: this.empresaForm.get('nombreEmpresa')?.value,
       rnc: this.empresaForm.get('rnc')?.value,
-      sector: this.empresaForm.get('sector')?.value,
-      telefonoEmpresa: this.contactoForm.get('telefono')?.value,
-      direccion: this.contactoForm.get('direccion')?.value,
-      sitioWeb: this.empresaForm.get('sitioWeb')?.value,
-      descripcion: this.empresaForm.get('descripcion')?.value,
-      cantidadEmpleados: this.empresaForm.get('tamano')?.value
+      sector: this.empresaForm.get('sector')?.value || null,
+      telefonoEmpresa: this.contactoForm.get('telefono')?.value || null,
+      direccion: this.contactoForm.get('direccion')?.value || null,
+      sitioWeb: this.empresaForm.get('sitioWeb')?.value || null,
+      descripcion: this.empresaForm.get('descripcion')?.value || null,
+      cantidadEmpleados: this.empresaForm.get('tamano')?.value || null,
+      imagenLogo: null,
+      imagenPortada: null,
+      observaciones: null
     };
 
     // Verificar si ya existe un perfil de empresa
