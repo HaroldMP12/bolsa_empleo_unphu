@@ -2,7 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
+import { PerfilService, PerfilEstudiante, PerfilEmpresa } from '../../core/services/perfil.service';
+import { ToastService } from '../../core/services/toast.service';
 import { AuthResponse } from '../../core/models/auth.models';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-perfil',
@@ -490,7 +493,10 @@ export class PerfilComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private authService: AuthService
+    private authService: AuthService,
+    private perfilService: PerfilService,
+    private toastService: ToastService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -579,13 +585,131 @@ export class PerfilComponent implements OnInit {
   }
 
   guardarPerfil(): void {
-    console.log('Guardando perfil...');
-    // TODO: Implementar guardado real
-    alert('Perfil guardado exitosamente (simulación)');
+    if (!this.currentUser) {
+      this.toastService.showError('Error', 'No se pudo identificar el usuario');
+      return;
+    }
+
+    if (this.isStudent()) {
+      this.guardarPerfilEstudiante();
+    } else if (this.isCompany()) {
+      this.guardarPerfilEmpresa();
+    }
+  }
+
+  private guardarPerfilEstudiante(): void {
+    if (!this.personalForm.valid || !this.academicForm.valid) {
+      this.toastService.showWarning('Formulario Incompleto', 'Por favor completa todos los campos requeridos');
+      return;
+    }
+
+    const perfilData: PerfilEstudiante = {
+      usuarioID: this.currentUser!.usuarioID,
+      tipoPerfil: this.academicForm.get('semestre')?.value === 'graduado' ? 'Egresado' : 'Estudiante',
+      matricula: this.academicForm.get('matricula')?.value,
+      carreraID: parseInt(this.academicForm.get('carrera')?.value) || 1, // Default carrera
+      semestre: this.academicForm.get('semestre')?.value !== 'graduado' ? parseInt(this.academicForm.get('semestre')?.value) : null,
+      fechaIngreso: this.academicForm.get('anoIngreso')?.value ? new Date(this.academicForm.get('anoIngreso')?.value, 0, 1) : null,
+      resumen: this.buildResumenEstudiante()
+    };
+
+    // Verificar si ya existe un perfil
+    this.perfilService.obtenerPerfilEstudiante(this.currentUser!.usuarioID).subscribe({
+      next: (perfilExistente) => {
+        // Actualizar perfil existente
+        perfilData.perfilID = perfilExistente.perfilID;
+        this.perfilService.actualizarPerfilEstudiante(perfilExistente.perfilID!, perfilData).subscribe({
+          next: () => {
+            this.toastService.showSuccess('¡Éxito!', 'Tu perfil ha sido actualizado correctamente');
+            setTimeout(() => this.router.navigate(['/dashboard']), 2000);
+          },
+          error: (error) => {
+            this.toastService.showError('Error', 'No se pudo actualizar el perfil: ' + (error.error?.message || error.message));
+          }
+        });
+      },
+      error: () => {
+        // Crear nuevo perfil
+        this.perfilService.crearPerfilEstudiante(perfilData).subscribe({
+          next: () => {
+            this.toastService.showSuccess('¡Éxito!', 'Tu perfil ha sido creado correctamente');
+            setTimeout(() => this.router.navigate(['/dashboard']), 2000);
+          },
+          error: (error) => {
+            this.toastService.showError('Error', 'No se pudo crear el perfil: ' + (error.error?.message || error.message));
+          }
+        });
+      }
+    });
+  }
+
+  private guardarPerfilEmpresa(): void {
+    if (!this.empresaForm.valid || !this.contactoForm.valid) {
+      this.toastService.showWarning('Formulario Incompleto', 'Por favor completa todos los campos requeridos');
+      return;
+    }
+
+    const empresaData: PerfilEmpresa = {
+      usuarioID: this.currentUser!.usuarioID,
+      nombreEmpresa: this.empresaForm.get('nombreEmpresa')?.value,
+      rnc: this.empresaForm.get('rnc')?.value,
+      sector: this.empresaForm.get('sector')?.value,
+      telefonoEmpresa: this.contactoForm.get('telefono')?.value,
+      direccion: this.contactoForm.get('direccion')?.value,
+      sitioWeb: this.empresaForm.get('sitioWeb')?.value,
+      descripcion: this.empresaForm.get('descripcion')?.value,
+      cantidadEmpleados: this.empresaForm.get('tamano')?.value
+    };
+
+    // Verificar si ya existe un perfil de empresa
+    this.perfilService.obtenerPerfilEmpresa(this.currentUser!.usuarioID).subscribe({
+      next: (empresaExistente) => {
+        // Actualizar empresa existente
+        empresaData.empresaID = empresaExistente.empresaID;
+        this.perfilService.actualizarPerfilEmpresa(empresaExistente.empresaID!, empresaData).subscribe({
+          next: () => {
+            this.toastService.showSuccess('¡Éxito!', 'El perfil de tu empresa ha sido actualizado correctamente');
+            setTimeout(() => this.router.navigate(['/dashboard']), 2000);
+          },
+          error: (error) => {
+            this.toastService.showError('Error', 'No se pudo actualizar el perfil: ' + (error.error?.message || error.message));
+          }
+        });
+      },
+      error: () => {
+        // Crear nueva empresa
+        this.perfilService.crearPerfilEmpresa(empresaData).subscribe({
+          next: () => {
+            this.toastService.showSuccess('¡Éxito!', 'El perfil de tu empresa ha sido creado correctamente');
+            setTimeout(() => this.router.navigate(['/dashboard']), 2000);
+          },
+          error: (error) => {
+            this.toastService.showError('Error', 'No se pudo crear el perfil: ' + (error.error?.message || error.message));
+          }
+        });
+      }
+    });
+  }
+
+  private buildResumenEstudiante(): string {
+    const personal = this.personalForm.value;
+    const academic = this.academicForm.value;
+    
+    let resumen = `Estudiante de ${academic.carrera || 'carrera no especificada'}`;
+    if (academic.semestre && academic.semestre !== 'graduado') {
+      resumen += ` en ${academic.semestre}° semestre`;
+    } else if (academic.semestre === 'graduado') {
+      resumen += ` graduado`;
+    }
+    
+    if (this.experiencias.length > 0) {
+      resumen += ` con experiencia en ${this.experiencias.map(exp => exp.cargo).join(', ')}`;
+    }
+    
+    return resumen;
   }
 
   cancelar(): void {
-    // TODO: Resetear formularios o navegar atrás
-    console.log('Cancelando cambios...');
+    this.router.navigate(['/dashboard']);
   }
 }

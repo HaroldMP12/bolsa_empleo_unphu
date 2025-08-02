@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { PerfilService } from '../../core/services/perfil.service';
 import { AuthResponse } from '../../core/models/auth.models';
 
 @Component({
@@ -529,7 +530,7 @@ export class DashboardComponent implements OnInit {
   };
   
   perfilCompleto = false;
-  perfilProgreso = 65;
+  perfilProgreso = 0;
   
   recentVacantes = [
     { titulo: 'Desarrollador Frontend', empresa: 'TechCorp', ubicacion: 'Santo Domingo' },
@@ -554,6 +555,7 @@ export class DashboardComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
+    private perfilService: PerfilService,
     private router: Router
   ) {}
 
@@ -565,14 +567,41 @@ export class DashboardComponent implements OnInit {
   }
   
   loadDashboardData(): void {
-    // TODO: Load real data based on user role
+    if (!this.currentUser) return;
+
     if (this.isStudent()) {
-      // Load student data
+      this.loadStudentProfileProgress();
     } else if (this.isCompany()) {
-      // Load company data
+      this.loadCompanyProfileProgress();
     } else if (this.isAdmin()) {
       // Load admin data
     }
+  }
+
+  private loadStudentProfileProgress(): void {
+    this.perfilService.obtenerPerfilEstudiante(this.currentUser!.usuarioID).subscribe({
+      next: (perfil) => {
+        this.perfilProgreso = this.perfilService.calcularProgresoEstudiante(perfil);
+        this.perfilCompleto = this.perfilProgreso >= 80;
+      },
+      error: () => {
+        this.perfilProgreso = 0;
+        this.perfilCompleto = false;
+      }
+    });
+  }
+
+  private loadCompanyProfileProgress(): void {
+    this.perfilService.obtenerPerfilEmpresa(this.currentUser!.usuarioID).subscribe({
+      next: (empresa) => {
+        this.perfilProgreso = this.perfilService.calcularProgresoEmpresa(empresa);
+        this.perfilCompleto = this.perfilProgreso >= 80;
+      },
+      error: () => {
+        this.perfilProgreso = 0;
+        this.perfilCompleto = false;
+      }
+    });
   }
   
   isStudent(): boolean {

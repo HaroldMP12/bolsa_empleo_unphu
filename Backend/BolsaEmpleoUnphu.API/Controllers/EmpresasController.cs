@@ -61,6 +61,22 @@ public class EmpresasController : ControllerBase
         };
     }
 
+    // GET: api/empresas/usuario/5
+    [HttpGet("usuario/{usuarioId}")]
+    public async Task<ActionResult<EmpresasModel>> GetEmpresaByUsuario(int usuarioId)
+    {
+        var empresa = await _context.Empresas
+            .Include(e => e.Usuario)
+            .FirstOrDefaultAsync(e => e.UsuarioID == usuarioId);
+
+        if (empresa == null)
+        {
+            return NotFound();
+        }
+
+        return empresa;
+    }
+
     // GET: api/empresas/5
     [HttpGet("{id}")]
     public async Task<ActionResult<EmpresasModel>> GetEmpresa(int id)
@@ -158,6 +174,7 @@ public class EmpresasController : ControllerBase
         try
         {
             await _context.SaveChangesAsync();
+            return Ok(new { message = "Perfil de empresa actualizado exitosamente" });
         }
         catch (DbUpdateConcurrencyException)
         {
@@ -167,8 +184,10 @@ public class EmpresasController : ControllerBase
             }
             throw;
         }
-
-        return NoContent();
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = "Error al actualizar el perfil de empresa", error = ex.Message });
+        }
     }
 
     // DELETE: api/empresas/5

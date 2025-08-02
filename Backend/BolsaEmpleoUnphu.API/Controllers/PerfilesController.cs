@@ -30,6 +30,23 @@ public class PerfilesController : ControllerBase
             .ToListAsync();
     }
 
+    // GET: api/perfiles/usuario/5
+    [HttpGet("usuario/{usuarioId}")]
+    public async Task<ActionResult<PerfilesModel>> GetPerfilByUsuario(int usuarioId)
+    {
+        var perfil = await _context.Perfiles
+            .Include(p => p.Usuario)
+            .Include(p => p.Carrera)
+            .FirstOrDefaultAsync(p => p.UsuarioID == usuarioId);
+
+        if (perfil == null)
+        {
+            return NotFound();
+        }
+
+        return perfil;
+    }
+
     // GET: api/perfiles/5
     [HttpGet("{id}")]
     public async Task<ActionResult<PerfilesModel>> GetPerfil(int id)
@@ -115,6 +132,7 @@ public class PerfilesController : ControllerBase
         try
         {
             await _context.SaveChangesAsync();
+            return Ok(new { message = "Perfil actualizado exitosamente" });
         }
         catch (DbUpdateConcurrencyException)
         {
@@ -124,8 +142,10 @@ public class PerfilesController : ControllerBase
             }
             throw;
         }
-
-        return NoContent();
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = "Error al actualizar el perfil", error = ex.Message });
+        }
     }
 
     // DELETE: api/perfiles/5
