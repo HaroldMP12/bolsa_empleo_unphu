@@ -28,7 +28,7 @@ import { CreatePostulacionDto } from '../../core/models/postulacion.models';
           </div>
           
           <!-- Preguntas de la vacante -->
-          <div class="preguntas-section" *ngIf="vacante?.preguntas && vacante.preguntas.length > 0">
+          <div class="preguntas-section" *ngIf="vacante?.preguntas && vacante!.preguntas!.length > 0">
             <h4>Preguntas Adicionales</h4>
             <div *ngFor="let pregunta of vacante!.preguntas; let i = index" class="pregunta-item">
               <label class="pregunta-label">
