@@ -622,6 +622,17 @@ import { ModalPostulacionComponent } from '../postulaciones/modal-postulacion.co
     .btn-confirm:hover {
       background: #0a2a3f;
     }
+    
+    /* Campos con error */
+    .form-control.error {
+      border-color: #dc3545;
+      box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+    }
+    
+    .form-control.error:focus {
+      border-color: #dc3545;
+      box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+    }
   `]
 })
 export class VacantesComponent implements OnInit {
@@ -782,8 +793,11 @@ export class VacantesComponent implements OnInit {
       modalidad: vacante.modalidad,
       ubicacion: vacante.ubicacion,
       categoriaID: vacante.categoriaID,
-      fechaVencimiento: vacante.fechaVencimiento.toISOString().split('T')[0],
-      preguntas: vacante.preguntas || []
+      fechaVencimiento: new Date(vacante.fechaVencimiento).toISOString().split('T')[0],
+      preguntas: (vacante.preguntas || []).map(p => ({
+        ...p,
+        opcionesTexto: p.opciones ? p.opciones.join(', ') : ''
+      }))
     };
     this.mostrarModal = true;
   }
@@ -866,6 +880,12 @@ export class VacantesComponent implements OnInit {
   }
 
   guardarVacante(): void {
+    // Validar campos requeridos
+    if (!this.validarFormulario()) {
+      this.mostrarConfirmacion('Error de Validación', 'Por favor completa todos los campos requeridos marcados con *');
+      return;
+    }
+    
     console.log('Guardando vacante:', this.nuevaVacante);
     
     // Simular guardado de vacante
@@ -923,6 +943,40 @@ export class VacantesComponent implements OnInit {
     
     this.cerrarModal();
     this.aplicarFiltros();
+  }
+  
+  validarFormulario(): boolean {
+    // Validar campos requeridos
+    if (!this.nuevaVacante.titulo.trim()) return false;
+    if (!this.nuevaVacante.descripcion.trim()) return false;
+    if (!this.nuevaVacante.requisitos.trim()) return false;
+    if (!this.nuevaVacante.modalidad) return false;
+    if (!this.nuevaVacante.ubicacion.trim()) return false;
+    if (!this.nuevaVacante.categoriaID) return false;
+    if (!this.nuevaVacante.fechaVencimiento) return false;
+    
+    // Validar que la fecha de vencimiento sea futura
+    const fechaVencimiento = new Date(this.nuevaVacante.fechaVencimiento);
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    if (fechaVencimiento <= hoy) {
+      this.mostrarConfirmacion('Fecha Inválida', 'La fecha de vencimiento debe ser posterior a hoy.');
+      return false;
+    }
+    
+    // Validar preguntas requeridas
+    for (const pregunta of this.nuevaVacante.preguntas) {
+      if (!pregunta.pregunta.trim()) {
+        this.mostrarConfirmacion('Pregunta Inválida', 'Todas las preguntas deben tener texto.');
+        return false;
+      }
+      if (pregunta.tipo === 'opcion_multiple' && (!pregunta.opcionesTexto || !pregunta.opcionesTexto.trim())) {
+        this.mostrarConfirmacion('Opciones Faltantes', 'Las preguntas de opción múltiple deben tener opciones.');
+        return false;
+      }
+    }
+    
+    return true;
   }
   
   getCategoriaName(categoriaID: number): string {
