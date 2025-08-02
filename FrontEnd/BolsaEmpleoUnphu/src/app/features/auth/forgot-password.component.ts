@@ -171,11 +171,16 @@ export class ForgotPasswordComponent {
       this.errorMessage = '';
       this.successMessage = '';
       
-      // Simulación por ahora - implementar endpoint real después
-      setTimeout(() => {
-        this.successMessage = 'Se ha enviado un enlace de recuperación a tu correo electrónico';
-        this.loading = false;
-      }, 2000);
+      this.apiService.post('auth/forgot-password', this.forgotPasswordForm.value).subscribe({
+        next: (response: any) => {
+          this.successMessage = response.message;
+          this.loading = false;
+        },
+        error: (error) => {
+          this.errorMessage = 'Error al procesar la solicitud. Intenta nuevamente.';
+          this.loading = false;
+        }
+      });
     }
   }
 }

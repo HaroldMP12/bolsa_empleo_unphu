@@ -44,4 +44,25 @@ public class AuthController : ControllerBase
             Expiracion = DateTime.UtcNow.AddHours(24)
         });
     }
+
+    [HttpPost("forgot-password")]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto forgotPasswordDto)
+    {
+        var usuario = await _context.Usuarios
+            .FirstOrDefaultAsync(u => u.Correo == forgotPasswordDto.Correo && u.Estado);
+
+        if (usuario == null)
+        {
+            // Por seguridad, siempre devolvemos éxito aunque el usuario no exista
+            return Ok(new { message = "Si el correo existe, recibirás un enlace de recuperación" });
+        }
+
+        // Generar token de recuperación (válido por 1 hora)
+        var resetToken = Guid.NewGuid().ToString();
+        
+        // TODO: Guardar el token en base de datos con expiración
+        // TODO: Enviar email con el enlace de recuperación
+        
+        return Ok(new { message = "Si el correo existe, recibirás un enlace de recuperación" });
+    }
 }
