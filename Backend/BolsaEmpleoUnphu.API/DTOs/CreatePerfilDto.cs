@@ -34,4 +34,11 @@ public class CreatePerfilDto
     public string? Resumen { get; set; }
     
     public string? RedesSociales { get; set; }
+    
+    public DateTime? FechaNacimiento { get; set; }
+    
+    [StringLength(255)]
+    public string? Direccion { get; set; }
+    
+    public decimal? PromedioAcademico { get; set; }
 }

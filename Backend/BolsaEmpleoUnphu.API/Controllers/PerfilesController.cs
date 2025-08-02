@@ -78,7 +78,10 @@ public class PerfilesController : ControllerBase
             AñoGraduacion = perfilDto.AñoGraduacion,
             UrlImagen = perfilDto.UrlImagen,
             Resumen = perfilDto.Resumen,
-            RedesSociales = perfilDto.RedesSociales
+            RedesSociales = perfilDto.RedesSociales,
+            FechaNacimiento = perfilDto.FechaNacimiento,
+            Direccion = perfilDto.Direccion,
+            PromedioAcademico = perfilDto.PromedioAcademico
         };
 
         _context.Perfiles.Add(perfil);
@@ -123,6 +126,9 @@ public class PerfilesController : ControllerBase
         perfil.UrlImagen = perfilDto.UrlImagen;
         perfil.Resumen = perfilDto.Resumen;
         perfil.RedesSociales = perfilDto.RedesSociales;
+        perfil.FechaNacimiento = perfilDto.FechaNacimiento;
+        perfil.Direccion = perfilDto.Direccion;
+        perfil.PromedioAcademico = perfilDto.PromedioAcademico;
 
         try
         {

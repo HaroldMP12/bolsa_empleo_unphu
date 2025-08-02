@@ -51,6 +51,16 @@ public class PerfilesModel
     [Column("RedesSociales", TypeName = "NVARCHAR(MAX)")]
     public string? RedesSociales { get; set; }
     
+    [Column("FechaNacimiento")]
+    public DateTime? FechaNacimiento { get; set; }
+    
+    [StringLength(255)]
+    [Column("Direccion")]
+    public string? Direccion { get; set; }
+    
+    [Column("PromedioAcademico")]
+    public decimal? PromedioAcademico { get; set; }
+    
     // Navegación
     [ForeignKey("UsuarioID")]
     public virtual UsuariosModel Usuario { get; set; } = null!;

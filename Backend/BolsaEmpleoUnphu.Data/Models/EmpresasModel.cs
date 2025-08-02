@@ -57,6 +57,18 @@ public class EmpresasModel
     [Column("CantidadEmpleados")]
     public string? CantidadEmpleados { get; set; }
     
+    [StringLength(100)]
+    [Column("PersonaContacto")]
+    public string? PersonaContacto { get; set; }
+    
+    [StringLength(100)]
+    [Column("CargoContacto")]
+    public string? CargoContacto { get; set; }
+    
+    [StringLength(20)]
+    [Column("TelefonoSecundario")]
+    public string? TelefonoSecundario { get; set; }
+    
     // Navegación
     [ForeignKey("UsuarioID")]
     public virtual UsuariosModel Usuario { get; set; } = null!;

@@ -702,7 +702,10 @@ export class PerfilComponent implements OnInit {
       redesSociales: null,
       tituloObtenido: null,
       fechaEgreso: null,
-      añoGraduacion: null
+      añoGraduacion: null,
+      fechaNacimiento: this.personalForm.get('fechaNacimiento')?.value || null,
+      direccion: this.personalForm.get('direccion')?.value || null,
+      promedioAcademico: this.academicForm.get('promedio')?.value ? parseFloat(this.academicForm.get('promedio')?.value) : null
     };
     
     console.log('Datos a enviar:', perfilData);
