@@ -79,7 +79,11 @@ export class PerfilService {
       campo !== null && campo !== undefined && campo !== '' && campo !== 0
     ).length;
     
-    return Math.round((camposCompletos / campos.length) * 100);
+    // Siempre incluir datos básicos del usuario (nombre y correo = 20%)
+    const progresoBasico = 20;
+    const progresoAdicional = Math.round((camposCompletos / campos.length) * 80);
+    
+    return progresoBasico + progresoAdicional;
   }
 
   calcularProgresoEmpresa(empresa: PerfilEmpresa): number {
@@ -97,6 +101,10 @@ export class PerfilService {
       campo !== null && campo !== undefined && campo !== ''
     ).length;
     
-    return Math.round((camposCompletos / campos.length) * 100);
+    // Siempre incluir datos básicos del usuario (nombre y correo = 20%)
+    const progresoBasico = 20;
+    const progresoAdicional = Math.round((camposCompletos / campos.length) * 80);
+    
+    return progresoBasico + progresoAdicional;
   }
 }

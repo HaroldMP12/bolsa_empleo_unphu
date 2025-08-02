@@ -4,13 +4,14 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule, Validators } 
 import { AuthService } from '../../core/services/auth.service';
 import { PerfilService, PerfilEstudiante, PerfilEmpresa } from '../../core/services/perfil.service';
 import { ToastService } from '../../core/services/toast.service';
+import { ConfirmationModalComponent } from '../../shared/components/confirmation-modal.component';
 import { AuthResponse } from '../../core/models/auth.models';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-perfil',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, ConfirmationModalComponent],
   template: `
     <div class="perfil-page">
       <div class="page-header">
@@ -303,9 +304,19 @@ import { Router } from '@angular/router';
       <!-- Botones de Acción -->
       <div class="action-buttons">
         <button type="button" class="btn-secondary" (click)="cancelar()">Cancelar</button>
-        <button type="button" class="btn-primary" (click)="guardarPerfil()">Guardar Cambios</button>
+        <button type="button" class="btn-primary" (click)="guardarPerfil()" [disabled]="guardando">{{ guardando ? 'Guardando...' : 'Guardar Cambios' }}</button>
       </div>
     </div>
+
+    <!-- Modal de Confirmación -->
+    <app-confirmation-modal
+      [isVisible]="showModal"
+      [type]="modalType"
+      [title]="modalTitle"
+      [message]="modalMessage"
+      [confirmText]="modalConfirmText"
+      (confirmed)="onModalConfirmed()">
+    </app-confirmation-modal>
   `,
   styles: [`
     .perfil-page {
@@ -495,6 +506,13 @@ export class PerfilComponent implements OnInit {
   cvSeleccionado = '';
   logoSeleccionado = '';
   portadaSeleccionada = '';
+  
+  guardando = false;
+  showModal = false;
+  modalType: 'success' | 'error' | 'warning' | 'info' = 'success';
+  modalTitle = '';
+  modalMessage = '';
+  modalConfirmText = 'Aceptar';
 
   constructor(
     private fb: FormBuilder,
@@ -604,10 +622,11 @@ export class PerfilComponent implements OnInit {
 
   private guardarPerfilEstudiante(): void {
     if (!this.personalForm.valid || !this.academicForm.valid) {
-      this.toastService.showWarning('Formulario Incompleto', 'Por favor completa todos los campos requeridos');
+      this.showModalMessage('warning', 'Formulario Incompleto', 'Por favor completa todos los campos requeridos');
       return;
     }
 
+    this.guardando = true;
     const semestreValue = this.academicForm.get('semestre')?.value;
     const anoIngresoValue = this.academicForm.get('anoIngreso')?.value;
     
@@ -628,11 +647,12 @@ export class PerfilComponent implements OnInit {
         perfilData.perfilID = perfilExistente.perfilID;
         this.perfilService.actualizarPerfilEstudiante(perfilExistente.perfilID!, perfilData).subscribe({
           next: () => {
-            this.toastService.showSuccess('¡Éxito!', 'Tu perfil ha sido actualizado correctamente');
-            setTimeout(() => this.router.navigate(['/dashboard']), 2000);
+            this.guardando = false;
+            this.showModalMessage('success', '¡Perfil Actualizado!', 'Tu perfil ha sido actualizado correctamente');
           },
           error: (error) => {
-            this.toastService.showError('Error', 'No se pudo actualizar el perfil: ' + (error.error?.message || error.message));
+            this.guardando = false;
+            this.showModalMessage('error', 'Error al Guardar', 'No se pudo actualizar el perfil. Inténtalo nuevamente.');
           }
         });
       },
@@ -640,11 +660,12 @@ export class PerfilComponent implements OnInit {
         // Crear nuevo perfil
         this.perfilService.crearPerfilEstudiante(perfilData).subscribe({
           next: () => {
-            this.toastService.showSuccess('¡Éxito!', 'Tu perfil ha sido creado correctamente');
-            setTimeout(() => this.router.navigate(['/dashboard']), 2000);
+            this.guardando = false;
+            this.showModalMessage('success', '¡Perfil Creado!', 'Tu perfil ha sido creado correctamente');
           },
           error: (error) => {
-            this.toastService.showError('Error', 'No se pudo crear el perfil: ' + (error.error?.message || error.message));
+            this.guardando = false;
+            this.showModalMessage('error', 'Error al Guardar', 'No se pudo crear el perfil. Inténtalo nuevamente.');
           }
         });
       }
@@ -653,10 +674,11 @@ export class PerfilComponent implements OnInit {
 
   private guardarPerfilEmpresa(): void {
     if (!this.empresaForm.valid || !this.contactoForm.valid) {
-      this.toastService.showWarning('Formulario Incompleto', 'Por favor completa todos los campos requeridos');
+      this.showModalMessage('warning', 'Formulario Incompleto', 'Por favor completa todos los campos requeridos');
       return;
     }
 
+    this.guardando = true;
     const empresaData: PerfilEmpresa = {
       usuarioID: this.currentUser!.usuarioID,
       nombreEmpresa: this.empresaForm.get('nombreEmpresa')?.value,
@@ -676,11 +698,12 @@ export class PerfilComponent implements OnInit {
         empresaData.empresaID = empresaExistente.empresaID;
         this.perfilService.actualizarPerfilEmpresa(empresaExistente.empresaID!, empresaData).subscribe({
           next: () => {
-            this.toastService.showSuccess('¡Éxito!', 'El perfil de tu empresa ha sido actualizado correctamente');
-            setTimeout(() => this.router.navigate(['/dashboard']), 2000);
+            this.guardando = false;
+            this.showModalMessage('success', '¡Perfil Actualizado!', 'El perfil de tu empresa ha sido actualizado correctamente');
           },
           error: (error) => {
-            this.toastService.showError('Error', 'No se pudo actualizar el perfil: ' + (error.error?.message || error.message));
+            this.guardando = false;
+            this.showModalMessage('error', 'Error al Guardar', 'No se pudo actualizar el perfil. Inténtalo nuevamente.');
           }
         });
       },
@@ -688,11 +711,12 @@ export class PerfilComponent implements OnInit {
         // Crear nueva empresa
         this.perfilService.crearPerfilEmpresa(empresaData).subscribe({
           next: () => {
-            this.toastService.showSuccess('¡Éxito!', 'El perfil de tu empresa ha sido creado correctamente');
-            setTimeout(() => this.router.navigate(['/dashboard']), 2000);
+            this.guardando = false;
+            this.showModalMessage('success', '¡Perfil Creado!', 'El perfil de tu empresa ha sido creado correctamente');
           },
           error: (error) => {
-            this.toastService.showError('Error', 'No se pudo crear el perfil: ' + (error.error?.message || error.message));
+            this.guardando = false;
+            this.showModalMessage('error', 'Error al Guardar', 'No se pudo crear el perfil. Inténtalo nuevamente.');
           }
         });
       }
@@ -732,5 +756,18 @@ export class PerfilComponent implements OnInit {
 
   cancelar(): void {
     this.router.navigate(['/dashboard']);
+  }
+
+  private showModalMessage(type: 'success' | 'error' | 'warning' | 'info', title: string, message: string): void {
+    this.modalType = type;
+    this.modalTitle = title;
+    this.modalMessage = message;
+    this.showModal = true;
+  }
+
+  onModalConfirmed(): void {
+    if (this.modalType === 'success') {
+      this.router.navigate(['/dashboard']);
+    }
   }
 }

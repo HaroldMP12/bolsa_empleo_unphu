@@ -585,7 +585,8 @@ export class DashboardComponent implements OnInit {
         this.perfilCompleto = this.perfilProgreso >= 80;
       },
       error: () => {
-        this.perfilProgreso = 0;
+        // Usuario sin perfil completo, pero con datos básicos
+        this.perfilProgreso = 20;
         this.perfilCompleto = false;
       }
     });
@@ -598,7 +599,8 @@ export class DashboardComponent implements OnInit {
         this.perfilCompleto = this.perfilProgreso >= 80;
       },
       error: () => {
-        this.perfilProgreso = 0;
+        // Empresa sin perfil completo, pero con datos básicos
+        this.perfilProgreso = 20;
         this.perfilCompleto = false;
       }
     });
