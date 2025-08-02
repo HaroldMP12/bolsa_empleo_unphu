@@ -334,12 +334,13 @@ export class GestionCandidatosComponent implements OnInit {
   cargarCandidatos(): void {
     // Mock data - replace with real API call
     this.vacanteTitulo = 'Desarrollador Frontend React';
+    const hoy = new Date();
     this.postulaciones = [
       {
         postulacionID: 1,
         vacanteID: this.vacanteId,
         usuarioID: 1,
-        fechaPostulacion: new Date('2024-01-15T10:30:00'),
+        fechaPostulacion: new Date(hoy.getTime() - 1 * 24 * 60 * 60 * 1000), // Hace 1 día
         estado: 'Pendiente',
         respuestas: [
           {
@@ -372,7 +373,7 @@ export class GestionCandidatosComponent implements OnInit {
         postulacionID: 2,
         vacanteID: this.vacanteId,
         usuarioID: 2,
-        fechaPostulacion: new Date('2024-01-14T14:20:00'),
+        fechaPostulacion: new Date(hoy.getTime() - 3 * 24 * 60 * 60 * 1000), // Hace 3 días
         estado: 'En Revisión',
         respuestas: [
           {
@@ -399,7 +400,7 @@ export class GestionCandidatosComponent implements OnInit {
         postulacionID: 3,
         vacanteID: this.vacanteId,
         usuarioID: 3,
-        fechaPostulacion: new Date('2024-01-13T09:15:00'),
+        fechaPostulacion: new Date(hoy.getTime() - 5 * 24 * 60 * 60 * 1000), // Hace 5 días
         estado: 'Aceptado',
         respuestas: [
           {

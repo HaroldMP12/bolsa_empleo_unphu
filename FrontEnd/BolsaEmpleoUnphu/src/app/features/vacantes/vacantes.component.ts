@@ -613,7 +613,7 @@ export class VacantesComponent implements OnInit {
         empresaID: 1,
         empresa: 'TechCorp',
         fechaPublicacion: new Date(),
-        fechaVencimiento: new Date('2024-02-15'),
+        fechaVencimiento: new Date(new Date().getTime() + 15 * 24 * 60 * 60 * 1000), // En 15 días
         estado: true,
         postulaciones: 12,
         preguntas: [
@@ -654,7 +654,7 @@ export class VacantesComponent implements OnInit {
         empresaID: 2,
         empresa: 'MarketPro',
         fechaPublicacion: new Date(),
-        fechaVencimiento: new Date('2024-02-20'),
+        fechaVencimiento: new Date(new Date().getTime() + 10 * 24 * 60 * 60 * 1000), // En 10 días
         estado: true,
         postulaciones: 8,
         preguntas: [
@@ -687,7 +687,7 @@ export class VacantesComponent implements OnInit {
         empresaID: 3,
         empresa: 'ContaPlus',
         fechaPublicacion: new Date(),
-        fechaVencimiento: new Date('2024-02-25'),
+        fechaVencimiento: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000), // En 7 días
         estado: true,
         postulaciones: 15,
         preguntas: [
@@ -801,7 +801,7 @@ export class VacantesComponent implements OnInit {
       postulacionID: Date.now(), // ID temporal
       vacanteID: postulacionDto.vacanteID,
       usuarioID: 1, // ID del usuario actual
-      fechaPostulacion: new Date(),
+      fechaPostulacion: new Date(), // Fecha actual real
       estado: 'Pendiente' as const,
       respuestas: postulacionDto.respuestas.map(r => ({
         postulacionID: Date.now(),

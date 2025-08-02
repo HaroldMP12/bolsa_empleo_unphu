@@ -131,6 +131,22 @@ interface Postulacion {
         </div>
       </div>
     </div>
+
+    <!-- MODAL CONFIRMACIÓN -->
+    <div *ngIf="mostrarConfirmacionModal" class="modal-overlay" (click)="cerrarConfirmacion()">
+      <div class="confirmation-modal" (click)="$event.stopPropagation()">
+        <div class="confirmation-header">
+          <h3>{{ confirmacionTitulo }}</h3>
+        </div>
+        <div class="confirmation-body">
+          <p>{{ confirmacionMensaje }}</p>
+        </div>
+        <div class="confirmation-footer">
+          <button class="btn-cancel" (click)="cerrarConfirmacion()">Cancelar</button>
+          <button class="btn-confirm" (click)="confirmarAccion()">Confirmar</button>
+        </div>
+      </div>
+    </div>
   `,
   styles: [`
     .postulaciones-page {
@@ -390,6 +406,69 @@ interface Postulacion {
       border-radius: 6px;
       cursor: pointer;
     }
+    
+    /* Modal de Confirmación */
+    .confirmation-modal {
+      background: white;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+    .confirmation-header {
+      background: var(--unphu-green-primary);
+      color: white;
+      padding: 1.5rem;
+      border-radius: 12px 12px 0 0;
+      text-align: center;
+    }
+    .confirmation-header h3 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .confirmation-body {
+      padding: 2rem;
+      text-align: center;
+    }
+    .confirmation-body p {
+      margin: 0;
+      color: #666;
+      line-height: 1.5;
+      font-size: 1rem;
+    }
+    .confirmation-footer {
+      padding: 1.5rem;
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+    .btn-cancel {
+      background: #f8f9fa;
+      color: var(--unphu-blue-dark);
+      border: 1px solid #dee2e6;
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    .btn-cancel:hover {
+      background: #e9ecef;
+    }
+    .btn-confirm {
+      background: var(--unphu-blue-dark);
+      color: white;
+      border: none;
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    .btn-confirm:hover {
+      background: #0a2a3f;
+    }
   `]
 })
 export class PostulacionesComponent implements OnInit {
@@ -400,6 +479,10 @@ export class PostulacionesComponent implements OnInit {
   estadosDisponibles = ['Todas', 'Pendiente', 'En Revisión', 'Aceptado', 'Rechazado'];
   mostrarModalDetalles = false;
   postulacionSeleccionada: Postulacion | null = null;
+  mostrarConfirmacionModal = false;
+  confirmacionTitulo = '';
+  confirmacionMensaje = '';
+  confirmacionCallback: (() => void) | null = null;
 
   constructor(private authService: AuthService) {}
 
@@ -414,14 +497,15 @@ export class PostulacionesComponent implements OnInit {
     // Cargar postulaciones desde localStorage
     const postulacionesGuardadas = JSON.parse(localStorage.getItem('postulaciones') || '[]');
     
-    // Mock data inicial + postulaciones guardadas
+    // Mock data inicial con fechas dinámicas
+    const hoy = new Date();
     const postulacionesMock = [
       {
         postulacionID: 1,
         vacanteID: 1,
         vacanteTitulo: 'Desarrollador Frontend React',
         empresa: 'TechCorp',
-        fechaPostulacion: new Date('2024-01-10'),
+        fechaPostulacion: new Date(hoy.getTime() - 2 * 24 * 60 * 60 * 1000), // Hace 2 días
         estado: 'En Revisión',
         modalidad: 'Híbrido',
         ubicacion: 'Santo Domingo'
@@ -431,7 +515,7 @@ export class PostulacionesComponent implements OnInit {
         vacanteID: 2,
         vacanteTitulo: 'Analista de Marketing Digital',
         empresa: 'MarketPro',
-        fechaPostulacion: new Date('2024-01-08'),
+        fechaPostulacion: new Date(hoy.getTime() - 4 * 24 * 60 * 60 * 1000), // Hace 4 días
         estado: 'Pendiente',
         modalidad: 'Presencial',
         ubicacion: 'Santiago'
@@ -441,7 +525,7 @@ export class PostulacionesComponent implements OnInit {
         vacanteID: 3,
         vacanteTitulo: 'Diseñador UX/UI',
         empresa: 'CreativeStudio',
-        fechaPostulacion: new Date('2024-01-05'),
+        fechaPostulacion: new Date(hoy.getTime() - 7 * 24 * 60 * 60 * 1000), // Hace 1 semana
         estado: 'Aceptado',
         modalidad: 'Remoto',
         ubicacion: 'Remoto'
@@ -451,7 +535,7 @@ export class PostulacionesComponent implements OnInit {
         vacanteID: 4,
         vacanteTitulo: 'Contador Junior',
         empresa: 'ContaPlus',
-        fechaPostulacion: new Date('2024-01-03'),
+        fechaPostulacion: new Date(hoy.getTime() - 10 * 24 * 60 * 60 * 1000), // Hace 10 días
         estado: 'Rechazado',
         modalidad: 'Presencial',
         ubicacion: 'Santo Domingo'
@@ -499,12 +583,37 @@ export class PostulacionesComponent implements OnInit {
     this.mostrarModalDetalles = false;
     this.postulacionSeleccionada = null;
   }
+  
+  mostrarConfirmacion(titulo: string, mensaje: string, callback: () => void): void {
+    this.confirmacionTitulo = titulo;
+    this.confirmacionMensaje = mensaje;
+    this.confirmacionCallback = callback;
+    this.mostrarConfirmacionModal = true;
+  }
+  
+  confirmarAccion(): void {
+    if (this.confirmacionCallback) {
+      this.confirmacionCallback();
+    }
+    this.cerrarConfirmacion();
+  }
+  
+  cerrarConfirmacion(): void {
+    this.mostrarConfirmacionModal = false;
+    this.confirmacionTitulo = '';
+    this.confirmacionMensaje = '';
+    this.confirmacionCallback = null;
+  }
 
   cancelarPostulacion(postulacion: Postulacion): void {
-    if (confirm('¿Estás seguro de que deseas cancelar esta postulación?')) {
-      console.log('Cancelando postulación:', postulacion.postulacionID);
-      // TODO: Call API to cancel
-      this.cargarPostulaciones();
-    }
+    this.mostrarConfirmacion(
+      'Cancelar Postulación',
+      `¿Estás seguro de que deseas cancelar tu postulación para "${postulacion.vacanteTitulo}"?`,
+      () => {
+        console.log('Cancelando postulación:', postulacion.postulacionID);
+        // TODO: Call API to cancel
+        this.cargarPostulaciones();
+      }
+    );
   }
 }

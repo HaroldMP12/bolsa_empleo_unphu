@@ -325,6 +325,15 @@ export class ModalPostulacionComponent implements OnInit {
   }
 
   cerrar(): void {
-    this.cerrarModal.emit();
+    // Verificar si hay datos sin guardar
+    const tieneRespuestas = Object.values(this.respuestas).some(r => r.trim() !== '');
+    
+    if (tieneRespuestas) {
+      if (confirm('¿Estás seguro de que deseas cerrar? Se perderán los datos ingresados.')) {
+        this.cerrarModal.emit();
+      }
+    } else {
+      this.cerrarModal.emit();
+    }
   }
 }
