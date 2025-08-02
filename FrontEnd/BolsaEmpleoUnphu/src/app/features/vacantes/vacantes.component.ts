@@ -263,6 +263,22 @@ import { ModalPostulacionComponent } from '../postulaciones/modal-postulacion.co
         </div>
       </div>
     </div>
+
+    <!-- MODAL CONFIRMACIÓN ELIMINAR -->
+    <div *ngIf="mostrarConfirmacionEliminarModal" class="modal-overlay" (click)="cerrarConfirmacionEliminar()">
+      <div class="confirmation-modal" (click)="$event.stopPropagation()">
+        <div class="confirmation-header">
+          <h3>{{ confirmacionEliminarTitulo }}</h3>
+        </div>
+        <div class="confirmation-body">
+          <p>{{ confirmacionEliminarMensaje }}</p>
+        </div>
+        <div class="confirmation-footer">
+          <button class="btn-cancel" (click)="cerrarConfirmacionEliminar()">Cancelar</button>
+          <button class="btn-confirm" (click)="confirmarEliminacion()">Eliminar</button>
+        </div>
+      </div>
+    </div>
   `,
   styles: [`
     .vacantes-page {
@@ -623,6 +639,26 @@ import { ModalPostulacionComponent } from '../postulaciones/modal-postulacion.co
       background: #0a2a3f;
     }
     
+    .btn-cancel {
+      background: #f8f9fa;
+      color: var(--unphu-blue-dark);
+      border: 1px solid #dee2e6;
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    .btn-cancel:hover {
+      background: #e9ecef;
+    }
+    
+    .confirmation-footer {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+    
     /* Campos con error */
     .form-control.error {
       border-color: #dc3545;
@@ -648,6 +684,10 @@ export class VacantesComponent implements OnInit {
   mostrarConfirmacionModal = false;
   confirmacionTitulo = '';
   confirmacionMensaje = '';
+  mostrarConfirmacionEliminarModal = false;
+  confirmacionEliminarTitulo = '';
+  confirmacionEliminarMensaje = '';
+  confirmacionEliminarCallback: (() => void) | null = null;
   nuevaVacante: CreateVacanteDto = {
     titulo: '',
     descripcion: '',
@@ -792,11 +832,25 @@ export class VacantesComponent implements OnInit {
   }
 
   eliminarVacante(vacante: Vacante): void {
-    if (confirm('¿Estás seguro de que deseas eliminar esta vacante?')) {
-      console.log('Eliminando vacante:', vacante.vacanteID);
-      // TODO: Call API to delete
-      this.cargarVacantes();
-    }
+    this.mostrarConfirmacionEliminar(
+      'Eliminar Vacante',
+      `¿Estás seguro de que deseas eliminar la vacante "${vacante.titulo}"? Esta acción no se puede deshacer.`,
+      () => {
+        // Eliminar de la lista actual
+        this.vacantes = this.vacantes.filter(v => v.vacanteID !== vacante.vacanteID);
+        
+        // Eliminar del localStorage
+        const vacantesGuardadas = JSON.parse(localStorage.getItem('vacantes') || '[]');
+        const vacantesActualizadas = vacantesGuardadas.filter((v: any) => v.vacanteID !== vacante.vacanteID);
+        localStorage.setItem('vacantes', JSON.stringify(vacantesActualizadas));
+        
+        // Disparar evento para actualizar otras vistas
+        window.dispatchEvent(new CustomEvent('vacantesChanged'));
+        
+        this.aplicarFiltros();
+        this.mostrarConfirmacion('Vacante Eliminada', 'La vacante ha sido eliminada exitosamente.');
+      }
+    );
   }
 
   verPostulaciones(vacante: Vacante): void {
@@ -1011,5 +1065,26 @@ export class VacantesComponent implements OnInit {
     this.mostrarConfirmacionModal = false;
     this.confirmacionTitulo = '';
     this.confirmacionMensaje = '';
+  }
+  
+  mostrarConfirmacionEliminar(titulo: string, mensaje: string, callback: () => void): void {
+    this.confirmacionEliminarTitulo = titulo;
+    this.confirmacionEliminarMensaje = mensaje;
+    this.confirmacionEliminarCallback = callback;
+    this.mostrarConfirmacionEliminarModal = true;
+  }
+  
+  confirmarEliminacion(): void {
+    if (this.confirmacionEliminarCallback) {
+      this.confirmacionEliminarCallback();
+    }
+    this.cerrarConfirmacionEliminar();
+  }
+  
+  cerrarConfirmacionEliminar(): void {
+    this.mostrarConfirmacionEliminarModal = false;
+    this.confirmacionEliminarTitulo = '';
+    this.confirmacionEliminarMensaje = '';
+    this.confirmacionEliminarCallback = null;
   }
 }
