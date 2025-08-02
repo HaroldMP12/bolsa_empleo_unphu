@@ -74,8 +74,8 @@ import { ApiService } from '../../core/services/api.service';
     .forgot-password-header p {
       margin: 0;
       opacity: 0.95;
-      font-size: 1rem;
-      font-weight: 300;
+      font-size: 1.1rem;
+      font-weight: 400;
     }
     .forgot-password-form {
       padding: 2.5rem;

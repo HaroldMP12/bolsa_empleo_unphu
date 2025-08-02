@@ -78,6 +78,8 @@ public class AuthController : ControllerBase
             // Enviar email
             await _emailService.SendPasswordResetEmailAsync(usuario.Correo, resetToken, usuario.NombreCompleto);
             
+            Console.WriteLine($"Email enviado exitosamente a: {usuario.Correo}");
+            
             return Ok(new { message = "Si el correo existe, recibirás un enlace de recuperación" });
         }
         catch (Exception ex)

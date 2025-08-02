@@ -19,7 +19,9 @@ public class EmailService : IEmailService
         using var client = new SmtpClient(smtpSettings["Host"], int.Parse(smtpSettings["Port"]!))
         {
             Credentials = new NetworkCredential(smtpSettings["Username"], smtpSettings["Password"]),
-            EnableSsl = bool.Parse(smtpSettings["EnableSsl"]!)
+            EnableSsl = bool.Parse(smtpSettings["EnableSsl"]!),
+            UseDefaultCredentials = false,
+            DeliveryMethod = SmtpDeliveryMethod.Network
         };
 
         var resetUrl = $"{_configuration["FrontendUrl"]}/auth/reset-password?token={resetToken}";
