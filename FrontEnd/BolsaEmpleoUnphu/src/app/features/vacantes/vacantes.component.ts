@@ -853,7 +853,7 @@ export class VacantesComponent implements OnInit {
       descripcion: this.nuevaVacante.descripcion,
       requisitos: this.nuevaVacante.requisitos,
       salario: this.nuevaVacante.salario,
-      modalidad: this.nuevaVacante.modalidad,
+      modalidad: this.nuevaVacante.modalidad as 'Presencial' | 'Remoto' | 'Híbrido',
       ubicacion: this.nuevaVacante.ubicacion,
       categoriaID: this.nuevaVacante.categoriaID,
       categoria: this.getCategoriaName(this.nuevaVacante.categoriaID),
