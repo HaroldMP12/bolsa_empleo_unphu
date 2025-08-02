@@ -39,6 +39,7 @@ namespace BolsaEmpleoUnphu.API
             // Servicios
             builder.Services.AddScoped<IJwtService, JwtService>();
             builder.Services.AddScoped<INotificacionService, NotificacionService>();
+            builder.Services.AddScoped<IEmailService, EmailService>();
 
             // CORS
             builder.Services.AddCors(options =>

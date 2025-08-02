@@ -13,11 +13,13 @@ public class AuthController : ControllerBase
 {
     private readonly BolsaEmpleoUnphuContext _context;
     private readonly IJwtService _jwtService;
+    private readonly IEmailService _emailService;
 
-    public AuthController(BolsaEmpleoUnphuContext context, IJwtService jwtService)
+    public AuthController(BolsaEmpleoUnphuContext context, IJwtService jwtService, IEmailService emailService)
     {
         _context = context;
         _jwtService = jwtService;
+        _emailService = emailService;
     }
 
     [HttpPost("login")]
@@ -60,8 +62,19 @@ public class AuthController : ControllerBase
         // Generar token de recuperación (válido por 1 hora)
         var resetToken = Guid.NewGuid().ToString();
         
-        // TODO: Guardar el token en base de datos con expiración
-        // TODO: Enviar email con el enlace de recuperación
+        // Guardar el token en base de datos
+        var passwordResetToken = new BolsaEmpleoUnphu.Data.Models.PasswordResetTokensModel
+        {
+            UsuarioID = usuario.UsuarioID,
+            Token = resetToken,
+            FechaExpiracion = DateTime.UtcNow.AddHours(1)
+        };
+        
+        _context.PasswordResetTokens.Add(passwordResetToken);
+        await _context.SaveChangesAsync();
+        
+        // Enviar email
+        await _emailService.SendPasswordResetEmailAsync(usuario.Correo, resetToken, usuario.NombreCompleto);
         
         return Ok(new { message = "Si el correo existe, recibirás un enlace de recuperación" });
     }

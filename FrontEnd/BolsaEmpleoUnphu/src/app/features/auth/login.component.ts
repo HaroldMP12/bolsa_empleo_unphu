@@ -64,7 +64,7 @@ import { AuthService } from '../../core/services/auth.service';
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      background: linear-gradient(135deg, rgba(15, 56, 90, 0.8) 0%, rgba(67, 148, 65, 0.8) 100%),
+      background: linear-gradient(135deg, rgba(67, 148, 65, 0.8) 0%, rgba(67, 148, 65, 0.8) 100%),
                   url('/images/login-background.jpg') center/cover;
       padding: 1rem;
     }
@@ -78,7 +78,7 @@ import { AuthService } from '../../core/services/auth.service';
       backdrop-filter: blur(10px);
     }
     .login-header {
-      background: var(--unphu-blue-dark);
+      background: var(--unphu-green-primary);
       color: white;
       padding: 2.5rem;
       text-align: center;
@@ -158,13 +158,13 @@ import { AuthService } from '../../core/services/auth.service';
       font-size: 1rem;
     }
     .register-link a {
-      color: var(--unphu-green-primary);
+      color: var(--unphu-blue-dark);
       text-decoration: none;
       font-weight: 600;
       transition: color 0.3s ease;
     }
     .register-link a:hover {
-      color: #3a7f39;
+      color: #0a2a3f;
       text-decoration: underline;
     }
     .forgot-password-link {
@@ -172,14 +172,14 @@ import { AuthService } from '../../core/services/auth.service';
       margin-top: 1rem;
     }
     .forgot-password-link a {
-      color: var(--unphu-green-primary);
+      color: var(--unphu-blue-dark);
       text-decoration: none;
       font-size: 0.9rem;
       font-weight: 500;
       transition: color 0.3s ease;
     }
     .forgot-password-link a:hover {
-      color: #3a7f39;
+      color: #0a2a3f;
       text-decoration: underline;
     }
   `]
