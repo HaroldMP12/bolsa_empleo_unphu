@@ -61,7 +61,7 @@ import { ApiService } from '../../core/services/api.service';
       max-width: 450px;
     }
     .forgot-password-header {
-      background: var(--unphu-blue-dark);
+      background: var(--unphu-green-primary);
       color: white;
       padding: 2.5rem;
       text-align: center;
@@ -99,7 +99,7 @@ import { ApiService } from '../../core/services/api.service';
     .btn-primary {
       width: 100%;
       padding: 1rem;
-      background: var(--unphu-green-primary);
+      background: var(--unphu-blue-dark);
       color: white;
       border: none;
       border-radius: 8px;
@@ -111,9 +111,9 @@ import { ApiService } from '../../core/services/api.service';
       letter-spacing: 0.5px;
     }
     .btn-primary:hover:not(:disabled) {
-      background: #3a7f39;
+      background: #0a2a3f;
       transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(67, 148, 65, 0.3);
+      box-shadow: 0 4px 12px rgba(15, 56, 90, 0.3);
     }
     .btn-primary:disabled {
       background: #ccc;

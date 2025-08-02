@@ -50,32 +50,43 @@ public class AuthController : ControllerBase
     [HttpPost("forgot-password")]
     public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto forgotPasswordDto)
     {
-        var usuario = await _context.Usuarios
-            .FirstOrDefaultAsync(u => u.Correo == forgotPasswordDto.Correo && u.Estado);
-
-        if (usuario == null)
+        try
         {
-            // Por seguridad, siempre devolvemos éxito aunque el usuario no exista
+            var usuario = await _context.Usuarios
+                .FirstOrDefaultAsync(u => u.Correo == forgotPasswordDto.Correo && u.Estado);
+
+            if (usuario == null)
+            {
+                // Por seguridad, siempre devolvemos éxito aunque el usuario no exista
+                return Ok(new { message = "Si el correo existe, recibirás un enlace de recuperación" });
+            }
+
+            // Generar token de recuperación (válido por 1 hora)
+            var resetToken = Guid.NewGuid().ToString();
+            
+            // Guardar el token en base de datos
+            var passwordResetToken = new BolsaEmpleoUnphu.Data.Models.PasswordResetTokensModel
+            {
+                UsuarioID = usuario.UsuarioID,
+                Token = resetToken,
+                FechaExpiracion = DateTime.UtcNow.AddHours(1)
+            };
+            
+            _context.PasswordResetTokens.Add(passwordResetToken);
+            await _context.SaveChangesAsync();
+            
+            // Enviar email
+            await _emailService.SendPasswordResetEmailAsync(usuario.Correo, resetToken, usuario.NombreCompleto);
+            
             return Ok(new { message = "Si el correo existe, recibirás un enlace de recuperación" });
         }
-
-        // Generar token de recuperación (válido por 1 hora)
-        var resetToken = Guid.NewGuid().ToString();
-        
-        // Guardar el token en base de datos
-        var passwordResetToken = new BolsaEmpleoUnphu.Data.Models.PasswordResetTokensModel
+        catch (Exception ex)
         {
-            UsuarioID = usuario.UsuarioID,
-            Token = resetToken,
-            FechaExpiracion = DateTime.UtcNow.AddHours(1)
-        };
-        
-        _context.PasswordResetTokens.Add(passwordResetToken);
-        await _context.SaveChangesAsync();
-        
-        // Enviar email
-        await _emailService.SendPasswordResetEmailAsync(usuario.Correo, resetToken, usuario.NombreCompleto);
-        
-        return Ok(new { message = "Si el correo existe, recibirás un enlace de recuperación" });
+            // Log del error para debugging
+            Console.WriteLine($"Error en forgot-password: {ex.Message}");
+            Console.WriteLine($"Stack trace: {ex.StackTrace}");
+            
+            return StatusCode(500, new { message = "Error interno del servidor", error = ex.Message });
+        }
     }
 }
