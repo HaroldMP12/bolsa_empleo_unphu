@@ -38,6 +38,22 @@ import { AuthResponse } from '../core/models/auth.models';
         </div>
       </div>
     </header>
+
+    <!-- MODAL CONFIRMACIÓN LOGOUT -->
+    <div *ngIf="mostrarConfirmacionModal" class="modal-overlay" (click)="cerrarConfirmacion()">
+      <div class="confirmation-modal" (click)="$event.stopPropagation()">
+        <div class="confirmation-header">
+          <h3>{{ confirmacionTitulo }}</h3>
+        </div>
+        <div class="confirmation-body">
+          <p>{{ confirmacionMensaje }}</p>
+        </div>
+        <div class="confirmation-footer">
+          <button class="btn-cancel" (click)="cerrarConfirmacion()">Cancelar</button>
+          <button class="btn-confirm" (click)="confirmarAccion()">Confirmar</button>
+        </div>
+      </div>
+    </div>
   `,
   styles: [`
     .header {
@@ -109,6 +125,81 @@ import { AuthResponse } from '../core/models/auth.models';
     .logout-btn:hover {
       background: #c82333;
     }
+    
+    /* Modal de Confirmación */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+    .confirmation-modal {
+      background: white;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+    .confirmation-header {
+      background: var(--unphu-green-primary);
+      color: white;
+      padding: 1.5rem;
+      border-radius: 12px 12px 0 0;
+      text-align: center;
+    }
+    .confirmation-header h3 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .confirmation-body {
+      padding: 2rem;
+      text-align: center;
+    }
+    .confirmation-body p {
+      margin: 0;
+      color: #666;
+      line-height: 1.5;
+      font-size: 1rem;
+    }
+    .confirmation-footer {
+      padding: 1.5rem;
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+    .btn-cancel {
+      background: #f8f9fa;
+      color: var(--unphu-blue-dark);
+      border: 1px solid #dee2e6;
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    .btn-cancel:hover {
+      background: #e9ecef;
+    }
+    .btn-confirm {
+      background: var(--unphu-blue-dark);
+      color: white;
+      border: none;
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    .btn-confirm:hover {
+      background: #0a2a3f;
+    }
   `]
 })
 export class HeaderComponent implements OnInit {
@@ -126,7 +217,39 @@ export class HeaderComponent implements OnInit {
   }
 
   logout(): void {
-    this.authService.logout();
-    this.router.navigate(['/auth/login']);
+    this.mostrarConfirmacion(
+      'Cerrar Sesión',
+      '¿Estás seguro de que deseas cerrar sesión?',
+      () => {
+        this.authService.logout();
+        this.router.navigate(['/auth/login']);
+      }
+    );
+  }
+  
+  mostrarConfirmacionModal = false;
+  confirmacionTitulo = '';
+  confirmacionMensaje = '';
+  confirmacionCallback: (() => void) | null = null;
+  
+  mostrarConfirmacion(titulo: string, mensaje: string, callback: () => void): void {
+    this.confirmacionTitulo = titulo;
+    this.confirmacionMensaje = mensaje;
+    this.confirmacionCallback = callback;
+    this.mostrarConfirmacionModal = true;
+  }
+  
+  confirmarAccion(): void {
+    if (this.confirmacionCallback) {
+      this.confirmacionCallback();
+    }
+    this.cerrarConfirmacion();
+  }
+  
+  cerrarConfirmacion(): void {
+    this.mostrarConfirmacionModal = false;
+    this.confirmacionTitulo = '';
+    this.confirmacionMensaje = '';
+    this.confirmacionCallback = null;
   }
 }

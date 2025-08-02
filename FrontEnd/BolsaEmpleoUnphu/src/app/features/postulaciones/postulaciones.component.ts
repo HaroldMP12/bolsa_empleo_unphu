@@ -611,8 +611,15 @@ export class PostulacionesComponent implements OnInit {
       `¿Estás seguro de que deseas cancelar tu postulación para "${postulacion.vacanteTitulo}"?`,
       () => {
         console.log('Cancelando postulación:', postulacion.postulacionID);
-        // TODO: Call API to cancel
-        this.cargarPostulaciones();
+        
+        // Eliminar de localStorage si existe
+        const postulacionesGuardadas = JSON.parse(localStorage.getItem('postulaciones') || '[]');
+        const postulacionesActualizadas = postulacionesGuardadas.filter((p: any) => p.postulacionID !== postulacion.postulacionID);
+        localStorage.setItem('postulaciones', JSON.stringify(postulacionesActualizadas));
+        
+        // Eliminar de la lista actual
+        this.postulaciones = this.postulaciones.filter(p => p.postulacionID !== postulacion.postulacionID);
+        this.filtrarPorEstado(this.estadoSeleccionado);
       }
     );
   }
