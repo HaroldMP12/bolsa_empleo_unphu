@@ -822,6 +822,9 @@ export class VacantesComponent implements OnInit {
     postulacionesExistentes.push(nuevaPostulacion);
     localStorage.setItem('postulaciones', JSON.stringify(postulacionesExistentes));
     
+    // Disparar evento personalizado para notificar cambios
+    window.dispatchEvent(new CustomEvent('postulacionesChanged'));
+    
     alert('¡Postulación enviada exitosamente! Recibirás una notificación cuando sea revisada.');
     this.cerrarModalPostulacion();
   }
@@ -842,9 +845,56 @@ export class VacantesComponent implements OnInit {
 
   guardarVacante(): void {
     console.log('Guardando vacante:', this.nuevaVacante);
-    // TODO: Call API to save
+    
+    // Simular guardado de vacante
+    const vacante = {
+      vacanteID: this.vacanteEditando ? this.vacanteEditando.vacanteID : Date.now(),
+      titulo: this.nuevaVacante.titulo,
+      descripcion: this.nuevaVacante.descripcion,
+      requisitos: this.nuevaVacante.requisitos,
+      salario: this.nuevaVacante.salario,
+      modalidad: this.nuevaVacante.modalidad,
+      ubicacion: this.nuevaVacante.ubicacion,
+      categoriaID: this.nuevaVacante.categoriaID,
+      categoria: this.getCategoriaName(this.nuevaVacante.categoriaID),
+      empresaID: 1,
+      empresa: 'Mi Empresa',
+      fechaPublicacion: new Date(),
+      fechaVencimiento: new Date(this.nuevaVacante.fechaVencimiento),
+      estado: true,
+      postulaciones: 0,
+      preguntas: this.nuevaVacante.preguntas.map(p => ({
+        ...p,
+        opciones: p.opcionesTexto ? p.opcionesTexto.split(',').map(o => o.trim()) : undefined
+      }))
+    };
+    
+    if (this.vacanteEditando) {
+      // Editar vacante existente
+      const index = this.vacantes.findIndex(v => v.vacanteID === this.vacanteEditando!.vacanteID);
+      if (index !== -1) {
+        this.vacantes[index] = vacante;
+      }
+      alert('Vacante actualizada exitosamente');
+    } else {
+      // Agregar nueva vacante
+      this.vacantes.push(vacante);
+      alert('Vacante creada exitosamente');
+    }
+    
     this.cerrarModal();
-    this.cargarVacantes();
+    this.aplicarFiltros();
+  }
+  
+  getCategoriaName(categoriaID: number): string {
+    const categorias: {[key: number]: string} = {
+      1: 'Tecnología',
+      2: 'Administración',
+      3: 'Contabilidad',
+      4: 'Mercadeo',
+      5: 'Derecho'
+    };
+    return categorias[categoriaID] || 'Otra';
   }
 
   cerrarModal(): void {

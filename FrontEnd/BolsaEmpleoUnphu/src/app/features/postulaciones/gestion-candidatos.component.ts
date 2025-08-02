@@ -102,6 +102,91 @@ import { Postulacion, UpdateEstadoPostulacionDto } from '../../core/models/postu
         </div>
       </div>
     </div>
+
+    <!-- MODAL PERFIL ESTUDIANTE -->
+    <div *ngIf="mostrarModalPerfil" class="modal-overlay" (click)="cerrarModalPerfil()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>Perfil del Candidato</h2>
+          <button class="btn-close" (click)="cerrarModalPerfil()">×</button>
+        </div>
+        
+        <div class="modal-body" *ngIf="candidatoSeleccionado">
+          <div class="perfil-info">
+            <div class="info-section">
+              <h3>Información Personal</h3>
+              <div class="info-grid">
+                <div class="info-item">
+                  <span class="label">Nombre:</span>
+                  <span>{{ candidatoSeleccionado.usuario?.nombreCompleto }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="label">Correo:</span>
+                  <span>{{ candidatoSeleccionado.usuario?.correo }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="label">Teléfono:</span>
+                  <span>{{ candidatoSeleccionado.usuario?.telefono }}</span>
+                </div>
+                <div class="info-item" *ngIf="candidatoSeleccionado.usuario?.carrera">
+                  <span class="label">Carrera:</span>
+                  <span>{{ candidatoSeleccionado.usuario?.carrera }}</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="info-section">
+              <h3>Información de Postulación</h3>
+              <div class="info-grid">
+                <div class="info-item">
+                  <span class="label">Fecha de Postulación:</span>
+                  <span>{{ candidatoSeleccionado.fechaPostulacion | date:'dd/MM/yyyy HH:mm' }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="label">Estado:</span>
+                  <span class="estado-badge estado-{{ candidatoSeleccionado.estado.toLowerCase().replace(' ', '-') }}">
+                    {{ candidatoSeleccionado.estado }}
+                  </span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="info-section" *ngIf="candidatoSeleccionado.respuestas.length > 0">
+              <h3>Respuestas a Preguntas</h3>
+              <div class="respuestas-detalle">
+                <div *ngFor="let respuesta of candidatoSeleccionado.respuestas" class="respuesta-detalle">
+                  <div class="pregunta-detalle">{{ respuesta.pregunta }}</div>
+                  <div class="respuesta-texto">{{ respuesta.respuesta }}</div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="info-section">
+              <h3>Información Académica (Mock)</h3>
+              <div class="info-grid">
+                <div class="info-item">
+                  <span class="label">Matrícula:</span>
+                  <span>2021-1234</span>
+                </div>
+                <div class="info-item">
+                  <span class="label">Semestre:</span>
+                  <span>8vo Semestre</span>
+                </div>
+                <div class="info-item">
+                  <span class="label">Promedio:</span>
+                  <span>3.75</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="modal-footer">
+          <button class="btn-secondary" (click)="cerrarModalPerfil()">Cerrar</button>
+          <button class="btn-primary" (click)="contactarCandidato(candidatoSeleccionado!)">Contactar</button>
+        </div>
+      </div>
+    </div>
   `,
   styles: [`
     .candidatos-page {
@@ -309,6 +394,118 @@ import { Postulacion, UpdateEstadoPostulacionDto } from '../../core/models/postu
       color: var(--unphu-blue-dark);
       margin-bottom: 1rem;
     }
+    
+    /* Modal Perfil */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .modal-content {
+      background: white;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 700px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-header h2 {
+      margin: 0;
+      color: var(--unphu-blue-dark);
+    }
+    .btn-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+    .modal-body {
+      padding: 2rem;
+    }
+    .info-section {
+      margin-bottom: 2rem;
+    }
+    .info-section h3 {
+      color: var(--unphu-blue-dark);
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+      border-bottom: 2px solid var(--unphu-green-primary);
+      padding-bottom: 0.5rem;
+    }
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .info-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.75rem;
+      background: #f8f9fa;
+      border-radius: 6px;
+    }
+    .label {
+      font-weight: 500;
+      color: var(--unphu-blue-dark);
+    }
+    .respuestas-detalle {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .respuesta-detalle {
+      background: #f8f9fa;
+      padding: 1.5rem;
+      border-radius: 8px;
+      border-left: 4px solid var(--unphu-blue-dark);
+    }
+    .pregunta-detalle {
+      font-weight: 500;
+      color: var(--unphu-blue-dark);
+      margin-bottom: 0.5rem;
+    }
+    .respuesta-texto {
+      color: #666;
+      line-height: 1.5;
+    }
+    .modal-footer {
+      padding: 1.5rem;
+      border-top: 1px solid #eee;
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+    }
+    .btn-primary {
+      background: var(--unphu-blue-dark);
+      color: white;
+      border: none;
+      padding: 0.75rem 2rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .btn-secondary {
+      background: #f8f9fa;
+      color: var(--unphu-blue-dark);
+      border: 1px solid #dee2e6;
+      padding: 0.75rem 2rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
   `]
 })
 export class GestionCandidatosComponent implements OnInit {
@@ -318,6 +515,8 @@ export class GestionCandidatosComponent implements OnInit {
   postulacionesFiltradas: Postulacion[] = [];
   estadoSeleccionado = 'Todos';
   estadosDisponibles = ['Todos', 'Pendiente', 'En Revisión', 'Aceptado', 'Rechazado'];
+  mostrarModalPerfil = false;
+  candidatoSeleccionado: Postulacion | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -329,18 +528,35 @@ export class GestionCandidatosComponent implements OnInit {
       this.vacanteId = +params['id'];
       this.cargarCandidatos();
     });
+    
+    // Escuchar evento personalizado de cambios en postulaciones
+    window.addEventListener('postulacionesChanged', () => {
+      this.cargarCandidatos();
+    });
   }
 
   cargarCandidatos(): void {
-    // Mock data - replace with real API call
-    this.vacanteTitulo = 'Desarrollador Frontend React';
+    // Obtener título de la vacante (mock)
+    const vacantes = [
+      { vacanteID: 1, titulo: 'Desarrollador Frontend React' },
+      { vacanteID: 2, titulo: 'Analista de Marketing Digital' },
+      { vacanteID: 3, titulo: 'Contador Senior' }
+    ];
+    
+    const vacante = vacantes.find(v => v.vacanteID === this.vacanteId);
+    this.vacanteTitulo = vacante?.titulo || 'Vacante';
+    
+    // Cargar postulaciones reales del localStorage
+    const postulacionesGuardadas = JSON.parse(localStorage.getItem('postulaciones') || '[]');
+    
+    // Mock data inicial
     const hoy = new Date();
-    this.postulaciones = [
+    const postulacionesMock = [
       {
         postulacionID: 1,
         vacanteID: this.vacanteId,
         usuarioID: 1,
-        fechaPostulacion: new Date(hoy.getTime() - 1 * 24 * 60 * 60 * 1000), // Hace 1 día
+        fechaPostulacion: new Date(hoy.getTime() - 1 * 24 * 60 * 60 * 1000),
         estado: 'Pendiente',
         respuestas: [
           {
@@ -348,18 +564,6 @@ export class GestionCandidatosComponent implements OnInit {
             preguntaID: 1,
             pregunta: '¿Cuántos años de experiencia tienes con React?',
             respuesta: '3-5 años'
-          },
-          {
-            postulacionID: 1,
-            preguntaID: 2,
-            pregunta: '¿Tienes experiencia con TypeScript?',
-            respuesta: 'Sí'
-          },
-          {
-            postulacionID: 1,
-            preguntaID: 3,
-            pregunta: 'Describe un proyecto en el que hayas trabajado con React',
-            respuesta: 'Desarrollé una aplicación de e-commerce completa usando React, Redux y Material-UI. La aplicación incluía carrito de compras, sistema de pagos y panel de administración.'
           }
         ],
         usuario: {
@@ -368,69 +572,29 @@ export class GestionCandidatosComponent implements OnInit {
           telefono: '809-555-0123',
           carrera: 'Ingeniería en Sistemas'
         }
-      },
-      {
-        postulacionID: 2,
-        vacanteID: this.vacanteId,
-        usuarioID: 2,
-        fechaPostulacion: new Date(hoy.getTime() - 3 * 24 * 60 * 60 * 1000), // Hace 3 días
-        estado: 'En Revisión',
-        respuestas: [
-          {
-            postulacionID: 2,
-            preguntaID: 1,
-            pregunta: '¿Cuántos años de experiencia tienes con React?',
-            respuesta: '1-2 años'
-          },
-          {
-            postulacionID: 2,
-            preguntaID: 2,
-            pregunta: '¿Tienes experiencia con TypeScript?',
-            respuesta: 'No'
-          }
-        ],
-        usuario: {
-          nombreCompleto: 'María García López',
-          correo: 'maria.garcia@email.com',
-          telefono: '809-555-0456',
-          carrera: 'Ingeniería en Sistemas'
-        }
-      },
-      {
-        postulacionID: 3,
-        vacanteID: this.vacanteId,
-        usuarioID: 3,
-        fechaPostulacion: new Date(hoy.getTime() - 5 * 24 * 60 * 60 * 1000), // Hace 5 días
-        estado: 'Aceptado',
-        respuestas: [
-          {
-            postulacionID: 3,
-            preguntaID: 1,
-            pregunta: '¿Cuántos años de experiencia tienes con React?',
-            respuesta: 'Más de 5 años'
-          },
-          {
-            postulacionID: 3,
-            preguntaID: 2,
-            pregunta: '¿Tienes experiencia con TypeScript?',
-            respuesta: 'Sí'
-          },
-          {
-            postulacionID: 3,
-            preguntaID: 3,
-            pregunta: 'Describe un proyecto en el que hayas trabajado con React',
-            respuesta: 'He liderado el desarrollo de múltiples aplicaciones React para empresas Fortune 500, incluyendo sistemas de gestión empresarial y plataformas de análisis de datos.'
-          }
-        ],
-        usuario: {
-          nombreCompleto: 'Carlos Rodríguez',
-          correo: 'carlos.rodriguez@email.com',
-          telefono: '809-555-0789',
-          carrera: 'Ingeniería en Sistemas'
-        }
       }
     ];
-
+    
+    // Convertir postulaciones guardadas al formato correcto
+    const postulacionesReales = postulacionesGuardadas
+      .filter((p: any) => p.vacanteID === this.vacanteId)
+      .map((p: any) => ({
+        postulacionID: p.postulacionID,
+        vacanteID: p.vacanteID,
+        usuarioID: p.usuarioID,
+        fechaPostulacion: new Date(p.fechaPostulacion),
+        estado: p.estado,
+        respuestas: p.respuestas,
+        usuario: {
+          nombreCompleto: 'Usuario UNPHU', // Mock user data
+          correo: 'usuario@unphu.edu.do',
+          telefono: '809-555-0000',
+          carrera: 'Ingeniería en Sistemas'
+        }
+      }));
+    
+    // Combinar mock + postulaciones reales
+    this.postulaciones = [...postulacionesMock, ...postulacionesReales];
     this.postulacionesFiltradas = [...this.postulaciones];
   }
 
@@ -459,8 +623,13 @@ export class GestionCandidatosComponent implements OnInit {
   }
 
   verPerfil(postulacion: Postulacion): void {
-    console.log('Ver perfil completo de:', postulacion.usuario?.nombreCompleto);
-    // TODO: Navigate to user profile or show modal
+    this.candidatoSeleccionado = postulacion;
+    this.mostrarModalPerfil = true;
+  }
+  
+  cerrarModalPerfil(): void {
+    this.mostrarModalPerfil = false;
+    this.candidatoSeleccionado = null;
   }
 
   contactarCandidato(postulacion: Postulacion): void {

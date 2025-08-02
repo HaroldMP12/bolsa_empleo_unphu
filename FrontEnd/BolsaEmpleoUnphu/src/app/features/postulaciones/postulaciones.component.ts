@@ -617,6 +617,9 @@ export class PostulacionesComponent implements OnInit {
         const postulacionesActualizadas = postulacionesGuardadas.filter((p: any) => p.postulacionID !== postulacion.postulacionID);
         localStorage.setItem('postulaciones', JSON.stringify(postulacionesActualizadas));
         
+        // Disparar evento personalizado para notificar cambios
+        window.dispatchEvent(new CustomEvent('postulacionesChanged'));
+        
         // Eliminar de la lista actual
         this.postulaciones = this.postulaciones.filter(p => p.postulacionID !== postulacion.postulacionID);
         this.filtrarPorEstado(this.estadoSeleccionado);
