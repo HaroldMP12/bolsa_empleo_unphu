@@ -168,8 +168,8 @@ import { Subscription } from 'rxjs';
               </div>
               
               <div class="candidato-estado">
-                <span class="estado-badge estado-{{ candidato.estado.toLowerCase().replace(' ', '-') }}">
-                  {{ candidato.estado }}
+                <span class="estado-badge estado-{{ (candidato.estado || 'pendiente').toLowerCase().replace(' ', '-') }}">
+                  {{ candidato.estado || 'Pendiente' }}
                 </span>
               </div>
             </div>
