@@ -64,19 +64,20 @@ export class PerfilService {
   }
 
   // Calcular progreso del perfil
-  calcularProgresoEstudiante(perfil: PerfilEstudiante): number {
+  calcularProgresoEstudiante(perfil: any): number {
     const campos = [
       perfil.tipoPerfil,
       perfil.matricula,
       perfil.carreraID,
-      perfil.semestre,
-      perfil.fechaIngreso,
-      perfil.urlImagen,
-      perfil.resumen
+      perfil.fechaNacimiento,
+      perfil.direccion,
+      perfil.promedioAcademico,
+      perfil.experienciaLaboral,
+      perfil.urlCV
     ];
     
     const camposCompletos = campos.filter(campo => 
-      campo !== null && campo !== undefined && campo !== '' && campo !== 0
+      campo !== null && campo !== undefined && campo !== ''
     ).length;
     
     // Siempre incluir datos básicos del usuario (nombre y correo = 20%)

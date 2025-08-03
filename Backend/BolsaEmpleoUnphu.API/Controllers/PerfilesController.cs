@@ -95,6 +95,7 @@ public class PerfilesController : ControllerBase
             if (usuario != null)
             {
                 usuario.Telefono = perfilDto.Telefono;
+                _context.Usuarios.Update(usuario);
             }
         }
         
@@ -152,6 +153,7 @@ public class PerfilesController : ControllerBase
             if (usuario != null)
             {
                 usuario.Telefono = perfilDto.Telefono;
+                _context.Usuarios.Update(usuario);
             }
         }
 
