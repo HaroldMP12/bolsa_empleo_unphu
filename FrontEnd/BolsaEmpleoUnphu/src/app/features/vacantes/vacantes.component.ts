@@ -1067,9 +1067,9 @@ export class VacantesComponent implements OnInit, OnDestroy {
     }
     
     // Guardar en localStorage (funciona inmediatamente)
-    const postulacionesExistentes = JSON.parse(localStorage.getItem('postulaciones') || '[]');
-    postulacionesExistentes.push(nuevaPostulacion);
-    localStorage.setItem('postulaciones', JSON.stringify(postulacionesExistentes));
+    const postulacionesGuardadas = JSON.parse(localStorage.getItem('postulaciones') || '[]');
+    postulacionesGuardadas.push(nuevaPostulacion);
+    localStorage.setItem('postulaciones', JSON.stringify(postulacionesGuardadas));
     
     // Enviar al backend en segundo plano
     const postulacionBackend = {
