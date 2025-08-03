@@ -794,12 +794,34 @@ export class DashboardComponent implements OnInit, OnDestroy {
       localStorage.setItem('usuarios', JSON.stringify(usuariosGuardados));
     }
     
-    const postulacionesExistentes = JSON.parse(localStorage.getItem('postulaciones') || '[]');
-    postulacionesExistentes.push(nuevaPostulacion);
-    localStorage.setItem('postulaciones', JSON.stringify(postulacionesExistentes));
+    // Enviar postulación al backend
+    const postulacionBackend = {
+      VacanteID: this.vacanteSeleccionada?.vacanteID,
+      UsuarioID: usuarioID,
+      Observaciones: 'Postulación desde dashboard'
+    };
     
-    this.dataSyncService.notifyPostulacionesChanged();
-    this.cerrarModalPostulacion();
+    fetch('https://localhost:7236/api/postulaciones', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
+      body: JSON.stringify(postulacionBackend)
+    })
+    .then(() => {
+      // También guardar en localStorage para compatibilidad
+      const postulacionesExistentes = JSON.parse(localStorage.getItem('postulaciones') || '[]');
+      postulacionesExistentes.push(nuevaPostulacion);
+      localStorage.setItem('postulaciones', JSON.stringify(postulacionesExistentes));
+      
+      this.dataSyncService.notifyPostulacionesChanged();
+      this.cerrarModalPostulacion();
+    })
+    .catch((error) => {
+      console.error('Error al enviar postulación:', error);
+      this.cerrarModalPostulacion();
+    });
   }
 
   aprobarEmpresa(empresaId: number): void {

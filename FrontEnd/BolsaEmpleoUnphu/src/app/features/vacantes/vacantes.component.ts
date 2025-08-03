@@ -1052,16 +1052,29 @@ export class VacantesComponent implements OnInit, OnDestroy {
       localStorage.setItem('usuarios', JSON.stringify(usuariosGuardados));
     }
     
-    // Guardar en localStorage para persistencia temporal
-    const postulacionesExistentes = JSON.parse(localStorage.getItem('postulaciones') || '[]');
-    postulacionesExistentes.push(nuevaPostulacion);
-    localStorage.setItem('postulaciones', JSON.stringify(postulacionesExistentes));
+    // Enviar postulación al backend
+    const postulacionBackend = {
+      VacanteID: this.vacanteSeleccionada?.vacanteID,
+      UsuarioID: usuarioID,
+      Observaciones: 'Postulación desde frontend'
+    };
     
-    // Disparar evento personalizado para notificar cambios
-    window.dispatchEvent(new CustomEvent('postulacionesChanged'));
-    
-    this.cerrarModalPostulacion();
-    this.mostrarConfirmacion('Postulación Enviada', '¡Tu postulación ha sido enviada exitosamente! Recibirás una notificación cuando sea revisada.');
+    this.apiService.post('postulaciones', postulacionBackend).subscribe({
+      next: () => {
+        // También guardar en localStorage para compatibilidad
+        const postulacionesExistentes = JSON.parse(localStorage.getItem('postulaciones') || '[]');
+        postulacionesExistentes.push(nuevaPostulacion);
+        localStorage.setItem('postulaciones', JSON.stringify(postulacionesExistentes));
+        
+        window.dispatchEvent(new CustomEvent('postulacionesChanged'));
+        this.cerrarModalPostulacion();
+        this.mostrarConfirmacion('Postulación Enviada', '¡Tu postulación ha sido enviada exitosamente! Recibirás una notificación cuando sea revisada.');
+      },
+      error: (error) => {
+        console.error('Error al enviar postulación:', error);
+        this.mostrarConfirmacion('Error', 'No se pudo enviar la postulación. Inténtalo de nuevo.');
+      }
+    });
   }
 
   agregarPregunta(): void {

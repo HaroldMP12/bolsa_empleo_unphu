@@ -835,30 +835,46 @@ export class PerfilEmpresaComponent implements OnInit, OnDestroy {
     this.vacanteSeleccionada = vacante;
     console.log('Vacante seleccionada:', vacante);
     
-    // Cargar postulaciones desde localStorage (datos mock)
-    const todasPostulaciones = JSON.parse(localStorage.getItem('postulaciones') || '[]');
-    console.log('Todas las postulaciones:', todasPostulaciones);
-    
-    const postulaciones = todasPostulaciones.filter((p: any) => {
-      console.log(`Comparando postulación vacanteID: ${p.vacanteID} con vacante vacanteID: ${vacante.vacanteID}`);
-      return p.vacanteID == vacante.vacanteID; // Usar == para comparar tipos diferentes
-    });
-    console.log('Postulaciones filtradas:', postulaciones);
-    
-    this.candidatos = postulaciones.map((postulacion: any) => {
-      const usuario = JSON.parse(localStorage.getItem('usuarios') || '[]')
-        .find((u: any) => u.usuarioID === postulacion.usuarioID);
+    // Cargar postulaciones desde el backend
+    fetch(`https://localhost:7236/api/postulaciones/vacante/${vacante.vacanteID}`, {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    })
+    .then(res => res.json())
+    .then(postulaciones => {
+      console.log('Postulaciones desde backend:', postulaciones);
       
-      return {
-        nombreCompleto: usuario?.nombreCompleto || postulacion.candidato || 'Usuario UNPHU',
-        correo: usuario?.correo || 'correo@unphu.edu.do',
-        fechaPostulacion: postulacion.fechaPostulacion,
-        estado: postulacion.estado || 'Pendiente'
-      };
+      this.candidatos = (postulaciones.data || postulaciones || []).map((postulacion: any) => {
+        return {
+          nombreCompleto: postulacion.nombreCompleto || 'Usuario UNPHU',
+          correo: postulacion.correoUsuario || 'correo@unphu.edu.do',
+          fechaPostulacion: postulacion.fechaPostulacion,
+          estado: postulacion.estado || 'Pendiente'
+        };
+      });
+      
+      console.log('Candidatos procesados:', this.candidatos);
+      this.mostrarModalCandidatos = true;
+    })
+    .catch(error => {
+      console.error('Error al cargar postulaciones:', error);
+      // Fallback a localStorage
+      const todasPostulaciones = JSON.parse(localStorage.getItem('postulaciones') || '[]');
+      const postulaciones = todasPostulaciones.filter((p: any) => p.vacanteID == vacante.vacanteID);
+      
+      this.candidatos = postulaciones.map((postulacion: any) => {
+        const usuario = JSON.parse(localStorage.getItem('usuarios') || '[]')
+          .find((u: any) => u.usuarioID === postulacion.usuarioID);
+        
+        return {
+          nombreCompleto: usuario?.nombreCompleto || 'Usuario UNPHU',
+          correo: usuario?.correo || 'correo@unphu.edu.do',
+          fechaPostulacion: postulacion.fechaPostulacion,
+          estado: postulacion.estado || 'Pendiente'
+        };
+      });
+      
+      this.mostrarModalCandidatos = true;
     });
-    
-    console.log('Candidatos procesados:', this.candidatos);
-    this.mostrarModalCandidatos = true;
   }
 
   cerrarModalCandidatos(): void {
