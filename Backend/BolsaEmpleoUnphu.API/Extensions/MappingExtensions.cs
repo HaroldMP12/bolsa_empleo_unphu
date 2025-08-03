@@ -39,7 +39,7 @@ public static class MappingExtensions
             Salario = vacante.Salario,
             CantidadVacantes = vacante.CantidadVacantes,
             NombreEmpresa = vacante.Empresa?.NombreEmpresa ?? "",
-            RNC = vacante.Empresa?.RNC ?? "",
+            Rnc = vacante.Empresa?.RNC ?? "",
             SectorEmpresa = vacante.Empresa?.Sector,
             SitioWebEmpresa = vacante.Empresa?.SitioWeb,
             NombreCategoria = vacante.Categoria?.NombreCategoria ?? "",

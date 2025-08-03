@@ -18,7 +18,7 @@ public class VacanteResponseDto
     
     // Datos de la empresa (sin datos sensibles)
     public string NombreEmpresa { get; set; } = string.Empty;
-    public string? RNC { get; set; }
+    public string? Rnc { get; set; }
     public string? SectorEmpresa { get; set; }
     public string? SitioWebEmpresa { get; set; }
     
