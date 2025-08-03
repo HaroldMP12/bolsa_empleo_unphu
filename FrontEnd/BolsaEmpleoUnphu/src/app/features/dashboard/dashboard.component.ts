@@ -169,7 +169,7 @@ import { Subscription } from 'rxjs';
                   <div class="empresa-info">
                     <h4>{{ empresa.nombre }}</h4>
                     <p>{{ empresa.correo }}</p>
-                    <span class="fecha">Registrada: {{ empresa.fechaRegistro }}</span>
+                    <span class="fecha">Registrada: {{ empresa.fechaRegistro | date:'dd/MM/yyyy' }}</span>
                   </div>
                   <div class="empresa-actions">
                     <button class="btn-success" (click)="aprobarEmpresa(empresa.id)">Aprobar</button>
@@ -187,16 +187,16 @@ import { Subscription } from 'rxjs';
               <div class="widget-header">
                 <h3>Estadísticas del Sistema</h3>
               </div>
-              <div class="admin-stats">
-                <div class="admin-stat-item">
+              <div class="stats-grid">
+                <div class="stat-card">
                   <span class="stat-number">{{ stats.totalUsuarios }}</span>
                   <span class="stat-label">Total Usuarios</span>
                 </div>
-                <div class="admin-stat-item">
+                <div class="stat-card">
                   <span class="stat-number">{{ stats.totalVacantes }}</span>
                   <span class="stat-label">Total Vacantes</span>
                 </div>
-                <div class="admin-stat-item">
+                <div class="stat-card">
                   <span class="stat-number">{{ stats.totalEmpresas }}</span>
                   <span class="stat-label">Empresas Activas</span>
                 </div>
@@ -209,10 +209,10 @@ import { Subscription } from 'rxjs';
                 <h3>Gestión Rápida</h3>
               </div>
               <div class="quick-actions">
-                <button class="action-btn">Gestionar Usuarios</button>
-                <button class="action-btn">Gestionar Categorías</button>
-                <button class="action-btn">Ver Reportes</button>
-                <button class="action-btn">Configuración</button>
+                <button class="action-btn" (click)="navegarUsuarios()">Gestionar Usuarios</button>
+                <button class="action-btn" (click)="navegarCategorias()">Gestionar Categorías</button>
+                <button class="action-btn" (click)="navegarReportes()">Ver Reportes</button>
+                <button class="action-btn" (click)="navegarConfiguracion()">Configuración</button>
               </div>
             </div>
           </div>
@@ -508,19 +508,40 @@ import { Subscription } from 'rxjs';
     .quick-actions {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 0.5rem;
+      gap: 1rem;
       padding: 1.5rem;
     }
     .action-btn {
-      padding: 0.75rem;
-      background: var(--unphu-background);
-      border: 1px solid #dee2e6;
-      border-radius: 6px;
+      padding: 1rem;
+      background: white;
+      border: 1px solid var(--unphu-blue-dark);
+      border-radius: 8px;
       cursor: pointer;
-      transition: background 0.3s;
+      transition: all 0.3s;
+      color: var(--unphu-blue-dark);
+      font-weight: 500;
+      text-align: center;
     }
     .action-btn:hover {
-      background: #e9ecef;
+      background: var(--unphu-blue-dark);
+      color: white;
+    }
+    
+    /* Usar el mismo formato de stats para admin */
+    .admin-dashboard .stats-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      padding: 1.5rem;
+    }
+    
+    .admin-dashboard .stat-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      background: #f8f9fa;
+      border-radius: 8px;
     }
   `]
 })
@@ -877,5 +898,21 @@ export class DashboardComponent implements OnInit, OnDestroy {
     console.log('Rechazando empresa:', empresaId);
     this.empresasPendientes = this.empresasPendientes.filter(e => e.id !== empresaId);
     this.stats.empresasPendientes--;
+  }
+
+  navegarUsuarios(): void {
+    this.router.navigate(['/admin/usuarios']);
+  }
+
+  navegarCategorias(): void {
+    this.router.navigate(['/admin/categorias']);
+  }
+
+  navegarReportes(): void {
+    this.router.navigate(['/admin/reportes']);
+  }
+
+  navegarConfiguracion(): void {
+    this.router.navigate(['/admin/configuracion']);
   }
 }
