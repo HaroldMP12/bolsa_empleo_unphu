@@ -284,6 +284,60 @@ import { Subscription } from 'rxjs';
         </div>
       </div>
     </div>
+
+    <!-- MODAL DETALLES VACANTE -->
+    <div *ngIf="mostrarModalDetalles" class="modal-overlay" (click)="cerrarModalDetalles()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>Detalles de la Vacante</h2>
+          <button class="btn-close" (click)="cerrarModalDetalles()">×</button>
+        </div>
+        
+        <div class="modal-body" *ngIf="vacanteSeleccionada">
+          <div class="vacante-detalles">
+            <h3>{{ vacanteSeleccionada.titulo }}</h3>
+            <div class="empresa-info">
+              <span class="empresa-nombre">{{ vacanteSeleccionada.empresa }}</span>
+              <span class="modalidad modalidad-{{ vacanteSeleccionada.modalidad.toLowerCase() }}">{{ vacanteSeleccionada.modalidad }}</span>
+            </div>
+            
+            <div class="detalles-grid">
+              <div class="detalle-item">
+                <span class="label">Ubicación:</span>
+                <span>{{ vacanteSeleccionada.ubicacion }}</span>
+              </div>
+              <div class="detalle-item" *ngIf="vacanteSeleccionada.salario">
+                <span class="label">Salario:</span>
+                <span>RD$ {{ vacanteSeleccionada.salario | number }}</span>
+              </div>
+              <div class="detalle-item">
+                <span class="label">Fecha de Vencimiento:</span>
+                <span>{{ vacanteSeleccionada.fechaVencimiento | date:'dd/MM/yyyy' }}</span>
+              </div>
+              <div class="detalle-item">
+                <span class="label">Categoría:</span>
+                <span>{{ vacanteSeleccionada.categoria }}</span>
+              </div>
+            </div>
+            
+            <div class="descripcion-section">
+              <h4>Descripción</h4>
+              <p>{{ vacanteSeleccionada.descripcion }}</p>
+            </div>
+            
+            <div class="requisitos-section">
+              <h4>Requisitos</h4>
+              <p>{{ vacanteSeleccionada.requisitos }}</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="modal-footer">
+          <button class="btn-secondary" (click)="cerrarModalDetalles()">Cerrar</button>
+          <button *ngIf="!isCompany()" class="btn-primary" (click)="postularseDesdeDetalles()">Postularse</button>
+        </div>
+      </div>
+    </div>
   `,
   styles: [`
     .vacantes-page {
@@ -674,6 +728,54 @@ import { Subscription } from 'rxjs';
       border-color: #dc3545;
       box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
     }
+    
+    /* Modal Detalles */
+    .vacante-detalles h3 {
+      color: var(--unphu-blue-dark);
+      margin: 0 0 1rem 0;
+      font-size: 1.5rem;
+    }
+    .empresa-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    .empresa-nombre {
+      color: #666;
+      font-weight: 500;
+      font-size: 1.1rem;
+    }
+    .detalles-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .detalle-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.75rem;
+      background: #f8f9fa;
+      border-radius: 6px;
+    }
+    .detalle-item .label {
+      font-weight: 500;
+      color: var(--unphu-blue-dark);
+    }
+    .descripcion-section, .requisitos-section {
+      margin-bottom: 1.5rem;
+    }
+    .descripcion-section h4, .requisitos-section h4 {
+      color: var(--unphu-blue-dark);
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+    .descripcion-section p, .requisitos-section p {
+      color: #666;
+      line-height: 1.6;
+      margin: 0;
+    }
   `]
 })
 export class VacantesComponent implements OnInit, OnDestroy {
@@ -693,6 +795,7 @@ export class VacantesComponent implements OnInit, OnDestroy {
   confirmacionEliminarTitulo = '';
   confirmacionEliminarMensaje = '';
   confirmacionEliminarCallback: (() => void) | null = null;
+  mostrarModalDetalles = false;
   nuevaVacante: CreateVacanteDto = {
     titulo: '',
     descripcion: '',
@@ -884,8 +987,18 @@ export class VacantesComponent implements OnInit, OnDestroy {
   }
 
   verDetalles(vacante: Vacante): void {
-    console.log('Ver detalles de:', vacante.titulo);
-    // TODO: Show details modal or navigate
+    this.vacanteSeleccionada = vacante;
+    this.mostrarModalDetalles = true;
+  }
+  
+  cerrarModalDetalles(): void {
+    this.mostrarModalDetalles = false;
+    this.vacanteSeleccionada = null;
+  }
+  
+  postularseDesdeDetalles(): void {
+    this.cerrarModalDetalles();
+    this.postularse(this.vacanteSeleccionada!);
   }
 
   postularse(vacante: Vacante): void {

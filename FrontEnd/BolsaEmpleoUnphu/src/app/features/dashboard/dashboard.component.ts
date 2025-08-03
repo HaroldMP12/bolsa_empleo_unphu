@@ -5,12 +5,14 @@ import { AuthService } from '../../core/services/auth.service';
 import { PerfilService } from '../../core/services/perfil.service';
 import { DataSyncService } from '../../core/services/data-sync.service';
 import { AuthResponse } from '../../core/models/auth.models';
+import { CreatePostulacionDto } from '../../core/models/postulacion.models';
+import { ModalPostulacionComponent } from '../postulaciones/modal-postulacion.component';
 import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, ModalPostulacionComponent],
   template: `
     <div class="dashboard">
       <!-- Welcome Section -->
@@ -51,7 +53,7 @@ import { Subscription } from 'rxjs';
                     <p>{{ vacante.empresa }}</p>
                     <span class="vacante-location">{{ vacante.ubicacion }}</span>
                   </div>
-                  <button class="btn-apply">Postular</button>
+                  <button class="btn-apply" (click)="postularse(vacante)">Postular</button>
                 </div>
                 <div *ngIf="recentVacantes.length === 0" class="empty-state">
                   <p>No hay vacantes disponibles</p>
@@ -217,6 +219,14 @@ import { Subscription } from 'rxjs';
         </div>
       </div>
     </div>
+
+    <!-- MODAL POSTULACIÓN -->
+    <app-modal-postulacion
+      *ngIf="mostrarModalPostulacion"
+      [vacante]="vacanteSeleccionada"
+      (cerrarModal)="cerrarModalPostulacion()"
+      (postulacionEnviada)="procesarPostulacion($event)">
+    </app-modal-postulacion>
   `,
   styles: [`
     .dashboard {
@@ -536,6 +546,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   recentVacantes: any[] = [];
   misVacantes: any[] = [];
   postulacionesRecientes: any[] = [];
+  mostrarModalPostulacion = false;
+  vacanteSeleccionada: any = null;
   
   empresasPendientes = [
     { id: 1, nombre: 'TechStart SRL', correo: 'info@techstart.com', fechaRegistro: '2024-01-15' },
@@ -726,15 +738,68 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
   }
   
+  postularse(vacante: any): void {
+    this.vacanteSeleccionada = vacante;
+    this.mostrarModalPostulacion = true;
+  }
+  
+  cerrarModalPostulacion(): void {
+    this.mostrarModalPostulacion = false;
+    this.vacanteSeleccionada = null;
+  }
+  
+  procesarPostulacion(postulacionDto: CreatePostulacionDto): void {
+    const usuarioID = this.currentUser?.usuarioID || Date.now();
+    const nuevaPostulacion = {
+      postulacionID: Date.now(),
+      vacanteID: postulacionDto.vacanteID,
+      usuarioID: usuarioID,
+      fechaPostulacion: new Date(),
+      estado: 'Pendiente' as const,
+      respuestas: postulacionDto.respuestas.map(r => ({
+        postulacionID: Date.now(),
+        preguntaID: r.preguntaID,
+        pregunta: this.vacanteSeleccionada?.preguntas?.find((p: any) => p.preguntaID === r.preguntaID)?.pregunta || '',
+        respuesta: r.respuesta
+      })),
+      vacante: {
+        titulo: this.vacanteSeleccionada?.titulo || '',
+        empresa: this.vacanteSeleccionada?.empresa || '',
+        modalidad: this.vacanteSeleccionada?.modalidad || '',
+        ubicacion: this.vacanteSeleccionada?.ubicacion || ''
+      }
+    };
+    
+    const usuariosGuardados = JSON.parse(localStorage.getItem('usuarios') || '[]');
+    const usuarioExistente = usuariosGuardados.find((u: any) => u.usuarioID === usuarioID);
+    
+    if (!usuarioExistente && this.currentUser) {
+      const datosUsuario = {
+        usuarioID: usuarioID,
+        nombreCompleto: this.currentUser.nombreCompleto,
+        correo: this.currentUser.correo,
+        telefono: '809-555-0000',
+        carrera: 'Ingeniería en Sistemas'
+      };
+      usuariosGuardados.push(datosUsuario);
+      localStorage.setItem('usuarios', JSON.stringify(usuariosGuardados));
+    }
+    
+    const postulacionesExistentes = JSON.parse(localStorage.getItem('postulaciones') || '[]');
+    postulacionesExistentes.push(nuevaPostulacion);
+    localStorage.setItem('postulaciones', JSON.stringify(postulacionesExistentes));
+    
+    this.dataSyncService.notifyPostulacionesChanged();
+    this.cerrarModalPostulacion();
+  }
+
   aprobarEmpresa(empresaId: number): void {
-    // TODO: Call API to approve company
     console.log('Aprobando empresa:', empresaId);
     this.empresasPendientes = this.empresasPendientes.filter(e => e.id !== empresaId);
     this.stats.empresasPendientes--;
   }
   
   rechazarEmpresa(empresaId: number): void {
-    // TODO: Call API to reject company
     console.log('Rechazando empresa:', empresaId);
     this.empresasPendientes = this.empresasPendientes.filter(e => e.id !== empresaId);
     this.stats.empresasPendientes--;
