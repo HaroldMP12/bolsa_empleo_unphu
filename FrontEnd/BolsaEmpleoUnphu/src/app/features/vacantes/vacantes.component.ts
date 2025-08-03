@@ -1016,7 +1016,7 @@ export class VacantesComponent implements OnInit, OnDestroy {
     const usuarioID = this.currentUser?.usuarioID || Date.now();
     const nuevaPostulacion = {
       postulacionID: Date.now(), // ID temporal
-      vacanteID: postulacionDto.vacanteID,
+      vacanteID: this.vacanteSeleccionada?.vacanteID || postulacionDto.vacanteID, // Usar el vacanteID correcto
       usuarioID: usuarioID,
       fechaPostulacion: new Date(), // Fecha actual real
       estado: 'Pendiente' as const,
@@ -1027,12 +1027,14 @@ export class VacantesComponent implements OnInit, OnDestroy {
         respuesta: r.respuesta
       })),
       vacante: {
-        titulo: this.vacanteSeleccionada?.titulo || '',
-        empresa: this.vacanteSeleccionada?.empresa || '',
+        titulo: this.vacanteSeleccionada?.titulo || this.vacanteSeleccionada?.tituloVacante || '',
+        empresa: this.getEmpresaNombre(this.vacanteSeleccionada?.empresa),
         modalidad: this.vacanteSeleccionada?.modalidad || '',
         ubicacion: this.vacanteSeleccionada?.ubicacion || ''
       }
     };
+    
+    console.log('Nueva postulación creada:', nuevaPostulacion);
     
     // Guardar datos del usuario actual para que la empresa los vea
     const usuariosGuardados = JSON.parse(localStorage.getItem('usuarios') || '[]');

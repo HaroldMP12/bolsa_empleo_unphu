@@ -610,8 +610,23 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.stats.postulacionesPendientes = studentStats.pendientes;
     this.stats.postulacionesRevisadas = studentStats.enRevision;
     
-    // Load recent vacantes for students
-    this.recentVacantes = this.dataSyncService.getActiveVacantes().slice(0, 3);
+    // Cargar vacantes desde la API
+    fetch('https://localhost:7236/api/vacantes', {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    })
+    .then(res => res.json())
+    .then(response => {
+      const vacantes = response.data || response || [];
+      this.recentVacantes = vacantes.slice(0, 3).map((v: any) => ({
+        ...v,
+        titulo: v.tituloVacante,
+        empresa: v.nombreEmpresa,
+        fechaVencimiento: v.fechaCierre
+      }));
+    })
+    .catch(() => {
+      this.recentVacantes = [];
+    });
   }
   
   private loadCompanyData(): void {
@@ -744,7 +759,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const usuarioID = this.currentUser?.usuarioID || Date.now();
     const nuevaPostulacion = {
       postulacionID: Date.now(),
-      vacanteID: postulacionDto.vacanteID,
+      vacanteID: this.vacanteSeleccionada?.vacanteID || postulacionDto.vacanteID,
       usuarioID: usuarioID,
       fechaPostulacion: new Date(),
       estado: 'Pendiente' as const,
@@ -755,12 +770,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
         respuesta: r.respuesta
       })),
       vacante: {
-        titulo: this.vacanteSeleccionada?.titulo || '',
-        empresa: this.vacanteSeleccionada?.empresa || '',
+        titulo: this.vacanteSeleccionada?.titulo || this.vacanteSeleccionada?.tituloVacante || '',
+        empresa: this.vacanteSeleccionada?.empresa || this.vacanteSeleccionada?.nombreEmpresa || '',
         modalidad: this.vacanteSeleccionada?.modalidad || '',
         ubicacion: this.vacanteSeleccionada?.ubicacion || ''
       }
     };
+    
+    console.log('Postulación desde dashboard:', nuevaPostulacion);
     
     const usuariosGuardados = JSON.parse(localStorage.getItem('usuarios') || '[]');
     const usuarioExistente = usuariosGuardados.find((u: any) => u.usuarioID === usuarioID);
