@@ -129,7 +129,10 @@ public class EmpresasController : ControllerBase
             Observaciones = empresaDto.Observaciones,
             ImagenLogo = empresaDto.ImagenLogo,
             ImagenPortada = empresaDto.ImagenPortada,
-            CantidadEmpleados = empresaDto.CantidadEmpleados
+            CantidadEmpleados = empresaDto.CantidadEmpleados,
+            PersonaContacto = empresaDto.PersonaContacto,
+            CargoContacto = empresaDto.CargoContacto,
+            TelefonoSecundario = empresaDto.TelefonoSecundario
         };
 
         _context.Empresas.Add(empresa);
@@ -165,6 +168,9 @@ public class EmpresasController : ControllerBase
         empresa.ImagenLogo = empresaDto.ImagenLogo;
         empresa.ImagenPortada = empresaDto.ImagenPortada;
         empresa.CantidadEmpleados = empresaDto.CantidadEmpleados;
+        empresa.PersonaContacto = empresaDto.PersonaContacto;
+        empresa.CargoContacto = empresaDto.CargoContacto;
+        empresa.TelefonoSecundario = empresaDto.TelefonoSecundario;
 
         try
         {

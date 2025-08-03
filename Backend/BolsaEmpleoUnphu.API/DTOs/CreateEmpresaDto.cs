@@ -39,4 +39,13 @@ public class CreateEmpresaDto
     
     [StringLength(100)]
     public string? CantidadEmpleados { get; set; }
+    
+    [StringLength(100)]
+    public string? PersonaContacto { get; set; }
+    
+    [StringLength(100)]
+    public string? CargoContacto { get; set; }
+    
+    [StringLength(20)]
+    public string? TelefonoSecundario { get; set; }
 }
