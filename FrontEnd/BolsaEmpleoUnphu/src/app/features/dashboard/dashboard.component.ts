@@ -648,12 +648,43 @@ export class DashboardComponent implements OnInit, OnDestroy {
           
           this.stats.vacantes = vacantes.length;
           this.stats.vacantesActivas = vacantes.filter((v: any) => new Date(v.fechaCierre) > new Date()).length;
-          this.stats.totalPostulaciones = vacantes.reduce((sum: number, v: any) => sum + (v.totalPostulaciones || 0), 0);
           
-          this.misVacantes = vacantes.slice(0, 3).map((v: any) => ({
-            titulo: v.tituloVacante,
-            postulaciones: v.totalPostulaciones || 0
-          }));
+          // Cargar postulaciones desde localStorage
+          const todasPostulaciones = JSON.parse(localStorage.getItem('postulaciones') || '[]');
+          const postulacionesEmpresa = [];
+          
+          for (const vacante of vacantes) {
+            const postulacionesVacante = todasPostulaciones.filter((p: any) => p.vacanteID == vacante.vacanteID);
+            postulacionesEmpresa.push(...postulacionesVacante.map((p: any) => ({ 
+              ...p, 
+              vacanteTitulo: vacante.tituloVacante 
+            })));
+          }
+          
+          this.stats.totalPostulaciones = postulacionesEmpresa.length;
+          
+          this.misVacantes = vacantes.slice(0, 3).map((v: any) => {
+            const postulacionesVacante = todasPostulaciones.filter((p: any) => p.vacanteID == v.vacanteID);
+            return {
+              titulo: v.tituloVacante,
+              postulaciones: postulacionesVacante.length
+            };
+          });
+          
+          // Cargar postulaciones recientes
+          this.postulacionesRecientes = postulacionesEmpresa
+            .sort((a: any, b: any) => new Date(b.fechaPostulacion).getTime() - new Date(a.fechaPostulacion).getTime())
+            .slice(0, 5)
+            .map((p: any) => {
+              const usuario = JSON.parse(localStorage.getItem('usuarios') || '[]')
+                .find((u: any) => u.usuarioID === p.usuarioID);
+              
+              return {
+                candidato: usuario?.nombreCompleto || 'Usuario UNPHU',
+                vacante: p.vacanteTitulo || 'Vacante',
+                fecha: this.getTimeAgo(new Date(p.fechaPostulacion))
+              };
+            });
         });
       }
     });
@@ -757,6 +788,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
   
   procesarPostulacion(postulacionDto: CreatePostulacionDto): void {
     const usuarioID = this.currentUser?.usuarioID || Date.now();
+    const vacanteID = this.vacanteSeleccionada?.vacanteID;
+    
+    // Validar postulación duplicada
+    const postulacionesExistentes = JSON.parse(localStorage.getItem('postulaciones') || '[]');
+    const yaPostulado = postulacionesExistentes.some((p: any) => 
+      p.vacanteID == vacanteID && p.usuarioID == usuarioID
+    );
+    
+    if (yaPostulado) {
+      this.cerrarModalPostulacion();
+      return;
+    }
     const nuevaPostulacion = {
       postulacionID: Date.now(),
       vacanteID: this.vacanteSeleccionada?.vacanteID || postulacionDto.vacanteID,

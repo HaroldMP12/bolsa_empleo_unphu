@@ -1012,8 +1012,22 @@ export class VacantesComponent implements OnInit, OnDestroy {
   procesarPostulacion(postulacionDto: CreatePostulacionDto): void {
     console.log('Procesando postulación:', postulacionDto);
     
-    // Simular creación de postulación
     const usuarioID = this.currentUser?.usuarioID || Date.now();
+    const vacanteID = this.vacanteSeleccionada?.vacanteID;
+    
+    // Validar postulación duplicada
+    const postulacionesExistentes = JSON.parse(localStorage.getItem('postulaciones') || '[]');
+    const yaPostulado = postulacionesExistentes.some((p: any) => 
+      p.vacanteID == vacanteID && p.usuarioID == usuarioID
+    );
+    
+    if (yaPostulado) {
+      this.mostrarConfirmacion('Ya te postulaste', 'Ya te has postulado a esta vacante anteriormente.');
+      this.cerrarModalPostulacion();
+      return;
+    }
+    
+    // Crear postulación
     const nuevaPostulacion = {
       postulacionID: Date.now(), // ID temporal
       vacanteID: this.vacanteSeleccionada?.vacanteID || postulacionDto.vacanteID, // Usar el vacanteID correcto
