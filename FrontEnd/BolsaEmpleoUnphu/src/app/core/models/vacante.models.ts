@@ -15,6 +15,7 @@ export interface Vacante {
   estado: boolean;
   preguntas?: PreguntaVacante[];
   postulaciones?: number;
+  createdBy?: string;
 }
 
 export interface PreguntaVacante {

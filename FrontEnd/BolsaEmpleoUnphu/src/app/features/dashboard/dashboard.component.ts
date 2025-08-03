@@ -641,8 +641,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
   
   private loadAdminData(): void {
-    const todasVacantes = this.dataSyncService.vacantes$.value;
-    const todasPostulaciones = this.dataSyncService.postulaciones$.value;
+    const todasVacantes = this.dataSyncService.vacantes$.getValue();
+    const todasPostulaciones = this.dataSyncService.postulaciones$.getValue();
     
     this.stats.totalVacantes = todasVacantes.length;
     this.stats.totalPostulaciones = todasPostulaciones.length;

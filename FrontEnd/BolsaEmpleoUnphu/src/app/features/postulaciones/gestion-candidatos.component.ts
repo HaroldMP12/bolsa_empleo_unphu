@@ -548,8 +548,8 @@ export class GestionCandidatosComponent implements OnInit, OnDestroy {
 
   cargarCandidatos(): void {
     // Get vacante title from data sync service
-    const todasVacantes = this.dataSyncService.vacantes$.value;
-    const vacante = todasVacantes.find(v => v.vacanteID === this.vacanteId);
+    const todasVacantes = this.dataSyncService.vacantes$.getValue();
+    const vacante = todasVacantes.find((v: any) => v.vacanteID === this.vacanteId);
     this.vacanteTitulo = vacante?.titulo || 'Vacante';
     
     // Get applications for this vacante

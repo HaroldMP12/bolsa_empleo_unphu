@@ -96,8 +96,8 @@ export class DataSyncService {
 
   // Get company statistics
   getCompanyStats(empresaID: number): VacanteStats {
-    const vacantes = this.vacantesSubject.value.filter(v => v.empresaID === empresaID);
-    const postulaciones = this.postulacionesSubject.value;
+    const vacantes = this.vacantesSubject.getValue().filter(v => v.empresaID === empresaID);
+    const postulaciones = this.postulacionesSubject.getValue();
     
     const hoy = new Date();
     const vacantesActivas = vacantes.filter(v => {
@@ -119,7 +119,7 @@ export class DataSyncService {
 
   // Get student statistics
   getStudentStats(usuarioID: number): PostulacionStats {
-    const postulaciones = this.postulacionesSubject.value.filter((p: any) => p.usuarioID === usuarioID);
+    const postulaciones = this.postulacionesSubject.getValue().filter((p: any) => p.usuarioID === usuarioID);
     
     return {
       totalPostulaciones: postulaciones.length,
@@ -132,13 +132,13 @@ export class DataSyncService {
 
   // Get vacantes for company
   getCompanyVacantes(empresaID: number): any[] {
-    return this.vacantesSubject.value.filter(v => v.empresaID === empresaID);
+    return this.vacantesSubject.getValue().filter(v => v.empresaID === empresaID);
   }
 
   // Get all active vacantes for students
   getActiveVacantes(): any[] {
     const hoy = new Date();
-    return this.vacantesSubject.value.filter(v => {
+    return this.vacantesSubject.getValue().filter(v => {
       const fechaVencimiento = new Date(v.fechaVencimiento);
       return fechaVencimiento > hoy && v.estado;
     });
@@ -146,12 +146,12 @@ export class DataSyncService {
 
   // Get applications for a specific vacante
   getVacanteApplications(vacanteID: number): any[] {
-    return this.postulacionesSubject.value.filter((p: any) => p.vacanteID === vacanteID);
+    return this.postulacionesSubject.getValue().filter((p: any) => p.vacanteID === vacanteID);
   }
 
   // Get applications for a specific user
   getUserApplications(usuarioID: number): any[] {
-    return this.postulacionesSubject.value.filter((p: any) => p.usuarioID === usuarioID);
+    return this.postulacionesSubject.getValue().filter((p: any) => p.usuarioID === usuarioID);
   }
 
   // Trigger data refresh
