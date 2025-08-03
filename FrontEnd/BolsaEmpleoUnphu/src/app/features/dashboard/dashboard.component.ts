@@ -212,7 +212,6 @@ import { Subscription } from 'rxjs';
                 <button class="action-btn" (click)="navegarUsuarios()">Gestionar Usuarios</button>
                 <button class="action-btn" (click)="navegarCategorias()">Gestionar Categorías</button>
                 <button class="action-btn" (click)="navegarReportes()">Ver Reportes</button>
-                <button class="action-btn" (click)="navegarConfiguracion()">Configuración</button>
               </div>
             </div>
           </div>
@@ -912,7 +911,4 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.router.navigate(['/admin/reportes']);
   }
 
-  navegarConfiguracion(): void {
-    this.router.navigate(['/admin/configuracion']);
-  }
 }

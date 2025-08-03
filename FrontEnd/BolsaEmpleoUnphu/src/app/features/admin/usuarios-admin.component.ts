@@ -70,8 +70,8 @@ interface Rol {
               <td>{{usuario.correo}}</td>
               <td>{{usuario.telefono || 'No especificado'}}</td>
               <td>
-                <span class="rol-badge" [class]="usuario.rol?.nombreRol?.toLowerCase() || 'sin-rol'">
-                  {{usuario.rol?.nombreRol || 'Sin rol'}}
+                <span class="rol-badge" [class]="usuario.rol?.nombreRol?.toLowerCase()">
+                  {{usuario.rol?.nombreRol}}
                 </span>
               </td>
               <td>
