@@ -548,7 +548,7 @@ export class GestionCandidatosComponent implements OnInit, OnDestroy {
 
   cargarCandidatos(): void {
     // Get vacante title from data sync service
-    const todasVacantes = this.dataSyncService.vacantes$.getValue();
+    const todasVacantes = this.dataSyncService.getVacantesValue();
     const vacante = todasVacantes.find((v: any) => v.vacanteID === this.vacanteId);
     this.vacanteTitulo = vacante?.titulo || 'Vacante';
     

@@ -494,19 +494,20 @@ export class PostulacionesComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.authService.currentUser$.subscribe(user => {
+    const userSub = this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
       this.cargarPostulaciones();
     });
+    this.subscriptions.push(userSub);
     
-    // Listen for real-time updates
-    window.addEventListener('postulacionesChanged', () => {
+    const postulacionesSub = this.dataSyncService.postulaciones$.subscribe(() => {
       this.cargarPostulaciones();
     });
-    
-    window.addEventListener('vacantesChanged', () => {
-      this.cargarPostulaciones();
-    });
+    this.subscriptions.push(postulacionesSub);
+  }
+  
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   cargarPostulaciones(): void {

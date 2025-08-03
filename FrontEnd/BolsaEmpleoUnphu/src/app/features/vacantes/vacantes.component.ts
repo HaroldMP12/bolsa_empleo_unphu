@@ -713,15 +713,20 @@ export class VacantesComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.authService.currentUser$.subscribe(user => {
+    const userSub = this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
       this.cargarVacantes();
     });
+    this.subscriptions.push(userSub);
     
-    // Escuchar cuando se crean nuevas vacantes
-    window.addEventListener('vacantesChanged', () => {
+    const vacantesSub = this.dataSyncService.vacantes$.subscribe(() => {
       this.cargarVacantes();
     });
+    this.subscriptions.push(vacantesSub);
+  }
+  
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   isCompany(): boolean {
@@ -986,7 +991,7 @@ export class VacantesComponent implements OnInit, OnDestroy {
       fechaVencimiento: new Date(this.nuevaVacante.fechaVencimiento),
       estado: true,
       postulaciones: 0,
-      createdBy: this.currentUser?.usuarioID || 'user', // Mark as user-created
+      createdBy: this.currentUser?.usuarioID?.toString() || 'user', // Mark as user-created
       preguntas: this.nuevaVacante.preguntas.map(p => ({
         ...p,
         opciones: p.opcionesTexto ? p.opcionesTexto.split(',').map(o => o.trim()) : undefined

@@ -22,6 +22,15 @@ export class DataSyncService {
   
   public vacantes$ = this.vacantesSubject.asObservable();
   public postulaciones$ = this.postulacionesSubject.asObservable();
+  
+  // Expose current values
+  getVacantesValue(): any[] {
+    return this.vacantesSubject.getValue();
+  }
+  
+  getPostulacionesValue(): any[] {
+    return this.postulacionesSubject.getValue();
+  }
 
   constructor() {
     this.loadInitialData();
