@@ -65,7 +65,6 @@ interface Rol {
               <td>
                 <div class="usuario-info">
                   <strong>{{usuario.nombreCompleto}}</strong>
-                  <small>ID: {{usuario.usuarioID}}</small>
                 </div>
               </td>
               <td>{{usuario.correo}}</td>
@@ -194,12 +193,19 @@ interface Rol {
       color: #2c3e50;
     }
 
+    .usuario-info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
     .usuario-info strong {
-      display: block;
+      font-weight: 600;
     }
 
     .usuario-info small {
       color: #7f8c8d;
+      font-size: 0.8rem;
     }
 
     .rol-badge, .estado-badge {

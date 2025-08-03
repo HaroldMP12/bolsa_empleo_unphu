@@ -856,6 +856,7 @@ export class VacantesComponent implements OnInit, OnDestroy {
                     ...v,
                     titulo: v.tituloVacante,
                     empresa: v.nombreEmpresa,
+                    categoria: v.nombreCategoria,
                     fechaVencimiento: v.fechaCierre,
                     postulaciones: postulacionesVacante.length
                   };
@@ -887,6 +888,7 @@ export class VacantesComponent implements OnInit, OnDestroy {
             ...v,
             titulo: v.tituloVacante,
             empresa: v.nombreEmpresa,
+            categoria: v.nombreCategoria,
             fechaVencimiento: v.fechaCierre
           }));
           this.vacantesFiltradas = [...this.vacantes];
