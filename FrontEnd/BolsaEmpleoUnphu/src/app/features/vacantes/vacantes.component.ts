@@ -845,13 +845,21 @@ export class VacantesComponent implements OnInit, OnDestroy {
             this.apiService.get(`vacantes/empresa/${empresa.empresaID}`).subscribe({
               next: (vacantesEmpresa: any) => {
                 const vacantesData = vacantesEmpresa.data || vacantesEmpresa || [];
+                
+                // Cargar postulaciones desde localStorage para contar
+                const todasPostulaciones = JSON.parse(localStorage.getItem('postulaciones') || '[]');
+                
                 // Mapear los datos del backend al formato esperado por el frontend
-                this.vacantes = vacantesData.map((v: any) => ({
-                  ...v,
-                  titulo: v.tituloVacante,
-                  empresa: v.nombreEmpresa,
-                  fechaVencimiento: v.fechaCierre
-                }));
+                this.vacantes = vacantesData.map((v: any) => {
+                  const postulacionesVacante = todasPostulaciones.filter((p: any) => p.vacanteID == v.vacanteID);
+                  return {
+                    ...v,
+                    titulo: v.tituloVacante,
+                    empresa: v.nombreEmpresa,
+                    fechaVencimiento: v.fechaCierre,
+                    postulaciones: postulacionesVacante.length
+                  };
+                });
                 this.vacantesFiltradas = [...this.vacantes];
               },
               error: () => {
