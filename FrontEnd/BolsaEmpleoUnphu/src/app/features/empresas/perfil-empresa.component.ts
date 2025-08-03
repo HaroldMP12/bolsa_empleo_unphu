@@ -74,7 +74,7 @@ import { Subscription } from 'rxjs';
               <h3>{{ vacante.titulo }}</h3>
               <div class="vacante-meta">
                 <span class="categoria">{{ vacante.categoria }}</span>
-                <span class="modalidad modalidad-{{ vacante.modalidad.toLowerCase() }}">
+                <span class="modalidad modalidad-{{ (vacante.modalidad || '').toLowerCase() }}">
                   {{ vacante.modalidad }}
                 </span>
               </div>
@@ -133,7 +133,7 @@ import { Subscription } from 'rxjs';
             </div>
             
             <div class="postulacion-estado">
-              <span class="estado-badge estado-{{ postulacion.estado.toLowerCase().replace(' ', '-') }}">
+              <span class="estado-badge estado-{{ getEstadoClass(postulacion.estado) }}">
                 {{ postulacion.estado }}
               </span>
             </div>
@@ -839,7 +839,10 @@ export class PerfilEmpresaComponent implements OnInit, OnDestroy {
     const todasPostulaciones = JSON.parse(localStorage.getItem('postulaciones') || '[]');
     console.log('Todas las postulaciones:', todasPostulaciones);
     
-    const postulaciones = todasPostulaciones.filter((p: any) => p.vacanteID === vacante.vacanteID);
+    const postulaciones = todasPostulaciones.filter((p: any) => {
+      console.log(`Comparando postulación vacanteID: ${p.vacanteID} con vacante vacanteID: ${vacante.vacanteID}`);
+      return p.vacanteID == vacante.vacanteID; // Usar == para comparar tipos diferentes
+    });
     console.log('Postulaciones filtradas:', postulaciones);
     
     this.candidatos = postulaciones.map((postulacion: any) => {
