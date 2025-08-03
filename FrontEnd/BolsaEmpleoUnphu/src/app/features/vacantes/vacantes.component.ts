@@ -1104,7 +1104,7 @@ export class VacantesComponent implements OnInit, OnDestroy {
           Modalidad: this.nuevaVacante.modalidad,
           Salario: this.nuevaVacante.salario || null,
           CantidadVacantes: 1,
-          CategoriaID: this.nuevaVacante.categoriaID
+          CategoriaID: parseInt(this.nuevaVacante.categoriaID.toString())
         };
         
         console.log('Datos a enviar:', vacanteData);
@@ -1157,7 +1157,7 @@ export class VacantesComponent implements OnInit, OnDestroy {
     if (!this.nuevaVacante.requisitos.trim()) return false;
     if (!this.nuevaVacante.modalidad?.trim()) return false;
     if (!this.nuevaVacante.ubicacion.trim()) return false;
-    if (!this.nuevaVacante.categoriaID) return false;
+    if (!this.nuevaVacante.categoriaID || this.nuevaVacante.categoriaID === 0) return false;
     if (!this.nuevaVacante.fechaVencimiento?.trim()) return false;
     
     // Validar que la fecha de vencimiento sea futura
