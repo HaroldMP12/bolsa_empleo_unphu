@@ -762,6 +762,9 @@ export class PerfilEmpresaComponent implements OnInit, OnDestroy {
               this.promedioPostulaciones = this.companyStats.totalVacantes > 0 
                 ? Math.round(this.companyStats.totalPostulaciones / this.companyStats.totalVacantes)
                 : 0;
+              
+              // Cargar postulaciones recientes después de tener las vacantes
+              this.loadRecentApplications();
             });
           }
         });
@@ -770,17 +773,19 @@ export class PerfilEmpresaComponent implements OnInit, OnDestroy {
   }
 
   private loadRecentApplications(): void {
-    const todasPostulaciones = [];
+    // Cargar postulaciones desde localStorage (igual que verCandidatos)
+    const todasPostulaciones = JSON.parse(localStorage.getItem('postulaciones') || '[]');
+    const postulacionesEmpresa = [];
     
     for (const vacante of this.misVacantes) {
-      const aplicaciones = this.dataSyncService.getVacanteApplications(vacante.vacanteID);
-      todasPostulaciones.push(...aplicaciones.map((p: any) => ({ 
+      const postulacionesVacante = todasPostulaciones.filter((p: any) => p.vacanteID == vacante.vacanteID);
+      postulacionesEmpresa.push(...postulacionesVacante.map((p: any) => ({ 
         ...p, 
         vacanteTitulo: vacante.titulo 
       })));
     }
     
-    this.postulacionesRecientes = todasPostulaciones
+    this.postulacionesRecientes = postulacionesEmpresa
       .sort((a: any, b: any) => new Date(b.fechaPostulacion).getTime() - new Date(a.fechaPostulacion).getTime())
       .slice(0, 5)
       .map((p: any) => {
