@@ -13,7 +13,7 @@ interface Usuario {
   telefono: string;
   estado: boolean;
   fechaRegistro: string;
-  rol: {
+  rol?: {
     rolID: number;
     nombreRol: string;
   };
