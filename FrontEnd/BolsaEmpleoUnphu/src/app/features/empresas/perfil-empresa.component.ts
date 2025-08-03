@@ -168,7 +168,7 @@ import { Subscription } from 'rxjs';
               </div>
               
               <div class="candidato-estado">
-                <span class="estado-badge estado-{{ (candidato.estado || 'pendiente').toLowerCase().replace(' ', '-') }}">
+                <span class="estado-badge estado-{{ getEstadoClass(candidato.estado) }}">
                   {{ candidato.estado || 'Pendiente' }}
                 </span>
               </div>
@@ -866,5 +866,10 @@ export class PerfilEmpresaComponent implements OnInit, OnDestroy {
 
   navegarDashboard(): void {
     this.router.navigate(['/dashboard']);
+  }
+
+  getEstadoClass(estado: string | null | undefined): string {
+    if (!estado) return 'pendiente';
+    return estado.toLowerCase().replace(' ', '-');
   }
 }
