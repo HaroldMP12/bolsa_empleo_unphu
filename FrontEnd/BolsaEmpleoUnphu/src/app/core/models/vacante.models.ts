@@ -1,6 +1,7 @@
 export interface Vacante {
   vacanteID: number;
-  titulo: string;
+  titulo?: string; // Para compatibilidad
+  tituloVacante?: string; // Como viene del backend
   descripcion: string;
   requisitos: string;
   salario?: number;
@@ -9,9 +10,10 @@ export interface Vacante {
   categoriaID: number;
   categoria?: string;
   empresaID: number;
-  empresa?: string;
+  empresa?: string | { nombreEmpresa: string }; // Puede ser string o objeto
   fechaPublicacion: Date;
-  fechaVencimiento: Date;
+  fechaVencimiento?: Date; // Para compatibilidad
+  fechaCierre?: string; // Como viene del backend
   estado: boolean;
   preguntas?: PreguntaVacante[];
   postulaciones?: number;
