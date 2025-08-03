@@ -68,13 +68,13 @@ interface VacanteAdmin {
               </td>
               <td>
                 <div class="empresa-info">
-                  <strong>{{vacante.empresa?.nombreEmpresa || 'Sin empresa'}}</strong>
-                  <small>{{vacante.empresa?.rnc || 'Sin RNC'}}</small>
+                  <strong>{{vacante.empresa.nombreEmpresa || 'Sin empresa'}}</strong>
+                  <small>{{vacante.empresa.rnc || 'Sin RNC'}}</small>
                 </div>
               </td>
-              <td>{{vacante.categoria?.nombreCategoria || 'Sin categoría'}}</td>
+              <td>{{vacante.categoria.nombreCategoria || 'Sin categoría'}}</td>
               <td>
-                <span class="modalidad-badge" [class]="vacante.modalidad?.toLowerCase()">
+                <span class="modalidad-badge" [class]="vacante.modalidad.toLowerCase()">
                   {{vacante.modalidad || 'No especificada'}}
                 </span>
               </td>
