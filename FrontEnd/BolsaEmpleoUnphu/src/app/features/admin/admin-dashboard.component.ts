@@ -1,6 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { ApiService } from '../../core/services/api.service';
+import { AdminSyncService } from '../../core/services/admin-sync.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -18,6 +21,11 @@ import { RouterModule } from '@angular/router';
           <div class="card-icon">🏢</div>
           <h3>Gestión de Empresas</h3>
           <p>Aprobar/rechazar empresas registradas</p>
+          <div class="card-stats" *ngIf="stats">
+            <span class="stat-badge pending" *ngIf="stats.empresasPendientes > 0">
+              {{stats.empresasPendientes}} pendientes
+            </span>
+          </div>
           <span class="card-action">Gestionar →</span>
         </div>
 
@@ -108,6 +116,54 @@ import { RouterModule } from '@angular/router';
       color: #3498db;
       font-weight: 600;
     }
+
+    .card-stats {
+      margin: 1rem 0;
+    }
+
+    .stat-badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .stat-badge.pending {
+      background: #fef9e7;
+      color: #f39c12;
+    }
   `]
 })
-export class AdminDashboardComponent {}
+export class AdminDashboardComponent implements OnInit, OnDestroy {
+  stats: any = null;
+  private syncSubscription?: Subscription;
+
+  constructor(
+    private apiService: ApiService,
+    private syncService: AdminSyncService
+  ) {}
+
+  ngOnInit() {
+    this.cargarEstadisticas();
+    this.syncSubscription = this.syncService.refresh$.subscribe(() => {
+      this.cargarEstadisticas();
+    });
+  }
+
+  ngOnDestroy() {
+    this.syncSubscription?.unsubscribe();
+  }
+
+  private cargarEstadisticas() {
+    this.apiService.get<any>('usuarios', { rolId: 3, estadoAprobacion: 'Pendiente' }).subscribe({
+      next: (response) => {
+        this.stats = {
+          empresasPendientes: response.totalRecords || 0
+        };
+      },
+      error: () => {
+        this.stats = { empresasPendientes: 0 };
+      }
+    });
+  }
+}

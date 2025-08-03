@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
 import { ToastService } from '../../core/services/toast.service';
+import { AdminSyncService } from '../../core/services/admin-sync.service';
+import { Subscription } from 'rxjs';
 
 interface Usuario {
   usuarioID: number;
@@ -353,7 +355,7 @@ interface Rol {
     }
   `]
 })
-export class UsuariosAdminComponent implements OnInit {
+export class UsuariosAdminComponent implements OnInit, OnDestroy {
   usuarios: Usuario[] = [];
   roles: Rol[] = [];
   filtroRol = '';
@@ -361,15 +363,24 @@ export class UsuariosAdminComponent implements OnInit {
   busqueda = '';
   cargando = false;
   usuarioEditando: any = null;
+  private syncSubscription?: Subscription;
 
   constructor(
     private apiService: ApiService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private syncService: AdminSyncService
   ) {}
 
   ngOnInit() {
     this.cargarRoles();
     this.cargarUsuarios();
+    this.syncSubscription = this.syncService.refresh$.subscribe(() => {
+      this.cargarUsuarios();
+    });
+  }
+
+  ngOnDestroy() {
+    this.syncSubscription?.unsubscribe();
   }
 
   cargarRoles() {
@@ -412,7 +423,7 @@ export class UsuariosAdminComponent implements OnInit {
       this.apiService.put(`usuarios/${usuario.usuarioID}`, usuarioActualizado).subscribe({
         next: () => {
           this.toastService.showSuccess(`Usuario ${accion}do exitosamente`);
-          this.cargarUsuarios();
+          this.syncService.notifyUserChange();
         },
         error: (error) => {
           console.error('Error al actualizar usuario:', error);
@@ -436,7 +447,7 @@ export class UsuariosAdminComponent implements OnInit {
         next: () => {
           this.toastService.showSuccess('Usuario actualizado exitosamente');
           this.cerrarModal();
-          this.cargarUsuarios();
+          this.syncService.notifyUserChange();
         },
         error: (error) => {
           console.error('Error al actualizar usuario:', error);

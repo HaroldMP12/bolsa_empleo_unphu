@@ -18,25 +18,19 @@ import { AuthResponse } from '../core/models/auth.models';
         <nav class="nav" *ngIf="currentUser">
           <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
           
-          <a *ngIf="currentUser.rol !== 'Empresa'" routerLink="/vacantes" routerLinkActive="active">Vacantes</a>
+          <!-- Opciones para Estudiantes/Egresados -->
+          <a *ngIf="currentUser.rol === 'Estudiante' || currentUser.rol === 'Egresado'" routerLink="/vacantes" routerLinkActive="active">Vacantes</a>
+          <a *ngIf="currentUser.rol === 'Estudiante' || currentUser.rol === 'Egresado'" routerLink="/postulaciones" routerLinkActive="active">Mis Postulaciones</a>
+          <a *ngIf="currentUser.rol === 'Estudiante' || currentUser.rol === 'Egresado'" routerLink="/perfil" routerLinkActive="active">Mi Perfil</a>
           
-          <a *ngIf="currentUser.rol !== 'Empresa'" routerLink="/postulaciones" routerLinkActive="active">
-            Mis Postulaciones
-          </a>
+          <!-- Opciones para Empresas -->
+          <a *ngIf="currentUser.rol === 'Empresa'" routerLink="/mis-vacantes" routerLinkActive="active">Mis Vacantes</a>
+          <a *ngIf="currentUser.rol === 'Empresa'" routerLink="/perfil-empresa" routerLinkActive="active">Perfil Empresa</a>
           
-          <a *ngIf="currentUser.rol === 'Empresa'" routerLink="/mis-vacantes" routerLinkActive="active">
-            Mis Vacantes
-          </a>
-          
-          <a *ngIf="currentUser.rol === 'Empresa'" routerLink="/perfil-empresa" routerLinkActive="active">
-            Perfil Empresa
-          </a>
-          
+          <!-- Opciones para Admin -->
           <a *ngIf="currentUser.rol === 'Admin'" routerLink="/admin" routerLinkActive="active" class="admin-link">
             🛠️ Administración
           </a>
-          
-          <a routerLink="/perfil" routerLinkActive="active">Mi Perfil</a>
         </nav>
         
         <div class="user-menu" *ngIf="currentUser">

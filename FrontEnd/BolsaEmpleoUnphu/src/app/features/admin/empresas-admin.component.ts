@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
 import { ToastService } from '../../core/services/toast.service';
+import { AdminSyncService } from '../../core/services/admin-sync.service';
+import { Subscription } from 'rxjs';
 
 interface EmpresaAdmin {
   usuarioID: number;
@@ -216,19 +218,29 @@ interface EmpresaAdmin {
     }
   `]
 })
-export class EmpresasAdminComponent implements OnInit {
+export class EmpresasAdminComponent implements OnInit, OnDestroy {
   empresas: EmpresaAdmin[] = [];
   filtroEstado = '';
   busqueda = '';
   cargando = false;
+  private syncSubscription?: Subscription;
 
   constructor(
     private apiService: ApiService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private syncService: AdminSyncService
   ) {}
 
   ngOnInit() {
     this.cargarEmpresas();
+    // Suscribirse a actualizaciones automáticas
+    this.syncSubscription = this.syncService.refresh$.subscribe(() => {
+      this.cargarEmpresas();
+    });
+  }
+
+  ngOnDestroy() {
+    this.syncSubscription?.unsubscribe();
   }
 
   cargarEmpresas() {
@@ -256,7 +268,7 @@ export class EmpresasAdminComponent implements OnInit {
       this.apiService.post(`usuarios/${usuarioId}/aprobar`, {}).subscribe({
         next: () => {
           this.toastService.showSuccess('Empresa aprobada exitosamente');
-          this.cargarEmpresas();
+          this.syncService.notifyCompanyChange();
         },
         error: (error) => {
           console.error('Error al aprobar empresa:', error);
@@ -272,7 +284,7 @@ export class EmpresasAdminComponent implements OnInit {
       this.apiService.post(`usuarios/${usuarioId}/rechazar`, motivo).subscribe({
         next: () => {
           this.toastService.showSuccess('Empresa rechazada');
-          this.cargarEmpresas();
+          this.syncService.notifyCompanyChange();
         },
         error: (error) => {
           console.error('Error al rechazar empresa:', error);
