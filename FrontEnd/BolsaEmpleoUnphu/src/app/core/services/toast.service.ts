@@ -14,41 +14,41 @@ export class ToastService {
   private toastsSubject = new BehaviorSubject<ToastMessage[]>([]);
   public toasts$ = this.toastsSubject.asObservable();
 
-  showSuccess(title: string, message: string, duration: number = 5000): void {
+  showSuccess(message: string, duration: number = 5000): void {
     this.addToast({
       id: this.generateId(),
       type: 'success',
-      title,
+      title: 'Éxito',
       message,
       duration
     });
   }
 
-  showError(title: string, message: string, duration: number = 7000): void {
+  showError(message: string, duration: number = 7000): void {
     this.addToast({
       id: this.generateId(),
       type: 'error',
-      title,
+      title: 'Error',
       message,
       duration
     });
   }
 
-  showWarning(title: string, message: string, duration: number = 6000): void {
+  showWarning(message: string, duration: number = 6000): void {
     this.addToast({
       id: this.generateId(),
       type: 'warning',
-      title,
+      title: 'Advertencia',
       message,
       duration
     });
   }
 
-  showInfo(title: string, message: string, duration: number = 5000): void {
+  showInfo(message: string, duration: number = 5000): void {
     this.addToast({
       id: this.generateId(),
       type: 'info',
-      title,
+      title: 'Información',
       message,
       duration
     });
