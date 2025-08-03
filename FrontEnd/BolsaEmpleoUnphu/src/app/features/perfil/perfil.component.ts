@@ -724,7 +724,7 @@ export class PerfilComponent implements OnInit {
       semestre: semestreValue && semestreValue !== 'graduado' && semestreValue !== '' ? parseInt(semestreValue) : null,
       fechaIngreso: anoIngresoValue ? new Date(anoIngresoValue + '-01-01') : null,
       resumen: this.buildResumenEstudiante(),
-      urlImagen: null,
+      urlImagen: this.fotoSeleccionada || null,
       redesSociales: null,
       tituloObtenido: null,
       fechaEgreso: null,
