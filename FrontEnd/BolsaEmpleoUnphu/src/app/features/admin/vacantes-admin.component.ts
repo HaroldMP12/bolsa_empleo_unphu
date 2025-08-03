@@ -62,25 +62,25 @@ interface VacanteAdmin {
             <tr *ngFor="let vacante of vacantes">
               <td>
                 <div class="vacante-info">
-                  <strong>{{vacante.tituloVacante}}</strong>
-                  <small>{{vacante.descripcion | slice:0:50}}...</small>
+                  <strong>{{vacante.tituloVacante || vacante.titulo}}</strong>
+                  <small>{{(vacante.descripcion | slice:0:50) || 'Sin descripción'}}...</small>
                 </div>
               </td>
               <td>
                 <div class="empresa-info">
-                  <strong>{{vacante.empresa.nombreEmpresa || 'Sin empresa'}}</strong>
-                  <small>{{vacante.empresa.rnc || 'Sin RNC'}}</small>
+                  <strong>{{vacante.empresa?.nombreEmpresa || 'Sin empresa'}}</strong>
+                  <small>{{vacante.empresa?.rnc || 'Sin RNC'}}</small>
                 </div>
               </td>
-              <td>{{vacante.categoria.nombreCategoria || 'Sin categoría'}}</td>
+              <td>{{vacante.categoria?.nombreCategoria || 'Sin categoría'}}</td>
               <td>
-                <span class="modalidad-badge" [class]="vacante.modalidad.toLowerCase()">
+                <span class="modalidad-badge" [class]="(vacante.modalidad || 'sin-modalidad').toLowerCase()">
                   {{vacante.modalidad || 'No especificada'}}
                 </span>
               </td>
               <td>{{vacante.ubicacion || 'No especificada'}}</td>
               <td>{{vacante.salario ? ('RD$ ' + (vacante.salario | number)) : 'No especificado'}}</td>
-              <td>{{formatearFecha(vacante.fechaCierre)}}</td>
+              <td>{{formatearFecha(vacante.fechaCierre || vacante.fechaVencimiento)}}</td>
               <td>{{vacante.cantidadVacantes || 1}}</td>
             </tr>
           </tbody>
@@ -229,7 +229,9 @@ export class VacantesAdminComponent implements OnInit, OnDestroy {
 
     this.apiService.get<any>('vacantes', params).subscribe({
       next: (response) => {
+        console.log('Respuesta de vacantes:', response);
         this.vacantes = response.data || response || [];
+        console.log('Vacantes procesadas:', this.vacantes);
         this.cargando = false;
       },
       error: (error) => {

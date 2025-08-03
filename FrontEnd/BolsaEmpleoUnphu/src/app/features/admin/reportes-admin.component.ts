@@ -106,33 +106,33 @@ interface EstadisticasGenerales {
         <div class="stats-section">
           <h3>Acciones Rápidas</h3>
           <div class="quick-actions">
-            <div class="action-card" routerLink="/admin/empresas" 
-                 *ngIf="estadisticas.empresasPendientes > 0">
+            <a class="action-card" routerLink="/admin/empresas" 
+               *ngIf="estadisticas.empresasPendientes > 0">
               <div class="action-icon">⚠️</div>
               <div class="action-info">
                 <h4>{{estadisticas.empresasPendientes}} empresas pendientes</h4>
                 <p>Requieren aprobación</p>
               </div>
               <div class="action-arrow">→</div>
-            </div>
+            </a>
             
-            <div class="action-card" routerLink="/admin/usuarios">
+            <a class="action-card" routerLink="/admin/usuarios">
               <div class="action-icon">👤</div>
               <div class="action-info">
                 <h4>Gestionar usuarios</h4>
                 <p>Administrar roles y permisos</p>
               </div>
               <div class="action-arrow">→</div>
-            </div>
+            </a>
             
-            <div class="action-card" routerLink="/admin/categorias">
+            <a class="action-card" routerLink="/admin/categorias">
               <div class="action-icon">📂</div>
               <div class="action-info">
                 <h4>Configurar categorías</h4>
                 <p>Organizar vacantes por tipo</p>
               </div>
               <div class="action-arrow">→</div>
-            </div>
+            </a>
           </div>
         </div>
 
