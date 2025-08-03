@@ -610,8 +610,19 @@ export class PerfilComponent implements OnInit {
 
     this.contactoForm.patchValue({
       telefono: empresa.telefonoEmpresa,
-      direccion: empresa.direccion
+      telefonoSecundario: empresa.telefonoSecundario,
+      direccion: empresa.direccion,
+      personaContacto: empresa.personaContacto,
+      cargoContacto: empresa.cargoContacto
     });
+    
+    if (empresa.imagenLogo) {
+      this.logoSeleccionado = empresa.imagenLogo;
+    }
+    
+    if (empresa.imagenPortada) {
+      this.portadaSeleccionada = empresa.imagenPortada;
+    }
   }
 
   initializeForms(): void {
@@ -805,8 +816,11 @@ export class PerfilComponent implements OnInit {
       sitioWeb: this.empresaForm.get('sitioWeb')?.value || null,
       descripcion: this.empresaForm.get('descripcion')?.value || null,
       cantidadEmpleados: this.empresaForm.get('tamano')?.value || null,
-      imagenLogo: null,
-      imagenPortada: null,
+      imagenLogo: this.logoSeleccionado || null,
+      imagenPortada: this.portadaSeleccionada || null,
+      personaContacto: this.contactoForm.get('personaContacto')?.value || null,
+      cargoContacto: this.contactoForm.get('cargoContacto')?.value || null,
+      telefonoSecundario: this.contactoForm.get('telefonoSecundario')?.value || null,
       observaciones: null
     };
 
