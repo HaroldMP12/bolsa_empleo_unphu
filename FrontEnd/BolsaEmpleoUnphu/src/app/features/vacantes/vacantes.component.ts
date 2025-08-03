@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { DataSyncService } from '../../core/services/data-sync.service';
+import { ApiService } from '../../core/services/api.service';
 import { AuthResponse } from '../../core/models/auth.models';
 import { Vacante, VacanteFiltros, CreateVacanteDto, PreguntaVacante } from '../../core/models/vacante.models';
 import { CreatePostulacionDto } from '../../core/models/postulacion.models';
@@ -812,6 +813,7 @@ export class VacantesComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthService,
     private dataSyncService: DataSyncService,
+    private apiService: ApiService,
     private router: Router
   ) {}
 
@@ -837,21 +839,35 @@ export class VacantesComponent implements OnInit, OnDestroy {
   }
 
   cargarVacantes(): void {
-    this.dataSyncService.getVacantes().subscribe({
-      next: (vacantes) => {
-        this.vacantes = vacantes;
-        if (this.isCompany()) {
+    if (this.isCompany()) {
+      // Para empresas, cargar desde la API
+      this.apiService.get<any>('vacantes').subscribe({
+        next: (response) => {
+          const todasVacantes = response.data || response || [];
           // Filtrar solo las vacantes de la empresa actual
-          this.vacantes = this.vacantes.filter(v => v.empresaID === this.currentUser?.usuarioID);
+          this.vacantes = todasVacantes.filter((v: any) => v.empresaID === this.currentUser?.usuarioID);
+          this.vacantesFiltradas = [...this.vacantes];
+        },
+        error: (error) => {
+          console.error('Error al cargar vacantes:', error);
+          this.vacantes = [];
+          this.vacantesFiltradas = [];
         }
-        this.vacantesFiltradas = [...this.vacantes];
-      },
-      error: (error) => {
-        console.error('Error al cargar vacantes:', error);
-        this.vacantes = [];
-        this.vacantesFiltradas = [];
-      }
-    });
+      });
+    } else {
+      // Para estudiantes, usar el data-sync service
+      this.dataSyncService.getVacantes().subscribe({
+        next: (vacantes) => {
+          this.vacantes = vacantes;
+          this.vacantesFiltradas = [...this.vacantes];
+        },
+        error: (error) => {
+          console.error('Error al cargar vacantes:', error);
+          this.vacantes = [];
+          this.vacantesFiltradas = [];
+        }
+      });
+    }
   }
 
   aplicarFiltros(): void {
@@ -1051,63 +1067,49 @@ export class VacantesComponent implements OnInit, OnDestroy {
     
     console.log('Guardando vacante:', this.nuevaVacante);
     
-    // Simular guardado de vacante
-    const vacante = {
-      vacanteID: this.vacanteEditando ? this.vacanteEditando.vacanteID : Date.now(),
-      titulo: this.nuevaVacante.titulo,
+    // Preparar datos para la API
+    const vacanteData = {
+      empresaID: this.currentUser?.usuarioID,
+      tituloVacante: this.nuevaVacante.titulo,
       descripcion: this.nuevaVacante.descripcion,
       requisitos: this.nuevaVacante.requisitos,
-      salario: this.nuevaVacante.salario,
-      modalidad: this.nuevaVacante.modalidad as 'Presencial' | 'Remoto' | 'Híbrido',
+      fechaCierre: this.nuevaVacante.fechaVencimiento,
       ubicacion: this.nuevaVacante.ubicacion,
-      categoriaID: this.nuevaVacante.categoriaID,
-      categoria: this.getCategoriaName(this.nuevaVacante.categoriaID),
-      empresaID: 1,
-      empresa: this.currentUser?.nombreCompleto || 'Mi Empresa',
-      fechaPublicacion: new Date(),
-      fechaVencimiento: new Date(this.nuevaVacante.fechaVencimiento),
-      estado: true,
-      postulaciones: 0,
-      createdBy: this.currentUser?.usuarioID?.toString() || 'user', // Mark as user-created
-      preguntas: this.nuevaVacante.preguntas.map(p => ({
-        ...p,
-        opciones: p.opcionesTexto ? p.opcionesTexto.split(',').map(o => o.trim()) : undefined
-      }))
+      tipoContrato: 'Fijo',
+      jornada: 'Tiempo completo',
+      modalidad: this.nuevaVacante.modalidad,
+      salario: this.nuevaVacante.salario || null,
+      cantidadVacantes: 1,
+      categoriaID: this.nuevaVacante.categoriaID
     };
     
-    // Guardar en localStorage
-    const vacantesGuardadas = JSON.parse(localStorage.getItem('vacantes') || '[]');
-    
     if (this.vacanteEditando) {
-      // Editar vacante existente
-      const index = this.vacantes.findIndex(v => v.vacanteID === this.vacanteEditando!.vacanteID);
-      if (index !== -1) {
-        this.vacantes[index] = vacante;
-      }
-      
-      // Actualizar en localStorage
-      const indexGuardada = vacantesGuardadas.findIndex((v: any) => v.vacanteID === this.vacanteEditando!.vacanteID);
-      if (indexGuardada !== -1) {
-        vacantesGuardadas[indexGuardada] = vacante;
-      }
-      localStorage.setItem('vacantes', JSON.stringify(vacantesGuardadas));
-      
-      this.mostrarConfirmacion('Vacante Actualizada', 'La vacante ha sido actualizada exitosamente.');
+      // Actualizar vacante existente
+      this.apiService.put(`vacantes/${this.vacanteEditando.vacanteID}`, vacanteData).subscribe({
+        next: () => {
+          this.mostrarConfirmacion('Vacante Actualizada', 'La vacante ha sido actualizada exitosamente.');
+          this.cerrarModal();
+          this.cargarVacantes();
+        },
+        error: (error) => {
+          console.error('Error al actualizar vacante:', error);
+          this.mostrarConfirmacion('Error', 'No se pudo actualizar la vacante.');
+        }
+      });
     } else {
-      // Agregar nueva vacante
-      this.vacantes.push(vacante);
-      vacantesGuardadas.push(vacante);
-      localStorage.setItem('vacantes', JSON.stringify(vacantesGuardadas));
-      
-      // Disparar eventos para actualizar todas las vistas
-      window.dispatchEvent(new CustomEvent('vacantesChanged'));
-      window.dispatchEvent(new CustomEvent('postulacionesChanged'));
-      
-      this.mostrarConfirmacion('Vacante Creada', 'La vacante ha sido creada exitosamente y ya está visible para los estudiantes.');
+      // Crear nueva vacante
+      this.apiService.post('vacantes', vacanteData).subscribe({
+        next: () => {
+          this.mostrarConfirmacion('Vacante Creada', 'La vacante ha sido creada exitosamente y ya está visible para los estudiantes.');
+          this.cerrarModal();
+          this.cargarVacantes();
+        },
+        error: (error) => {
+          console.error('Error al crear vacante:', error);
+          this.mostrarConfirmacion('Error', 'No se pudo crear la vacante.');
+        }
+      });
     }
-    
-    this.cerrarModal();
-    this.aplicarFiltros();
   }
   
   validarFormulario(): boolean {
