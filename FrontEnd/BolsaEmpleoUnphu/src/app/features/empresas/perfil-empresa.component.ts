@@ -527,19 +527,44 @@ export class PerfilEmpresaComponent implements OnInit, OnDestroy {
   private loadCompanyData(): void {
     if (!this.currentUser) return;
     
-    // Get company statistics (assuming empresaID = 1)
-    this.companyStats = this.dataSyncService.getCompanyStats(1);
-    
-    // Calculate average applications per vacante
-    this.promedioPostulaciones = this.companyStats.totalVacantes > 0 
-      ? Math.round(this.companyStats.totalPostulaciones / this.companyStats.totalVacantes)
-      : 0;
-    
-    // Get company vacantes
-    this.misVacantes = this.dataSyncService.getCompanyVacantes(1);
-    
-    // Get recent applications
-    this.loadRecentApplications();
+    // Cargar vacantes desde la API
+    this.authService.currentUser$.subscribe(user => {
+      if (user) {
+        // Obtener empresa del usuario
+        fetch(`https://localhost:7236/api/empresas/usuario/${user.usuarioID}`, {
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        })
+        .then(res => res.json())
+        .then(empresa => {
+          if (empresa?.empresaID) {
+            // Obtener vacantes de la empresa
+            fetch(`https://localhost:7236/api/vacantes/empresa/${empresa.empresaID}`, {
+              headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            })
+            .then(res => res.json())
+            .then(response => {
+              const vacantes = response.data || response || [];
+              this.misVacantes = vacantes.map((v: any) => ({
+                ...v,
+                titulo: v.tituloVacante,
+                empresa: v.nombreEmpresa,
+                fechaVencimiento: v.fechaCierre
+              }));
+              
+              this.companyStats = {
+                totalVacantes: vacantes.length,
+                vacantesActivas: vacantes.filter((v: any) => new Date(v.fechaCierre) > new Date()).length,
+                totalPostulaciones: vacantes.reduce((sum: number, v: any) => sum + (v.totalPostulaciones || 0), 0)
+              };
+              
+              this.promedioPostulaciones = this.companyStats.totalVacantes > 0 
+                ? Math.round(this.companyStats.totalPostulaciones / this.companyStats.totalVacantes)
+                : 0;
+            });
+          }
+        });
+      }
+    });
   }
 
   private loadRecentApplications(): void {

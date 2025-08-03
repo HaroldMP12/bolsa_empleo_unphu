@@ -617,39 +617,31 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private loadCompanyData(): void {
     if (!this.currentUser) return;
     
-    // Assuming empresaID = 1 for current company
-    const companyStats = this.dataSyncService.getCompanyStats(1);
-    this.stats.vacantes = companyStats.totalVacantes;
-    this.stats.vacantesActivas = companyStats.vacantesActivas;
-    this.stats.totalPostulaciones = companyStats.totalPostulaciones;
-    
-    // Get company vacantes
-    const empresaVacantes = this.dataSyncService.getCompanyVacantes(1);
-    this.misVacantes = empresaVacantes.map((v: any) => ({
-      titulo: v.titulo,
-      postulaciones: v.postulaciones || 0
-    }));
-    
-    // Get recent applications
-    const todasPostulaciones = [];
-    for (const vacante of empresaVacantes) {
-      const aplicaciones = this.dataSyncService.getVacanteApplications(vacante.vacanteID);
-      todasPostulaciones.push(...aplicaciones.map((p: any) => ({ ...p, vacanteTitulo: vacante.titulo })));
-    }
-    
-    this.postulacionesRecientes = todasPostulaciones
-      .sort((a: any, b: any) => new Date(b.fechaPostulacion).getTime() - new Date(a.fechaPostulacion).getTime())
-      .slice(0, 5)
-      .map((p: any) => {
-        const usuario = JSON.parse(localStorage.getItem('usuarios') || '[]')
-          .find((u: any) => u.usuarioID === p.usuarioID);
-        
-        return {
-          candidato: usuario?.nombreCompleto || 'Usuario UNPHU',
-          vacante: p.vacanteTitulo || 'Vacante',
-          fecha: this.getTimeAgo(new Date(p.fechaPostulacion))
-        };
-      });
+    // Cargar vacantes desde la API
+    fetch(`https://localhost:7236/api/empresas/usuario/${this.currentUser.usuarioID}`, {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    })
+    .then(res => res.json())
+    .then(empresa => {
+      if (empresa?.empresaID) {
+        fetch(`https://localhost:7236/api/vacantes/empresa/${empresa.empresaID}`, {
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        })
+        .then(res => res.json())
+        .then(response => {
+          const vacantes = response.data || response || [];
+          
+          this.stats.vacantes = vacantes.length;
+          this.stats.vacantesActivas = vacantes.filter((v: any) => new Date(v.fechaCierre) > new Date()).length;
+          this.stats.totalPostulaciones = vacantes.reduce((sum: number, v: any) => sum + (v.totalPostulaciones || 0), 0);
+          
+          this.misVacantes = vacantes.slice(0, 3).map((v: any) => ({
+            titulo: v.tituloVacante,
+            postulaciones: v.totalPostulaciones || 0
+          }));
+        });
+      }
+    });
   }
   
   private loadAdminData(): void {
