@@ -843,7 +843,14 @@ export class VacantesComponent implements OnInit, OnDestroy {
           if (empresa && empresa.empresaID) {
             this.apiService.get(`vacantes/empresa/${empresa.empresaID}`).subscribe({
               next: (vacantesEmpresa: any) => {
-                this.vacantes = vacantesEmpresa.data || vacantesEmpresa || [];
+                const vacantesData = vacantesEmpresa.data || vacantesEmpresa || [];
+                // Mapear los datos del backend al formato esperado por el frontend
+                this.vacantes = vacantesData.map((v: any) => ({
+                  ...v,
+                  titulo: v.tituloVacante,
+                  empresa: v.nombreEmpresa,
+                  fechaVencimiento: v.fechaCierre
+                }));
                 this.vacantesFiltradas = [...this.vacantes];
               },
               error: () => {
@@ -865,7 +872,14 @@ export class VacantesComponent implements OnInit, OnDestroy {
       // Para estudiantes, usar todas las vacantes activas
       this.apiService.get<any>('vacantes').subscribe({
         next: (response) => {
-          this.vacantes = response.data || response || [];
+          const vacantesData = response.data || response || [];
+          // Mapear los datos del backend al formato esperado por el frontend
+          this.vacantes = vacantesData.map((v: any) => ({
+            ...v,
+            titulo: v.tituloVacante,
+            empresa: v.nombreEmpresa,
+            fechaVencimiento: v.fechaCierre
+          }));
           this.vacantesFiltradas = [...this.vacantes];
         },
         error: (error) => {
@@ -1218,9 +1232,9 @@ export class VacantesComponent implements OnInit, OnDestroy {
   }
 
   getEmpresaNombre(empresa: string | { nombreEmpresa: string } | undefined): string {
-    if (!empresa) return 'Sin empresa';
-    if (typeof empresa === 'string') return empresa;
-    return empresa.nombreEmpresa || 'Sin empresa';
+    if (!empresa) return 'Empresa no disponible';
+    if (typeof empresa === 'string') return empresa || 'Empresa no disponible';
+    return empresa.nombreEmpresa || 'Empresa no disponible';
   }
 
   getTituloVacante(vacante: Vacante | null): string {
