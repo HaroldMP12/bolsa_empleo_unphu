@@ -50,6 +50,13 @@ import { Subscription } from 'rxjs';
           <span class="card-action">Gestionar →</span>
         </div>
 
+        <div class="dashboard-card" routerLink="/admin/vacantes">
+          <div class="card-icon">💼</div>
+          <h3>Gestión de Vacantes</h3>
+          <p>Ver y administrar todas las vacantes</p>
+          <span class="card-action">Gestionar →</span>
+        </div>
+
         <div class="dashboard-card" routerLink="/admin/reportes">
           <div class="card-icon">📊</div>
           <h3>Reportes</h3>
@@ -90,6 +97,9 @@ import { Subscription } from 'rxjs';
       cursor: pointer;
       transition: all 0.3s ease;
       border: 1px solid #e1e8ed;
+      text-decoration: none;
+      color: inherit;
+      display: block;
     }
 
     .dashboard-card:hover {

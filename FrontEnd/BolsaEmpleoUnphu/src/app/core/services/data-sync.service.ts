@@ -53,44 +53,12 @@ export class DataSyncService {
   }
 
   private refreshVacantes(): void {
+    // Cargar desde localStorage como fallback
     const vacantesGuardadas = JSON.parse(localStorage.getItem('vacantes') || '[]');
     const postulacionesGuardadas = JSON.parse(localStorage.getItem('postulaciones') || '[]');
     
-    // Mock data inicial
-    const vacantesMock = [
-      {
-        vacanteID: 1,
-        titulo: 'Desarrollador Frontend React',
-        descripcion: 'Buscamos desarrollador frontend con experiencia en React, TypeScript y CSS.',
-        requisitos: 'Experiencia mínima 2 años, React, TypeScript, Git',
-        salario: 45000,
-        modalidad: 'Híbrido',
-        ubicacion: 'Santo Domingo',
-        categoriaID: 1,
-        categoria: 'Tecnología',
-        empresaID: 1,
-        empresa: 'TechCorp',
-        fechaPublicacion: new Date(),
-        fechaVencimiento: new Date(new Date().getTime() + 15 * 24 * 60 * 60 * 1000),
-        estado: true,
-        createdBy: 'system',
-        preguntas: [
-          {
-            preguntaID: 1,
-            vacanteID: 1,
-            pregunta: '¿Cuántos años de experiencia tienes con React?',
-            tipo: 'opcion_multiple',
-            opciones: ['Menos de 1 año', '1-2 años', '3-5 años', 'Más de 5 años'],
-            requerida: true
-          }
-        ]
-      }
-    ];
-    
-    const todasVacantes = [...vacantesMock, ...vacantesGuardadas];
-    
     // Update application counts for each vacante
-    const vacantesConPostulaciones = todasVacantes.map(vacante => ({
+    const vacantesConPostulaciones = vacantesGuardadas.map((vacante: any) => ({
       ...vacante,
       postulaciones: postulacionesGuardadas.filter((p: any) => p.vacanteID === vacante.vacanteID).length
     }));
@@ -142,6 +110,11 @@ export class DataSyncService {
   // Get vacantes for company
   getCompanyVacantes(empresaID: number): any[] {
     return this.vacantesSubject.getValue().filter(v => v.empresaID === empresaID);
+  }
+
+  // Get all vacantes
+  getVacantes(): Observable<any[]> {
+    return this.vacantes$;
   }
 
   // Get all active vacantes for students

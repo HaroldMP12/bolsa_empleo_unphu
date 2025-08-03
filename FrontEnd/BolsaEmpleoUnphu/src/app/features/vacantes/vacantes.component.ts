@@ -837,57 +837,21 @@ export class VacantesComponent implements OnInit, OnDestroy {
   }
 
   cargarVacantes(): void {
-    // Cargar vacantes guardadas del localStorage
-    const vacantesGuardadas = JSON.parse(localStorage.getItem('vacantes') || '[]');
-    const postulacionesGuardadas = JSON.parse(localStorage.getItem('postulaciones') || '[]');
-    
-    // Mock data inicial
-    const vacantesMock = [
-      {
-        vacanteID: 1,
-        titulo: 'Desarrollador Frontend React',
-        descripcion: 'Buscamos desarrollador frontend con experiencia en React, TypeScript y CSS. Trabajarás en proyectos innovadores con tecnologías modernas.',
-        requisitos: 'Experiencia mínima 2 años, React, TypeScript, Git',
-        salario: 45000,
-        modalidad: 'Híbrido' as const,
-        ubicacion: 'Santo Domingo',
-        categoriaID: 1,
-        categoria: 'Tecnología',
-        empresaID: 1,
-        empresa: 'TechCorp',
-        fechaPublicacion: new Date(),
-        fechaVencimiento: new Date(new Date().getTime() + 15 * 24 * 60 * 60 * 1000),
-        estado: true,
-        postulaciones: 0,
-        createdBy: 'system', // Mark as system-created
-        preguntas: [
-          {
-            preguntaID: 1,
-            vacanteID: 1,
-            pregunta: '¿Cuántos años de experiencia tienes con React?',
-            tipo: 'opcion_multiple',
-            opciones: ['Menos de 1 año', '1-2 años', '3-5 años', 'Más de 5 años'],
-            requerida: true
-          }
-        ]
+    this.dataSyncService.getVacantes().subscribe({
+      next: (vacantes) => {
+        this.vacantes = vacantes;
+        if (this.isCompany()) {
+          // Filtrar solo las vacantes de la empresa actual
+          this.vacantes = this.vacantes.filter(v => v.empresaID === this.currentUser?.usuarioID);
+        }
+        this.vacantesFiltradas = [...this.vacantes];
+      },
+      error: (error) => {
+        console.error('Error al cargar vacantes:', error);
+        this.vacantes = [];
+        this.vacantesFiltradas = [];
       }
-    ];
-    
-    // Combinar mock + vacantes guardadas
-    this.vacantes = [...vacantesMock, ...vacantesGuardadas];
-    
-    // Actualizar contador de postulaciones para cada vacante
-    this.vacantes = this.vacantes.map(vacante => ({
-      ...vacante,
-      postulaciones: postulacionesGuardadas.filter((p: any) => p.vacanteID === vacante.vacanteID).length
-    }));
-
-    if (this.isCompany()) {
-      // Filter only company's vacantes (empresaID = 1 for current company)
-      this.vacantes = this.vacantes.filter(v => v.empresaID === 1);
-    }
-
-    this.vacantesFiltradas = [...this.vacantes];
+    });
   }
 
   aplicarFiltros(): void {

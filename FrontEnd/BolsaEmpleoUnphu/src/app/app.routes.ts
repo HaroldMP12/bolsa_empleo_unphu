@@ -27,6 +27,7 @@ export const routes: Routes = [
       { path: 'admin/usuarios', loadComponent: () => import('./features/admin/usuarios-admin.component').then(m => m.UsuariosAdminComponent), canActivate: [AdminGuard] },
       { path: 'admin/categorias', loadComponent: () => import('./features/admin/categorias-admin.component').then(m => m.CategoriasAdminComponent), canActivate: [AdminGuard] },
       { path: 'admin/carreras', loadComponent: () => import('./features/admin/carreras-admin.component').then(m => m.CarrerasAdminComponent), canActivate: [AdminGuard] },
+      { path: 'admin/vacantes', loadComponent: () => import('./features/admin/vacantes-admin.component').then(m => m.VacantesAdminComponent), canActivate: [AdminGuard] },
       { path: 'admin/reportes', loadComponent: () => import('./features/admin/reportes-admin.component').then(m => m.ReportesAdminComponent), canActivate: [AdminGuard] }
     ]
   },
