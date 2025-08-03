@@ -189,7 +189,7 @@ import { Subscription } from 'rxjs';
             <div class="form-row">
               <div class="form-group">
                 <label>Salario (Opcional)</label>
-                <input type="number" [(ngModel)]="nuevaVacante.salario" name="salario" class="form-control" min="0">
+                <input type="number" [(ngModel)]="nuevaVacante.salario" name="salario" class="form-control" min="0" placeholder="Opcional">
               </div>
               <div class="form-group">
                 <label>Fecha de Vencimiento *</label>
@@ -802,6 +802,7 @@ export class VacantesComponent implements OnInit, OnDestroy {
     ubicacion: '',
     categoriaID: 0,
     fechaVencimiento: '',
+    salario: undefined,
     preguntas: []
   };
 
@@ -928,6 +929,7 @@ export class VacantesComponent implements OnInit, OnDestroy {
       ubicacion: '',
       categoriaID: 0,
       fechaVencimiento: '',
+      salario: undefined,
       preguntas: []
     };
     this.mostrarModal = true;
@@ -1130,7 +1132,12 @@ export class VacantesComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           console.error('Error al actualizar vacante:', error);
-          this.mostrarConfirmacion('Error', 'No se pudo actualizar la vacante.');
+          let errorMessage = 'No se pudo actualizar la vacante.';
+          if (error.error && error.error.errors) {
+            const validationErrors = Object.values(error.error.errors).flat();
+            errorMessage = validationErrors.join(', ');
+          }
+          this.mostrarConfirmacion('Error de Validación', errorMessage);
         }
       });
     } else {
@@ -1144,7 +1151,12 @@ export class VacantesComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           console.error('Error al crear vacante:', error);
-          this.mostrarConfirmacion('Error', 'No se pudo crear la vacante.');
+          let errorMessage = 'No se pudo crear la vacante.';
+          if (error.error && error.error.errors) {
+            const validationErrors = Object.values(error.error.errors).flat();
+            errorMessage = validationErrors.join(', ');
+          }
+          this.mostrarConfirmacion('Error de Validación', errorMessage);
         }
       });
     }
