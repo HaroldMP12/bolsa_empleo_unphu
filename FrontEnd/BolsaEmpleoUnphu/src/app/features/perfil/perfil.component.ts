@@ -566,7 +566,7 @@ export class PerfilComponent implements OnInit {
     this.personalForm.patchValue({
       nombreCompleto: this.currentUser?.nombreCompleto || '',
       correo: this.currentUser?.correo || '',
-      telefono: '',
+      telefono: perfil.usuario?.telefono || '',
       fechaNacimiento: perfil.fechaNacimiento ? perfil.fechaNacimiento.split('T')[0] : '',
       direccion: perfil.direccion || ''
     });
@@ -585,6 +585,14 @@ export class PerfilComponent implements OnInit {
       } catch {
         this.experiencias = [];
       }
+    }
+    
+    if (perfil.urlCV) {
+      this.cvSeleccionado = perfil.urlCV;
+    }
+    
+    if (perfil.urlImagen) {
+      this.fotoSeleccionada = perfil.urlImagen;
     }
     
     console.log('Formulario actualizado:', this.academicForm.value);
