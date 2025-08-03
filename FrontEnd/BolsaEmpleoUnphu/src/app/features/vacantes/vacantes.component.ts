@@ -844,8 +844,14 @@ export class VacantesComponent implements OnInit, OnDestroy {
       this.apiService.get<any>('vacantes').subscribe({
         next: (response) => {
           const todasVacantes = response.data || response || [];
-          // Filtrar solo las vacantes de la empresa actual
-          this.vacantes = todasVacantes.filter((v: any) => v.empresaID === this.currentUser?.usuarioID);
+          console.log('Todas las vacantes:', todasVacantes);
+          console.log('Usuario actual:', this.currentUser);
+          // Filtrar vacantes por empresa del usuario actual
+          this.vacantes = todasVacantes.filter((v: any) => {
+            console.log('Vacante empresaID:', v.empresaID, 'Usuario ID:', this.currentUser?.usuarioID);
+            return v.empresaID === this.currentUser?.usuarioID;
+          });
+          console.log('Vacantes filtradas:', this.vacantes);
           this.vacantesFiltradas = [...this.vacantes];
         },
         error: (error) => {
