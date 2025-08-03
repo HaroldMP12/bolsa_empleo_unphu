@@ -1,12 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { DataSyncService } from '../../core/services/data-sync.service';
 import { AuthResponse } from '../../core/models/auth.models';
 import { Vacante, VacanteFiltros, CreateVacanteDto, PreguntaVacante } from '../../core/models/vacante.models';
 import { CreatePostulacionDto } from '../../core/models/postulacion.models';
 import { ModalPostulacionComponent } from '../postulaciones/modal-postulacion.component';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-vacantes',
@@ -114,7 +116,10 @@ import { ModalPostulacionComponent } from '../postulaciones/modal-postulacion.co
                 <div class="action-buttons">
                   <button class="btn-outline" (click)="editarVacante(vacante)">Editar</button>
                   <button class="btn-outline" (click)="verPostulaciones(vacante)">Ver Postulaciones</button>
-                  <button class="btn-danger" (click)="eliminarVacante(vacante)">Eliminar</button>
+                  <button 
+                    *ngIf="vacante.createdBy !== 'system'" 
+                    class="btn-danger" 
+                    (click)="eliminarVacante(vacante)">Eliminar</button>
                 </div>
               </div>
             </div>
@@ -671,7 +676,7 @@ import { ModalPostulacionComponent } from '../postulaciones/modal-postulacion.co
     }
   `]
 })
-export class VacantesComponent implements OnInit {
+export class VacantesComponent implements OnInit, OnDestroy {
   currentUser: AuthResponse | null = null;
   vacantes: Vacante[] = [];
   vacantesFiltradas: Vacante[] = [];
@@ -699,8 +704,11 @@ export class VacantesComponent implements OnInit {
     preguntas: []
   };
 
+  private subscriptions: Subscription[] = [];
+
   constructor(
     private authService: AuthService,
+    private dataSyncService: DataSyncService,
     private router: Router
   ) {}
 
@@ -743,6 +751,7 @@ export class VacantesComponent implements OnInit {
         fechaVencimiento: new Date(new Date().getTime() + 15 * 24 * 60 * 60 * 1000),
         estado: true,
         postulaciones: 0,
+        createdBy: 'system', // Mark as system-created
         preguntas: [
           {
             preguntaID: 1,
@@ -766,7 +775,7 @@ export class VacantesComponent implements OnInit {
     }));
 
     if (this.isCompany()) {
-      // Filter only company's vacantes
+      // Filter only company's vacantes (empresaID = 1 for current company)
       this.vacantes = this.vacantes.filter(v => v.empresaID === 1);
     }
 
@@ -832,6 +841,12 @@ export class VacantesComponent implements OnInit {
   }
 
   eliminarVacante(vacante: Vacante): void {
+    // Check if company can delete this vacante (only user-created ones)
+    if ((vacante as any).createdBy === 'system') {
+      this.mostrarConfirmacion('No Permitido', 'No puedes eliminar vacantes que no has creado.');
+      return;
+    }
+    
     this.mostrarConfirmacionEliminar(
       'Eliminar Vacante',
       `¿Estás seguro de que deseas eliminar la vacante "${vacante.titulo}"? Esta acción no se puede deshacer.`,
@@ -844,8 +859,14 @@ export class VacantesComponent implements OnInit {
         const vacantesActualizadas = vacantesGuardadas.filter((v: any) => v.vacanteID !== vacante.vacanteID);
         localStorage.setItem('vacantes', JSON.stringify(vacantesActualizadas));
         
-        // Disparar evento para actualizar otras vistas
+        // Also remove related applications
+        const postulacionesGuardadas = JSON.parse(localStorage.getItem('postulaciones') || '[]');
+        const postulacionesActualizadas = postulacionesGuardadas.filter((p: any) => p.vacanteID !== vacante.vacanteID);
+        localStorage.setItem('postulaciones', JSON.stringify(postulacionesActualizadas));
+        
+        // Disparar eventos para actualizar otras vistas
         window.dispatchEvent(new CustomEvent('vacantesChanged'));
+        window.dispatchEvent(new CustomEvent('postulacionesChanged'));
         
         this.aplicarFiltros();
         this.mostrarConfirmacion('Vacante Eliminada', 'La vacante ha sido eliminada exitosamente.');
@@ -960,11 +981,12 @@ export class VacantesComponent implements OnInit {
       categoriaID: this.nuevaVacante.categoriaID,
       categoria: this.getCategoriaName(this.nuevaVacante.categoriaID),
       empresaID: 1,
-      empresa: 'Mi Empresa',
+      empresa: this.currentUser?.nombreCompleto || 'Mi Empresa',
       fechaPublicacion: new Date(),
       fechaVencimiento: new Date(this.nuevaVacante.fechaVencimiento),
       estado: true,
       postulaciones: 0,
+      createdBy: this.currentUser?.usuarioID || 'user', // Mark as user-created
       preguntas: this.nuevaVacante.preguntas.map(p => ({
         ...p,
         opciones: p.opcionesTexto ? p.opcionesTexto.split(',').map(o => o.trim()) : undefined
@@ -995,8 +1017,9 @@ export class VacantesComponent implements OnInit {
       vacantesGuardadas.push(vacante);
       localStorage.setItem('vacantes', JSON.stringify(vacantesGuardadas));
       
-      // Disparar evento para que estudiantes vean la nueva vacante
+      // Disparar eventos para actualizar todas las vistas
       window.dispatchEvent(new CustomEvent('vacantesChanged'));
+      window.dispatchEvent(new CustomEvent('postulacionesChanged'));
       
       this.mostrarConfirmacion('Vacante Creada', 'La vacante ha sido creada exitosamente y ya está visible para los estudiantes.');
     }

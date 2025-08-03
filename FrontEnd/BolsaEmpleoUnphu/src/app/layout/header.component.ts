@@ -28,6 +28,10 @@ import { AuthResponse } from '../core/models/auth.models';
             Mis Vacantes
           </a>
           
+          <a *ngIf="currentUser.rol === 'Empresa'" routerLink="/perfil-empresa" routerLinkActive="active">
+            Perfil Empresa
+          </a>
+          
           <a routerLink="/perfil" routerLinkActive="active">Mi Perfil</a>
         </nav>
         

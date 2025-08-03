@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { PerfilService } from '../../core/services/perfil.service';
+import { DataSyncService } from '../../core/services/data-sync.service';
 import { AuthResponse } from '../../core/models/auth.models';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
@@ -512,69 +514,153 @@ import { AuthResponse } from '../../core/models/auth.models';
     }
   `]
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
   currentUser: AuthResponse | null = null;
   
-  // Mock data - replace with real API calls
   stats = {
-    postulaciones: 3,
-    vacantes: 5,
+    postulaciones: 0,
+    vacantes: 0,
     empresasPendientes: 2,
-    postulacionesPendientes: 2,
-    postulacionesRevisadas: 1,
-    totalPostulaciones: 15,
-    vacantesActivas: 3,
+    postulacionesPendientes: 0,
+    postulacionesRevisadas: 0,
+    totalPostulaciones: 0,
+    vacantesActivas: 0,
     totalUsuarios: 150,
-    totalVacantes: 45,
+    totalVacantes: 0,
     totalEmpresas: 12
   };
   
   perfilCompleto = false;
   perfilProgreso = 0;
   
-  recentVacantes = [
-    { titulo: 'Desarrollador Frontend', empresa: 'TechCorp', ubicacion: 'Santo Domingo' },
-    { titulo: 'Analista de Datos', empresa: 'DataSoft', ubicacion: 'Santiago' },
-    { titulo: 'Diseñador UX/UI', empresa: 'CreativeStudio', ubicacion: 'Remoto' }
-  ];
-  
-  misVacantes = [
-    { titulo: 'Desarrollador Backend', postulaciones: 8 },
-    { titulo: 'Project Manager', postulaciones: 12 }
-  ];
-  
-  postulacionesRecientes = [
-    { candidato: 'Juan Pérez', vacante: 'Desarrollador Frontend', fecha: 'Hace 2 horas' },
-    { candidato: 'María García', vacante: 'Analista de Datos', fecha: 'Hace 1 día' }
-  ];
+  recentVacantes: any[] = [];
+  misVacantes: any[] = [];
+  postulacionesRecientes: any[] = [];
   
   empresasPendientes = [
     { id: 1, nombre: 'TechStart SRL', correo: 'info@techstart.com', fechaRegistro: '2024-01-15' },
     { id: 2, nombre: 'InnovaCorp', correo: 'contacto@innovacorp.com', fechaRegistro: '2024-01-14' }
   ];
 
+  private subscriptions: Subscription[] = [];
+
   constructor(
     private authService: AuthService,
     private perfilService: PerfilService,
+    private dataSyncService: DataSyncService,
     private router: Router
   ) {}
+  
+
 
   ngOnInit(): void {
-    this.authService.currentUser$.subscribe(user => {
+    const userSub = this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
       this.loadDashboardData();
     });
+    this.subscriptions.push(userSub);
+    
+    // Subscribe to data changes
+    const vacantesSub = this.dataSyncService.vacantes$.subscribe(() => {
+      this.loadDashboardData();
+    });
+    this.subscriptions.push(vacantesSub);
+    
+    const postulacionesSub = this.dataSyncService.postulaciones$.subscribe(() => {
+      this.loadDashboardData();
+    });
+    this.subscriptions.push(postulacionesSub);
+  }
+  
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
   
   loadDashboardData(): void {
     if (!this.currentUser) return;
 
     if (this.isStudent()) {
+      this.loadStudentData();
       this.loadStudentProfileProgress();
     } else if (this.isCompany()) {
+      this.loadCompanyData();
       this.loadCompanyProfileProgress();
     } else if (this.isAdmin()) {
-      // Load admin data
+      this.loadAdminData();
+    }
+  }
+  
+  private loadStudentData(): void {
+    if (!this.currentUser) return;
+    
+    const studentStats = this.dataSyncService.getStudentStats(this.currentUser.usuarioID);
+    this.stats.postulaciones = studentStats.totalPostulaciones;
+    this.stats.postulacionesPendientes = studentStats.pendientes;
+    this.stats.postulacionesRevisadas = studentStats.enRevision;
+    
+    // Load recent vacantes for students
+    this.recentVacantes = this.dataSyncService.getActiveVacantes().slice(0, 3);
+  }
+  
+  private loadCompanyData(): void {
+    if (!this.currentUser) return;
+    
+    // Assuming empresaID = 1 for current company
+    const companyStats = this.dataSyncService.getCompanyStats(1);
+    this.stats.vacantes = companyStats.totalVacantes;
+    this.stats.vacantesActivas = companyStats.vacantesActivas;
+    this.stats.totalPostulaciones = companyStats.totalPostulaciones;
+    
+    // Get company vacantes
+    const empresaVacantes = this.dataSyncService.getCompanyVacantes(1);
+    this.misVacantes = empresaVacantes.map((v: any) => ({
+      titulo: v.titulo,
+      postulaciones: v.postulaciones || 0
+    }));
+    
+    // Get recent applications
+    const todasPostulaciones = [];
+    for (const vacante of empresaVacantes) {
+      const aplicaciones = this.dataSyncService.getVacanteApplications(vacante.vacanteID);
+      todasPostulaciones.push(...aplicaciones.map((p: any) => ({ ...p, vacanteTitulo: vacante.titulo })));
+    }
+    
+    this.postulacionesRecientes = todasPostulaciones
+      .sort((a: any, b: any) => new Date(b.fechaPostulacion).getTime() - new Date(a.fechaPostulacion).getTime())
+      .slice(0, 5)
+      .map((p: any) => {
+        const usuario = JSON.parse(localStorage.getItem('usuarios') || '[]')
+          .find((u: any) => u.usuarioID === p.usuarioID);
+        
+        return {
+          candidato: usuario?.nombreCompleto || 'Usuario UNPHU',
+          vacante: p.vacanteTitulo || 'Vacante',
+          fecha: this.getTimeAgo(new Date(p.fechaPostulacion))
+        };
+      });
+  }
+  
+  private loadAdminData(): void {
+    const todasVacantes = this.dataSyncService.vacantes$.value;
+    const todasPostulaciones = this.dataSyncService.postulaciones$.value;
+    
+    this.stats.totalVacantes = todasVacantes.length;
+    this.stats.totalPostulaciones = todasPostulaciones.length;
+  }
+  
+  private getTimeAgo(fecha: Date): string {
+    const ahora = new Date();
+    const diferencia = ahora.getTime() - fecha.getTime();
+    const minutos = Math.floor(diferencia / (1000 * 60));
+    const horas = Math.floor(diferencia / (1000 * 60 * 60));
+    const dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
+    
+    if (minutos < 60) {
+      return `Hace ${minutos} minutos`;
+    } else if (horas < 24) {
+      return `Hace ${horas} horas`;
+    } else {
+      return `Hace ${dias} días`;
     }
   }
 

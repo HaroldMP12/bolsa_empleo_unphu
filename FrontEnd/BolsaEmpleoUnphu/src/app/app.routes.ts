@@ -17,7 +17,8 @@ export const routes: Routes = [
       { path: 'postulaciones', loadComponent: () => import('./features/postulaciones/postulaciones.component').then(m => m.PostulacionesComponent) },
       { path: 'mis-vacantes', loadComponent: () => import('./features/vacantes/vacantes.component').then(m => m.VacantesComponent) },
       { path: 'candidatos/:id', loadComponent: () => import('./features/postulaciones/gestion-candidatos.component').then(m => m.GestionCandidatosComponent) },
-      { path: 'perfil', loadComponent: () => import('./features/perfil/perfil.component').then(m => m.PerfilComponent) }
+      { path: 'perfil', loadComponent: () => import('./features/perfil/perfil.component').then(m => m.PerfilComponent) },
+      { path: 'perfil-empresa', loadComponent: () => import('./features/empresas/perfil-empresa.component').then(m => m.PerfilEmpresaComponent) }
     ]
   },
   { path: '**', redirectTo: '/dashboard' }

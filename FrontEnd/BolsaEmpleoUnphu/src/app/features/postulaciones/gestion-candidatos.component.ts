@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { DataSyncService } from '../../core/services/data-sync.service';
 import { Postulacion, UpdateEstadoPostulacionDto } from '../../core/models/postulacion.models';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-gestion-candidatos',
@@ -508,7 +510,7 @@ import { Postulacion, UpdateEstadoPostulacionDto } from '../../core/models/postu
     }
   `]
 })
-export class GestionCandidatosComponent implements OnInit {
+export class GestionCandidatosComponent implements OnInit, OnDestroy {
   vacanteId: number = 0;
   vacanteTitulo: string = '';
   postulaciones: Postulacion[] = [];
@@ -518,65 +520,62 @@ export class GestionCandidatosComponent implements OnInit {
   mostrarModalPerfil = false;
   candidatoSeleccionado: Postulacion | null = null;
 
+  private subscriptions: Subscription[] = [];
+
   constructor(
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private dataSyncService: DataSyncService
   ) {}
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => {
+    const routeSub = this.route.params.subscribe(params => {
       this.vacanteId = +params['id'];
       this.cargarCandidatos();
     });
+    this.subscriptions.push(routeSub);
     
-    // Escuchar evento personalizado de cambios en postulaciones
-    window.addEventListener('postulacionesChanged', () => {
+    // Subscribe to data changes
+    const postulacionesSub = this.dataSyncService.postulaciones$.subscribe(() => {
       this.cargarCandidatos();
     });
+    this.subscriptions.push(postulacionesSub);
+  }
+  
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   cargarCandidatos(): void {
-    // Obtener título de la vacante desde localStorage o mock
-    const vacantesGuardadas = JSON.parse(localStorage.getItem('vacantes') || '[]');
-    const vacantesMock = [
-      { vacanteID: 1, titulo: 'Desarrollador Frontend React' },
-      { vacanteID: 2, titulo: 'Analista de Marketing Digital' },
-      { vacanteID: 3, titulo: 'Contador Senior' }
-    ];
-    
-    const todasVacantes = [...vacantesMock, ...vacantesGuardadas];
+    // Get vacante title from data sync service
+    const todasVacantes = this.dataSyncService.vacantes$.value;
     const vacante = todasVacantes.find(v => v.vacanteID === this.vacanteId);
     this.vacanteTitulo = vacante?.titulo || 'Vacante';
     
-    // Cargar postulaciones reales del localStorage
-    const postulacionesGuardadas = JSON.parse(localStorage.getItem('postulaciones') || '[]');
+    // Get applications for this vacante
+    const aplicaciones = this.dataSyncService.getVacanteApplications(this.vacanteId);
     const usuariosGuardados = JSON.parse(localStorage.getItem('usuarios') || '[]');
     
-    // Convertir postulaciones guardadas al formato correcto
-    const postulacionesReales = postulacionesGuardadas
-      .filter((p: any) => p.vacanteID === this.vacanteId)
-      .map((p: any) => {
-        // Buscar datos del usuario real
-        const usuario = usuariosGuardados.find((u: any) => u.usuarioID === p.usuarioID) || {
-          nombreCompleto: 'Usuario UNPHU',
-          correo: 'usuario@unphu.edu.do',
-          telefono: '809-555-0000',
-          carrera: 'Ingeniería en Sistemas'
-        };
-        
-        return {
-          postulacionID: p.postulacionID,
-          vacanteID: p.vacanteID,
-          usuarioID: p.usuarioID,
-          fechaPostulacion: new Date(p.fechaPostulacion),
-          estado: p.estado,
-          respuestas: p.respuestas,
-          usuario: usuario
-        };
-      });
+    // Convert applications to display format
+    this.postulaciones = aplicaciones.map((p: any) => {
+      const usuario = usuariosGuardados.find((u: any) => u.usuarioID === p.usuarioID) || {
+        nombreCompleto: 'Usuario UNPHU',
+        correo: 'usuario@unphu.edu.do',
+        telefono: '809-555-0000',
+        carrera: 'Ingeniería en Sistemas'
+      };
+      
+      return {
+        postulacionID: p.postulacionID,
+        vacanteID: p.vacanteID,
+        usuarioID: p.usuarioID,
+        fechaPostulacion: new Date(p.fechaPostulacion),
+        estado: p.estado,
+        respuestas: p.respuestas,
+        usuario: usuario
+      };
+    });
     
-    // Solo postulaciones reales, sin mock
-    this.postulaciones = postulacionesReales;
     this.postulacionesFiltradas = [...this.postulaciones];
   }
 
@@ -598,7 +597,18 @@ export class GestionCandidatosComponent implements OnInit {
 
   cambiarEstado(postulacion: Postulacion): void {
     console.log('Cambiando estado de postulación:', postulacion.postulacionID, 'a:', postulacion.estado);
-    // TODO: Call API to update estado
+    
+    // Update in localStorage
+    const postulacionesGuardadas = JSON.parse(localStorage.getItem('postulaciones') || '[]');
+    const index = postulacionesGuardadas.findIndex((p: any) => p.postulacionID === postulacion.postulacionID);
+    
+    if (index !== -1) {
+      postulacionesGuardadas[index].estado = postulacion.estado;
+      localStorage.setItem('postulaciones', JSON.stringify(postulacionesGuardadas));
+      
+      // Notify data sync service of the change
+      this.dataSyncService.notifyPostulacionesChanged();
+    }
     
     // Actualizar filtros si es necesario
     this.filtrarPorEstado(this.estadoSeleccionado);

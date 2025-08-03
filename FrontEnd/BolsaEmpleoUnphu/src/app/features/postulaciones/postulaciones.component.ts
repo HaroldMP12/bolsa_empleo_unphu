@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { DataSyncService } from '../../core/services/data-sync.service';
 import { AuthResponse } from '../../core/models/auth.models';
+import { Subscription } from 'rxjs';
 
 interface Postulacion {
   postulacionID: number;
@@ -471,7 +473,7 @@ interface Postulacion {
     }
   `]
 })
-export class PostulacionesComponent implements OnInit {
+export class PostulacionesComponent implements OnInit, OnDestroy {
   currentUser: AuthResponse | null = null;
   postulaciones: Postulacion[] = [];
   postulacionesFiltradas: Postulacion[] = [];
@@ -484,18 +486,34 @@ export class PostulacionesComponent implements OnInit {
   confirmacionMensaje = '';
   confirmacionCallback: (() => void) | null = null;
 
-  constructor(private authService: AuthService) {}
+  private subscriptions: Subscription[] = [];
+
+  constructor(
+    private authService: AuthService,
+    private dataSyncService: DataSyncService
+  ) {}
 
   ngOnInit(): void {
     this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
       this.cargarPostulaciones();
     });
+    
+    // Listen for real-time updates
+    window.addEventListener('postulacionesChanged', () => {
+      this.cargarPostulaciones();
+    });
+    
+    window.addEventListener('vacantesChanged', () => {
+      this.cargarPostulaciones();
+    });
   }
 
   cargarPostulaciones(): void {
-    // Cargar postulaciones desde localStorage
-    const postulacionesGuardadas = JSON.parse(localStorage.getItem('postulaciones') || '[]');
+    if (!this.currentUser) return;
+    
+    // Get user's applications from data sync service
+    const userApplications = this.dataSyncService.getUserApplications(this.currentUser.usuarioID);
     
     // Mock data inicial con fechas dinámicas
     const hoy = new Date();
@@ -505,7 +523,7 @@ export class PostulacionesComponent implements OnInit {
         vacanteID: 1,
         vacanteTitulo: 'Desarrollador Frontend React',
         empresa: 'TechCorp',
-        fechaPostulacion: new Date(hoy.getTime() - 2 * 24 * 60 * 60 * 1000), // Hace 2 días
+        fechaPostulacion: new Date(hoy.getTime() - 2 * 24 * 60 * 60 * 1000),
         estado: 'En Revisión',
         modalidad: 'Híbrido',
         ubicacion: 'Santo Domingo'
@@ -515,43 +533,23 @@ export class PostulacionesComponent implements OnInit {
         vacanteID: 2,
         vacanteTitulo: 'Analista de Marketing Digital',
         empresa: 'MarketPro',
-        fechaPostulacion: new Date(hoy.getTime() - 4 * 24 * 60 * 60 * 1000), // Hace 4 días
+        fechaPostulacion: new Date(hoy.getTime() - 4 * 24 * 60 * 60 * 1000),
         estado: 'Pendiente',
         modalidad: 'Presencial',
         ubicacion: 'Santiago'
-      },
-      {
-        postulacionID: 3,
-        vacanteID: 3,
-        vacanteTitulo: 'Diseñador UX/UI',
-        empresa: 'CreativeStudio',
-        fechaPostulacion: new Date(hoy.getTime() - 7 * 24 * 60 * 60 * 1000), // Hace 1 semana
-        estado: 'Aceptado',
-        modalidad: 'Remoto',
-        ubicacion: 'Remoto'
-      },
-      {
-        postulacionID: 4,
-        vacanteID: 4,
-        vacanteTitulo: 'Contador Junior',
-        empresa: 'ContaPlus',
-        fechaPostulacion: new Date(hoy.getTime() - 10 * 24 * 60 * 60 * 1000), // Hace 10 días
-        estado: 'Rechazado',
-        modalidad: 'Presencial',
-        ubicacion: 'Santo Domingo'
       }
     ];
     
-    // Convertir postulaciones guardadas al formato correcto
-    const postulacionesConvertidas = postulacionesGuardadas.map((p: any) => ({
+    // Convert real applications to display format
+    const postulacionesConvertidas = userApplications.map((p: any) => ({
       postulacionID: p.postulacionID,
       vacanteID: p.vacanteID,
-      vacanteTitulo: p.vacante.titulo,
-      empresa: p.vacante.empresa,
+      vacanteTitulo: p.vacante?.titulo || 'Vacante',
+      empresa: p.vacante?.empresa || 'Empresa',
       fechaPostulacion: new Date(p.fechaPostulacion),
       estado: p.estado,
-      modalidad: p.vacante.modalidad,
-      ubicacion: p.vacante.ubicacion
+      modalidad: p.vacante?.modalidad || 'Presencial',
+      ubicacion: p.vacante?.ubicacion || 'No especificada'
     }));
     
     this.postulaciones = [...postulacionesMock, ...postulacionesConvertidas];
@@ -617,8 +615,9 @@ export class PostulacionesComponent implements OnInit {
         const postulacionesActualizadas = postulacionesGuardadas.filter((p: any) => p.postulacionID !== postulacion.postulacionID);
         localStorage.setItem('postulaciones', JSON.stringify(postulacionesActualizadas));
         
-        // Disparar evento personalizado para notificar cambios
-        window.dispatchEvent(new CustomEvent('postulacionesChanged'));
+        // Notify data sync service of changes
+        this.dataSyncService.notifyPostulacionesChanged();
+        this.dataSyncService.notifyVacantesChanged();
         
         // Eliminar de la lista actual
         this.postulaciones = this.postulaciones.filter(p => p.postulacionID !== postulacion.postulacionID);
