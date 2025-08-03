@@ -396,7 +396,10 @@ export class UsuariosAdminComponent implements OnInit, OnDestroy {
 
   cargarUsuarios() {
     this.cargando = true;
-    const params: any = {};
+    const params: any = {
+      page: 1,
+      pageSize: 100 // Cargar más usuarios
+    };
     
     if (this.filtroRol) params.rolId = this.filtroRol;
     if (this.filtroEstado) params.estado = this.filtroEstado;
@@ -404,12 +407,14 @@ export class UsuariosAdminComponent implements OnInit, OnDestroy {
 
     this.apiService.get<any>('usuarios', params).subscribe({
       next: (response) => {
-        this.usuarios = response.data || [];
+        console.log('Respuesta usuarios:', response);
+        this.usuarios = response.data || response || [];
         this.cargando = false;
       },
       error: (error) => {
         console.error('Error al cargar usuarios:', error);
         this.toastService.showError('Error al cargar los usuarios');
+        this.usuarios = [];
         this.cargando = false;
       }
     });
