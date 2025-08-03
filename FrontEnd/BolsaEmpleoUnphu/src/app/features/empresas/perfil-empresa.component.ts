@@ -86,7 +86,7 @@ import { Subscription } from 'rxjs';
             </div>
             
             <div class="vacante-actions">
-              <button class="btn-outline" routerLink="/candidatos/{{ vacante.vacanteID }}">
+              <button class="btn-outline" (click)="verCandidatos(vacante)">
                 Ver Candidatos
               </button>
               <button 
@@ -135,6 +135,48 @@ import { Subscription } from 'rxjs';
           <div *ngIf="postulacionesRecientes.length === 0" class="empty-state-small">
             <p>No hay postulaciones recientes</p>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL CANDIDATOS -->
+    <div *ngIf="mostrarModalCandidatos" class="modal-overlay" (click)="cerrarModalCandidatos()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>Candidatos - {{ vacanteSeleccionada?.tituloVacante || vacanteSeleccionada?.titulo }}</h2>
+          <button class="btn-close" (click)="cerrarModalCandidatos()">×</button>
+        </div>
+        
+        <div class="modal-body">
+          <div *ngIf="candidatos.length > 0" class="candidatos-list">
+            <div *ngFor="let candidato of candidatos" class="candidato-item">
+              <div class="candidato-avatar">
+                <span>{{ getInitials(candidato.nombreCompleto) }}</span>
+              </div>
+              
+              <div class="candidato-info">
+                <h4>{{ candidato.nombreCompleto }}</h4>
+                <p>{{ candidato.correo }}</p>
+                <span class="fecha-postulacion">Postulado: {{ candidato.fechaPostulacion | date:'dd/MM/yyyy HH:mm' }}</span>
+              </div>
+              
+              <div class="candidato-estado">
+                <span class="estado-badge estado-{{ candidato.estado.toLowerCase().replace(' ', '-') }}">
+                  {{ candidato.estado }}
+                </span>
+              </div>
+            </div>
+          </div>
+          
+          <div *ngIf="candidatos.length === 0" class="empty-candidatos">
+            <div class="empty-icon">💼</div>
+            <h3>No hay candidatos por el momento</h3>
+            <p>Aún no se han recibido postulaciones para esta vacante. Los candidatos aparecerán aquí cuando se postulen.</p>
+          </div>
+        </div>
+        
+        <div class="modal-footer">
+          <button class="btn-secondary" (click)="cerrarModalCandidatos()">Cerrar</button>
         </div>
       </div>
     </div>
@@ -466,6 +508,136 @@ import { Subscription } from 'rxjs';
       color: #666;
     }
     
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(30, 58, 138, 0.4);
+      backdrop-filter: blur(4px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    
+    .modal-content {
+      background: white;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 700px;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    
+    .modal-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+      color: white;
+      border-radius: 12px 12px 0 0;
+    }
+    
+    .modal-header h2 {
+      margin: 0;
+      font-size: 1.25rem;
+    }
+    
+    .btn-close {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal-body {
+      padding: 2rem;
+    }
+    
+    .candidatos-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .candidato-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      transition: border-color 0.3s;
+    }
+    
+    .candidato-item:hover {
+      border-color: var(--unphu-blue-dark);
+    }
+    
+    .candidato-info {
+      flex: 1;
+    }
+    
+    .candidato-info h4 {
+      margin: 0 0 0.25rem 0;
+      color: var(--unphu-blue-dark);
+      font-size: 1rem;
+    }
+    
+    .candidato-info p {
+      margin: 0 0 0.25rem 0;
+      color: #666;
+      font-size: 0.875rem;
+    }
+    
+    .fecha-postulacion {
+      color: #999;
+      font-size: 0.75rem;
+    }
+    
+    .empty-candidatos {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: #666;
+    }
+    
+    .empty-candidatos .empty-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+    
+    .empty-candidatos h3 {
+      color: var(--unphu-blue-dark);
+      margin-bottom: 1rem;
+      font-size: 1.25rem;
+    }
+    
+    .empty-candidatos p {
+      margin: 0;
+      line-height: 1.5;
+    }
+    
+    .modal-footer {
+      padding: 1.5rem;
+      border-top: 1px solid #eee;
+      display: flex;
+      justify-content: flex-end;
+    }
+    
     /* Responsive */
     @media (max-width: 768px) {
       .vacante-item {
@@ -480,6 +652,16 @@ import { Subscription } from 'rxjs';
       .vacante-actions {
         justify-content: center;
       }
+      
+      .modal-content {
+        width: 95%;
+        max-height: 90vh;
+      }
+      
+      .candidato-item {
+        flex-direction: column;
+        text-align: center;
+      }
     }
   `]
 })
@@ -493,6 +675,9 @@ export class PerfilEmpresaComponent implements OnInit, OnDestroy {
   misVacantes: any[] = [];
   postulacionesRecientes: any[] = [];
   promedioPostulaciones = 0;
+  mostrarModalCandidatos = false;
+  vacanteSeleccionada: any = null;
+  candidatos: any[] = [];
   
   private subscriptions: Subscription[] = [];
 
@@ -596,14 +781,12 @@ export class PerfilEmpresaComponent implements OnInit, OnDestroy {
 
   getVacanteStatus(vacante: any): string {
     const hoy = new Date();
-    const fechaVencimiento = new Date(vacante.fechaVencimiento);
+    const fechaVencimiento = new Date(vacante.fechaVencimiento || vacante.fechaCierre);
     
     if (fechaVencimiento <= hoy) {
       return 'Vencida';
-    } else if (vacante.estado) {
-      return 'Activa';
     } else {
-      return 'Inactiva';
+      return 'Activa';
     }
   }
 
@@ -629,5 +812,28 @@ export class PerfilEmpresaComponent implements OnInit, OnDestroy {
     } else {
       return `Hace ${dias} días`;
     }
+  }
+
+  verCandidatos(vacante: any): void {
+    this.vacanteSeleccionada = vacante;
+    this.candidatos = this.dataSyncService.getVacanteApplications(vacante.vacanteID)
+      .map((postulacion: any) => {
+        const usuario = JSON.parse(localStorage.getItem('usuarios') || '[]')
+          .find((u: any) => u.usuarioID === postulacion.usuarioID);
+        
+        return {
+          nombreCompleto: usuario?.nombreCompleto || 'Usuario UNPHU',
+          correo: usuario?.correo || 'correo@unphu.edu.do',
+          fechaPostulacion: postulacion.fechaPostulacion,
+          estado: postulacion.estado || 'Pendiente'
+        };
+      });
+    this.mostrarModalCandidatos = true;
+  }
+
+  cerrarModalCandidatos(): void {
+    this.mostrarModalCandidatos = false;
+    this.vacanteSeleccionada = null;
+    this.candidatos = [];
   }
 }
