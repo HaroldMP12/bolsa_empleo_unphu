@@ -62,17 +62,17 @@ interface VacanteAdmin {
             <tr *ngFor="let vacante of vacantes">
               <td>
                 <div class="vacante-info">
-                  <strong>{{vacante.tituloVacante || vacante.titulo}}</strong>
+                  <strong>{{vacante.tituloVacante}}</strong>
                   <small>{{(vacante.descripcion | slice:0:50) || 'Sin descripción'}}...</small>
                 </div>
               </td>
               <td>
                 <div class="empresa-info">
-                  <strong>{{vacante.empresa?.nombreEmpresa || 'Sin empresa'}}</strong>
-                  <small>{{vacante.empresa?.rnc || 'Sin RNC'}}</small>
+                  <strong>{{vacante.empresa.nombreEmpresa || 'Sin empresa'}}</strong>
+                  <small>{{vacante.empresa.rnc || 'Sin RNC'}}</small>
                 </div>
               </td>
-              <td>{{vacante.categoria?.nombreCategoria || 'Sin categoría'}}</td>
+              <td>{{vacante.categoria.nombreCategoria || 'Sin categoría'}}</td>
               <td>
                 <span class="modalidad-badge" [class]="(vacante.modalidad || 'sin-modalidad').toLowerCase()">
                   {{vacante.modalidad || 'No especificada'}}
@@ -80,7 +80,7 @@ interface VacanteAdmin {
               </td>
               <td>{{vacante.ubicacion || 'No especificada'}}</td>
               <td>{{vacante.salario ? ('RD$ ' + (vacante.salario | number)) : 'No especificado'}}</td>
-              <td>{{formatearFecha(vacante.fechaCierre || vacante.fechaVencimiento)}}</td>
+              <td>{{formatearFecha(vacante.fechaCierre)}}</td>
               <td>{{vacante.cantidadVacantes || 1}}</td>
             </tr>
           </tbody>
