@@ -566,7 +566,7 @@ export class PerfilComponent implements OnInit {
     this.personalForm.patchValue({
       nombreCompleto: this.currentUser?.nombreCompleto || '',
       correo: this.currentUser?.correo || '',
-      telefono: this.currentUser?.telefono || '',
+      telefono: '',
       fechaNacimiento: perfil.fechaNacimiento || '',
       direccion: perfil.direccion || ''
     });
