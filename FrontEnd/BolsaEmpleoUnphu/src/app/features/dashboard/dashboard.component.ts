@@ -711,11 +711,38 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
   
   private loadAdminData(): void {
-    const todasVacantes = this.dataSyncService.getVacantesValue();
-    const todasPostulaciones = this.dataSyncService.getPostulacionesValue();
+    // Cargar usuarios
+    fetch('https://localhost:7236/api/usuarios?pageSize=1000', {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    })
+    .then(res => res.json())
+    .then(response => {
+      const usuarios = response.data || [];
+      this.stats.totalUsuarios = usuarios.length;
+    })
+    .catch(() => this.stats.totalUsuarios = 0);
     
-    this.stats.totalVacantes = todasVacantes.length;
-    this.stats.totalPostulaciones = todasPostulaciones.length;
+    // Cargar vacantes
+    fetch('https://localhost:7236/api/vacantes?pageSize=1000', {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    })
+    .then(res => res.json())
+    .then(response => {
+      const vacantes = response.data || [];
+      this.stats.totalVacantes = vacantes.length;
+    })
+    .catch(() => this.stats.totalVacantes = 0);
+    
+    // Cargar empresas
+    fetch('https://localhost:7236/api/empresas?pageSize=1000', {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    })
+    .then(res => res.json())
+    .then(response => {
+      const empresas = response.data || [];
+      this.stats.totalEmpresas = empresas.length;
+    })
+    .catch(() => this.stats.totalEmpresas = 0);
   }
   
   private getTimeAgo(fecha: Date): string {

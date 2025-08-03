@@ -65,7 +65,6 @@ interface VacanteAdmin {
               <td>
                 <div class="empresa-info">
                   <strong>{{vacante.nombreEmpresa || 'Sin empresa'}}</strong>
-                  <small>{{vacante.rnc || 'Sin RNC'}}</small>
                 </div>
               </td>
               <td>{{vacante.nombreCategoria || 'Sin categoría'}}</td>
