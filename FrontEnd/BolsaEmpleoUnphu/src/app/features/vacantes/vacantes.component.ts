@@ -79,7 +79,7 @@ import { Subscription } from 'rxjs';
               <h3>{{ vacante.titulo }}</h3>
               <div class="vacante-meta">
                 <span class="empresa">{{ vacante.empresa }}</span>
-                <span class="modalidad modalidad-{{ vacante.modalidad.toLowerCase() }}">{{ vacante.modalidad }}</span>
+                <span class="modalidad modalidad-{{ vacante.modalidad ? vacante.modalidad.toLowerCase() : 'sin-modalidad' }}">{{ vacante.modalidad || 'No especificada' }}</span>
               </div>
             </div>
             
@@ -299,7 +299,7 @@ import { Subscription } from 'rxjs';
             <h3>{{ vacanteSeleccionada.titulo }}</h3>
             <div class="empresa-info">
               <span class="empresa-nombre">{{ vacanteSeleccionada.empresa }}</span>
-              <span class="modalidad modalidad-{{ vacanteSeleccionada.modalidad.toLowerCase() }}">{{ vacanteSeleccionada.modalidad }}</span>
+              <span class="modalidad modalidad-{{ vacanteSeleccionada.modalidad ? vacanteSeleccionada.modalidad.toLowerCase() : 'sin-modalidad' }}">{{ vacanteSeleccionada.modalidad || 'No especificada' }}</span>
             </div>
             
             <div class="detalles-grid">
