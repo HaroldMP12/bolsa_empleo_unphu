@@ -721,7 +721,7 @@ export class PerfilComponent implements OnInit {
       tituloObtenido: null,
       fechaEgreso: null,
       añoGraduacion: null,
-      fechaNacimiento: this.personalForm.get('fechaNacimiento')?.value ? new Date(this.personalForm.get('fechaNacimiento')?.value) : null,
+      fechaNacimiento: this.personalForm.get('fechaNacimiento')?.value || null,
       direccion: this.personalForm.get('direccion')?.value || null,
       promedioAcademico: this.academicForm.get('promedio')?.value ? parseFloat(this.academicForm.get('promedio')?.value) : null,
       urlCV: this.cvSeleccionado || null,
@@ -730,6 +730,9 @@ export class PerfilComponent implements OnInit {
     };
     
     console.log('Datos a enviar:', perfilData);
+    console.log('Personal form values:', this.personalForm.value);
+    console.log('Experiencias:', this.experiencias);
+    console.log('Archivos:', { foto: this.fotoSeleccionada, cv: this.cvSeleccionado });
 
     // Verificar si ya existe un perfil
     this.perfilService.obtenerPerfilEstudiante(this.currentUser!.usuarioID).subscribe({
