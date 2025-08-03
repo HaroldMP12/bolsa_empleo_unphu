@@ -87,6 +87,17 @@ public class PerfilesController : ControllerBase
         };
 
         _context.Perfiles.Add(perfil);
+        
+        // Actualizar teléfono del usuario si se proporciona
+        if (!string.IsNullOrEmpty(perfilDto.Telefono))
+        {
+            var usuario = await _context.Usuarios.FindAsync(perfilDto.UsuarioID);
+            if (usuario != null)
+            {
+                usuario.Telefono = perfilDto.Telefono;
+            }
+        }
+        
         await _context.SaveChangesAsync();
 
         return CreatedAtAction(nameof(GetPerfil), new { id = perfil.PerfilID }, perfil);

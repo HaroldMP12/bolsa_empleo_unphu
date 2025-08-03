@@ -567,7 +567,7 @@ export class PerfilComponent implements OnInit {
       nombreCompleto: this.currentUser?.nombreCompleto || '',
       correo: this.currentUser?.correo || '',
       telefono: '',
-      fechaNacimiento: perfil.fechaNacimiento || '',
+      fechaNacimiento: perfil.fechaNacimiento ? perfil.fechaNacimiento.split('T')[0] : '',
       direccion: perfil.direccion || ''
     });
     
@@ -713,7 +713,7 @@ export class PerfilComponent implements OnInit {
       tipoPerfil: semestreValue === 'graduado' ? 'Egresado' : 'Estudiante',
       matricula: this.academicForm.get('matricula')?.value || null,
       carreraID: parseInt(this.academicForm.get('carrera')?.value) || 1,
-      semestre: semestreValue !== 'graduado' && semestreValue ? parseInt(semestreValue) : null,
+      semestre: semestreValue && semestreValue !== 'graduado' && semestreValue !== '' ? parseInt(semestreValue) : null,
       fechaIngreso: anoIngresoValue ? new Date(anoIngresoValue + '-01-01') : null,
       resumen: this.buildResumenEstudiante(),
       urlImagen: null,
