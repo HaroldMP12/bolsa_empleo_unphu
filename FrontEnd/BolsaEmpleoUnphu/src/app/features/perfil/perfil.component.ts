@@ -705,7 +705,7 @@ export class PerfilComponent implements OnInit {
 
   guardarPerfil(): void {
     if (!this.currentUser) {
-      this.toastService.showError('Error', 'No se pudo identificar el usuario');
+      this.toastService.showError('No se pudo identificar el usuario');
       return;
     }
 
