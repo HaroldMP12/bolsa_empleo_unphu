@@ -76,9 +76,9 @@ import { Subscription } from 'rxjs';
         <div class="vacantes-grid">
           <div *ngFor="let vacante of vacantesFiltradas" class="vacante-card">
             <div class="vacante-header">
-              <h3>{{ vacante.tituloVacante || vacante.titulo }}</h3>
+              <h3>{{ getTituloVacante(vacante) }}</h3>
               <div class="vacante-meta">
-                <span class="empresa">{{ vacante.empresa?.nombreEmpresa || vacante.empresa }}</span>
+                <span class="empresa">{{ getEmpresaNombre(vacante.empresa) }}</span>
                 <span class="modalidad modalidad-{{ vacante.modalidad ? vacante.modalidad.toLowerCase() : 'sin-modalidad' }}">{{ vacante.modalidad || 'No especificada' }}</span>
               </div>
             </div>
@@ -293,9 +293,9 @@ import { Subscription } from 'rxjs';
         
         <div class="modal-body" *ngIf="vacanteSeleccionada">
           <div class="vacante-detalles">
-            <h3>{{ vacanteSeleccionada.titulo }}</h3>
+            <h3>{{ getTituloVacante(vacanteSeleccionada) }}</h3>
             <div class="empresa-info">
-              <span class="empresa-nombre">{{ vacanteSeleccionada.empresa }}</span>
+              <span class="empresa-nombre">{{ getEmpresaNombre(vacanteSeleccionada.empresa) }}</span>
               <span class="modalidad modalidad-{{ vacanteSeleccionada.modalidad ? vacanteSeleccionada.modalidad.toLowerCase() : 'sin-modalidad' }}">{{ vacanteSeleccionada.modalidad || 'No especificada' }}</span>
             </div>
             
@@ -879,9 +879,12 @@ export class VacantesComponent implements OnInit, OnDestroy {
 
   aplicarFiltros(): void {
     this.vacantesFiltradas = this.vacantes.filter(vacante => {
+      const titulo = vacante.titulo || vacante.tituloVacante || '';
+      const empresaNombre = this.getEmpresaNombre(vacante.empresa);
+      
       const matchSearch = !this.filtros.search || 
-        vacante.titulo.toLowerCase().includes(this.filtros.search.toLowerCase()) ||
-        vacante.empresa!.toLowerCase().includes(this.filtros.search.toLowerCase());
+        titulo.toLowerCase().includes(this.filtros.search.toLowerCase()) ||
+        empresaNombre.toLowerCase().includes(this.filtros.search.toLowerCase());
       
       const matchCategoria = !this.filtros.categoria || 
         vacante.categoriaID.toString() === this.filtros.categoria.toString();
@@ -918,15 +921,16 @@ export class VacantesComponent implements OnInit, OnDestroy {
 
   editarVacante(vacante: Vacante): void {
     this.vacanteEditando = vacante;
+    const fechaVencimiento = vacante.fechaVencimiento || vacante.fechaCierre;
     this.nuevaVacante = {
-      titulo: vacante.titulo,
+      titulo: vacante.titulo || vacante.tituloVacante || '',
       descripcion: vacante.descripcion,
       requisitos: vacante.requisitos,
       salario: vacante.salario,
-      modalidad: vacante.modalidad,
+      modalidad: vacante.modalidad || '',
       ubicacion: vacante.ubicacion,
       categoriaID: vacante.categoriaID,
-      fechaVencimiento: new Date(vacante.fechaVencimiento).toISOString().split('T')[0],
+      fechaVencimiento: fechaVencimiento ? new Date(fechaVencimiento).toISOString().split('T')[0] : '',
       preguntas: (vacante.preguntas || []).map(p => ({
         ...p,
         opcionesTexto: p.opciones ? p.opciones.join(', ') : ''
@@ -938,7 +942,7 @@ export class VacantesComponent implements OnInit, OnDestroy {
   eliminarVacante(vacante: Vacante): void {
     this.mostrarConfirmacionEliminar(
       'Eliminar Vacante',
-      `¿Estás seguro de que deseas eliminar la vacante "${vacante.tituloVacante || vacante.titulo}"? Esta acción no se puede deshacer.`,
+      `¿Estás seguro de que deseas eliminar la vacante "${this.getTituloVacante(vacante)}"? Esta acción no se puede deshacer.`,
       () => {
         // Eliminar usando la API
         console.log('Eliminando vacante ID:', vacante.vacanteID);
@@ -1075,10 +1079,10 @@ export class VacantesComponent implements OnInit, OnDestroy {
         // Preparar datos para la API (nombres exactos del DTO)
         const vacanteData = {
           empresaID: empresa.empresaID,
-          tituloVacante: this.nuevaVacante.titulo,
+          tituloVacante: this.nuevaVacante.titulo || '',
           descripcion: this.nuevaVacante.descripcion,
           requisitos: this.nuevaVacante.requisitos,
-          fechaCierre: new Date(this.nuevaVacante.fechaVencimiento).toISOString(),
+          fechaCierre: this.nuevaVacante.fechaVencimiento ? new Date(this.nuevaVacante.fechaVencimiento).toISOString() : new Date().toISOString(),
           ubicacion: this.nuevaVacante.ubicacion,
           tipoContrato: 'Fijo',
           jornada: 'Tiempo completo',
@@ -1130,21 +1134,23 @@ export class VacantesComponent implements OnInit, OnDestroy {
   
   validarFormulario(): boolean {
     // Validar campos requeridos
-    if (!this.nuevaVacante.titulo.trim()) return false;
+    if (!this.nuevaVacante.titulo?.trim()) return false;
     if (!this.nuevaVacante.descripcion.trim()) return false;
     if (!this.nuevaVacante.requisitos.trim()) return false;
-    if (!this.nuevaVacante.modalidad) return false;
+    if (!this.nuevaVacante.modalidad?.trim()) return false;
     if (!this.nuevaVacante.ubicacion.trim()) return false;
     if (!this.nuevaVacante.categoriaID) return false;
-    if (!this.nuevaVacante.fechaVencimiento) return false;
+    if (!this.nuevaVacante.fechaVencimiento?.trim()) return false;
     
     // Validar que la fecha de vencimiento sea futura
-    const fechaVencimiento = new Date(this.nuevaVacante.fechaVencimiento);
-    const hoy = new Date();
-    hoy.setHours(0, 0, 0, 0);
-    if (fechaVencimiento <= hoy) {
-      this.mostrarConfirmacion('Fecha Inválida', 'La fecha de vencimiento debe ser posterior a hoy.');
-      return false;
+    if (this.nuevaVacante.fechaVencimiento) {
+      const fechaVencimiento = new Date(this.nuevaVacante.fechaVencimiento);
+      const hoy = new Date();
+      hoy.setHours(0, 0, 0, 0);
+      if (fechaVencimiento <= hoy) {
+        this.mostrarConfirmacion('Fecha Inválida', 'La fecha de vencimiento debe ser posterior a hoy.');
+        return false;
+      }
     }
     
     // Validar preguntas requeridas
@@ -1209,5 +1215,16 @@ export class VacantesComponent implements OnInit, OnDestroy {
     this.confirmacionEliminarTitulo = '';
     this.confirmacionEliminarMensaje = '';
     this.confirmacionEliminarCallback = null;
+  }
+
+  getEmpresaNombre(empresa: string | { nombreEmpresa: string } | undefined): string {
+    if (!empresa) return 'Sin empresa';
+    if (typeof empresa === 'string') return empresa;
+    return empresa.nombreEmpresa || 'Sin empresa';
+  }
+
+  getTituloVacante(vacante: Vacante | null): string {
+    if (!vacante) return '';
+    return vacante.titulo || vacante.tituloVacante || '';
   }
 }

@@ -31,14 +31,14 @@ export interface PreguntaVacante {
 }
 
 export interface CreateVacanteDto {
-  titulo: string;
+  titulo?: string;
   descripcion: string;
   requisitos: string;
   salario?: number;
-  modalidad: string;
+  modalidad?: string;
   ubicacion: string;
   categoriaID: number;
-  fechaVencimiento: string;
+  fechaVencimiento?: string;
   preguntas: PreguntaVacante[];
 }
 
