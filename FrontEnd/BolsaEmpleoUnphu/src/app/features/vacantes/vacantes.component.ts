@@ -964,7 +964,8 @@ export class VacantesComponent implements OnInit, OnDestroy {
           next: () => {
             console.log('Vacante eliminada exitosamente');
             this.mostrarConfirmacion('Vacante Eliminada', 'La vacante ha sido eliminada exitosamente.');
-            this.cargarVacantes(); // Recargar la lista
+            this.cargarVacantes();
+            this.dataSyncService.notifyVacantesChanged();
           },
           error: (error) => {
             console.error('Error completo al eliminar vacante:', error);
@@ -1092,18 +1093,18 @@ export class VacantesComponent implements OnInit, OnDestroy {
         
         // Preparar datos para la API (nombres exactos del DTO)
         const vacanteData = {
-          empresaID: empresa.empresaID,
-          tituloVacante: this.nuevaVacante.titulo || '',
-          descripcion: this.nuevaVacante.descripcion,
-          requisitos: this.nuevaVacante.requisitos,
-          fechaCierre: this.nuevaVacante.fechaVencimiento ? new Date(this.nuevaVacante.fechaVencimiento).toISOString() : new Date().toISOString(),
-          ubicacion: this.nuevaVacante.ubicacion,
-          tipoContrato: 'Fijo',
-          jornada: 'Tiempo completo',
-          modalidad: this.nuevaVacante.modalidad,
-          salario: this.nuevaVacante.salario || null,
-          cantidadVacantes: 1,
-          categoriaID: this.nuevaVacante.categoriaID
+          EmpresaID: empresa.empresaID,
+          TituloVacante: this.nuevaVacante.titulo || '',
+          Descripcion: this.nuevaVacante.descripcion,
+          Requisitos: this.nuevaVacante.requisitos,
+          FechaCierre: this.nuevaVacante.fechaVencimiento ? new Date(this.nuevaVacante.fechaVencimiento).toISOString() : new Date().toISOString(),
+          Ubicacion: this.nuevaVacante.ubicacion,
+          TipoContrato: 'Fijo',
+          Jornada: 'Tiempo completo',
+          Modalidad: this.nuevaVacante.modalidad,
+          Salario: this.nuevaVacante.salario || null,
+          CantidadVacantes: 1,
+          CategoriaID: this.nuevaVacante.categoriaID
         };
         
         console.log('Datos a enviar:', vacanteData);
@@ -1119,11 +1120,13 @@ export class VacantesComponent implements OnInit, OnDestroy {
   private crearOActualizarVacante(vacanteData: any): void {
     if (this.vacanteEditando) {
       // Actualizar vacante existente
-      this.apiService.put(`vacantes/${this.vacanteEditando.vacanteID}`, vacanteData).subscribe({
+      const updateData = { ...vacanteData, VacanteID: this.vacanteEditando.vacanteID };
+      this.apiService.put(`vacantes/${this.vacanteEditando.vacanteID}`, updateData).subscribe({
         next: () => {
           this.mostrarConfirmacion('Vacante Actualizada', 'La vacante ha sido actualizada exitosamente.');
           this.cerrarModal();
           this.cargarVacantes();
+          this.dataSyncService.notifyVacantesChanged();
         },
         error: (error) => {
           console.error('Error al actualizar vacante:', error);
@@ -1137,6 +1140,7 @@ export class VacantesComponent implements OnInit, OnDestroy {
           this.mostrarConfirmacion('Vacante Creada', 'La vacante ha sido creada exitosamente y ya está visible para los estudiantes.');
           this.cerrarModal();
           this.cargarVacantes();
+          this.dataSyncService.notifyVacantesChanged();
         },
         error: (error) => {
           console.error('Error al crear vacante:', error);
