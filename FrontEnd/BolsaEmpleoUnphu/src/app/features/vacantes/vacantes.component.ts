@@ -117,10 +117,7 @@ import { Subscription } from 'rxjs';
                 <div class="action-buttons">
                   <button class="btn-outline" (click)="editarVacante(vacante)">Editar</button>
                   <button class="btn-outline" (click)="verPostulaciones(vacante)">Ver Postulaciones</button>
-                  <button 
-                    *ngIf="vacante.createdBy !== 'system'" 
-                    class="btn-danger" 
-                    (click)="eliminarVacante(vacante)">Eliminar</button>
+                  <button class="btn-danger" (click)="eliminarVacante(vacante)">Eliminar</button>
                 </div>
               </div>
             </div>
@@ -840,54 +837,35 @@ export class VacantesComponent implements OnInit, OnDestroy {
 
   cargarVacantes(): void {
     if (this.isCompany()) {
-      // Para empresas, cargar desde la API
-      this.apiService.get<any>('vacantes').subscribe({
-        next: (response) => {
-          const todasVacantes = response.data || response || [];
-          console.log('Todas las vacantes:', todasVacantes);
-          console.log('Usuario actual:', this.currentUser);
-          // Filtrar vacantes por empresa del usuario actual
-          // Usar el endpoint específico para vacantes de empresa
-          this.apiService.get(`empresas/usuario/${this.currentUser?.usuarioID}`).subscribe({
-            next: (empresa: any) => {
-              if (empresa && empresa.empresaID) {
-                // Usar endpoint específico para vacantes de la empresa
-                this.apiService.get(`vacantes/empresa/${empresa.empresaID}`).subscribe({
-                  next: (vacantesEmpresa: any) => {
-                    console.log('Vacantes de empresa recibidas:', vacantesEmpresa);
-                    this.vacantes = vacantesEmpresa.data || vacantesEmpresa || [];
-                    console.log('Vacantes procesadas para empresa:', this.vacantes);
-                    this.vacantesFiltradas = [...this.vacantes];
-                  },
-                  error: () => {
-                    this.vacantes = [];
-                    this.vacantesFiltradas = [];
-                  }
-                });
-              } else {
+      // Para empresas, usar endpoint específico
+      this.apiService.get(`empresas/usuario/${this.currentUser?.usuarioID}`).subscribe({
+        next: (empresa: any) => {
+          if (empresa && empresa.empresaID) {
+            this.apiService.get(`vacantes/empresa/${empresa.empresaID}`).subscribe({
+              next: (vacantesEmpresa: any) => {
+                this.vacantes = vacantesEmpresa.data || vacantesEmpresa || [];
+                this.vacantesFiltradas = [...this.vacantes];
+              },
+              error: () => {
                 this.vacantes = [];
                 this.vacantesFiltradas = [];
               }
-            },
-            error: () => {
-              this.vacantes = [];
-              this.vacantesFiltradas = [];
-            }
-          });
-          console.log('Vacantes filtradas:', this.vacantes);
-          this.vacantesFiltradas = [...this.vacantes];
+            });
+          } else {
+            this.vacantes = [];
+            this.vacantesFiltradas = [];
+          }
         },
-        error: (error) => {
-          console.error('Error al cargar vacantes:', error);
+        error: () => {
           this.vacantes = [];
           this.vacantesFiltradas = [];
         }
       });
     } else {
-      // Para estudiantes, usar el data-sync service
-      this.dataSyncService.getVacantes().subscribe({
-        next: (vacantes) => {
-          this.vacantes = vacantes;
+      // Para estudiantes, usar todas las vacantes activas
+      this.apiService.get<any>('vacantes').subscribe({
+        next: (response) => {
+          this.vacantes = response.data || response || [];
           this.vacantesFiltradas = [...this.vacantes];
         },
         error: (error) => {
@@ -958,35 +936,21 @@ export class VacantesComponent implements OnInit, OnDestroy {
   }
 
   eliminarVacante(vacante: Vacante): void {
-    // Check if company can delete this vacante (only user-created ones)
-    if ((vacante as any).createdBy === 'system') {
-      this.mostrarConfirmacion('No Permitido', 'No puedes eliminar vacantes que no has creado.');
-      return;
-    }
-    
     this.mostrarConfirmacionEliminar(
       'Eliminar Vacante',
       `¿Estás seguro de que deseas eliminar la vacante "${vacante.titulo}"? Esta acción no se puede deshacer.`,
       () => {
-        // Eliminar de la lista actual
-        this.vacantes = this.vacantes.filter(v => v.vacanteID !== vacante.vacanteID);
-        
-        // Eliminar del localStorage
-        const vacantesGuardadas = JSON.parse(localStorage.getItem('vacantes') || '[]');
-        const vacantesActualizadas = vacantesGuardadas.filter((v: any) => v.vacanteID !== vacante.vacanteID);
-        localStorage.setItem('vacantes', JSON.stringify(vacantesActualizadas));
-        
-        // Also remove related applications
-        const postulacionesGuardadas = JSON.parse(localStorage.getItem('postulaciones') || '[]');
-        const postulacionesActualizadas = postulacionesGuardadas.filter((p: any) => p.vacanteID !== vacante.vacanteID);
-        localStorage.setItem('postulaciones', JSON.stringify(postulacionesActualizadas));
-        
-        // Disparar eventos para actualizar otras vistas
-        window.dispatchEvent(new CustomEvent('vacantesChanged'));
-        window.dispatchEvent(new CustomEvent('postulacionesChanged'));
-        
-        this.aplicarFiltros();
-        this.mostrarConfirmacion('Vacante Eliminada', 'La vacante ha sido eliminada exitosamente.');
+        // Eliminar usando la API
+        this.apiService.delete(`vacantes/${vacante.vacanteID}`).subscribe({
+          next: () => {
+            this.mostrarConfirmacion('Vacante Eliminada', 'La vacante ha sido eliminada exitosamente.');
+            this.cargarVacantes(); // Recargar la lista
+          },
+          error: (error) => {
+            console.error('Error al eliminar vacante:', error);
+            this.mostrarConfirmacion('Error', 'No se pudo eliminar la vacante.');
+          }
+        });
       }
     );
   }
