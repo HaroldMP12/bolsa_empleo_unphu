@@ -847,15 +847,27 @@ export class VacantesComponent implements OnInit, OnDestroy {
           console.log('Todas las vacantes:', todasVacantes);
           console.log('Usuario actual:', this.currentUser);
           // Filtrar vacantes por empresa del usuario actual
-          // Primero obtener el empresaID del usuario actual
+          // Usar el endpoint específico para vacantes de empresa
           this.apiService.get(`empresas/usuario/${this.currentUser?.usuarioID}`).subscribe({
             next: (empresa: any) => {
               if (empresa && empresa.empresaID) {
-                this.vacantes = todasVacantes.filter((v: any) => v.empresaID === empresa.empresaID);
+                // Usar endpoint específico para vacantes de la empresa
+                this.apiService.get(`vacantes/empresa/${empresa.empresaID}`).subscribe({
+                  next: (vacantesEmpresa: any) => {
+                    console.log('Vacantes de empresa recibidas:', vacantesEmpresa);
+                    this.vacantes = vacantesEmpresa.data || vacantesEmpresa || [];
+                    console.log('Vacantes procesadas para empresa:', this.vacantes);
+                    this.vacantesFiltradas = [...this.vacantes];
+                  },
+                  error: () => {
+                    this.vacantes = [];
+                    this.vacantesFiltradas = [];
+                  }
+                });
               } else {
                 this.vacantes = [];
+                this.vacantesFiltradas = [];
               }
-              this.vacantesFiltradas = [...this.vacantes];
             },
             error: () => {
               this.vacantes = [];
@@ -1092,13 +1104,13 @@ export class VacantesComponent implements OnInit, OnDestroy {
           return;
         }
         
-        // Preparar datos para la API
+        // Preparar datos para la API (nombres exactos del DTO)
         const vacanteData = {
           empresaID: empresa.empresaID,
           tituloVacante: this.nuevaVacante.titulo,
           descripcion: this.nuevaVacante.descripcion,
           requisitos: this.nuevaVacante.requisitos,
-          fechaCierre: this.nuevaVacante.fechaVencimiento,
+          fechaCierre: new Date(this.nuevaVacante.fechaVencimiento).toISOString(),
           ubicacion: this.nuevaVacante.ubicacion,
           tipoContrato: 'Fijo',
           jornada: 'Tiempo completo',
@@ -1107,6 +1119,8 @@ export class VacantesComponent implements OnInit, OnDestroy {
           cantidadVacantes: 1,
           categoriaID: this.nuevaVacante.categoriaID
         };
+        
+        console.log('Datos a enviar:', vacanteData);
         
         this.crearOActualizarVacante(vacanteData);
       },
