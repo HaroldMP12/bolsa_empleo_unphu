@@ -11,7 +11,7 @@ interface VacanteAdmin {
   tituloVacante: string;
   descripcion: string;
   nombreEmpresa: string;
-  rnc?: string;
+  RNC?: string;
   nombreCategoria: string;
   fechaCierre: string;
   ubicacion: string;
@@ -65,7 +65,7 @@ interface VacanteAdmin {
               <td>
                 <div class="empresa-info">
                   <strong>{{vacante.nombreEmpresa || 'Sin empresa'}}</strong>
-                  <small>{{vacante.rnc || 'Sin RNC'}}</small>
+                  <small>{{vacante.RNC || 'Sin RNC'}}</small>
                 </div>
               </td>
               <td>{{vacante.nombreCategoria || 'Sin categoría'}}</td>
