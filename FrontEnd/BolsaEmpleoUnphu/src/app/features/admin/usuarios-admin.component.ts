@@ -54,7 +54,6 @@ interface Rol {
               <th>Usuario</th>
               <th>Correo</th>
               <th>Teléfono</th>
-              <th>Rol</th>
               <th>Estado</th>
               <th>Fecha Registro</th>
               <th>Acciones</th>
@@ -69,11 +68,6 @@ interface Rol {
               </td>
               <td>{{usuario.correo}}</td>
               <td>{{usuario.telefono || 'No especificado'}}</td>
-              <td>
-                <span class="rol-badge" [class]="usuario.rol?.nombreRol?.toLowerCase()">
-                  {{usuario.rol?.nombreRol}}
-                </span>
-              </td>
               <td>
                 <span class="estado-badge" [class]="usuario.estado ? 'activo' : 'inactivo'">
                   {{usuario.estado ? 'Activo' : 'Inactivo'}}

@@ -10,13 +10,9 @@ interface VacanteAdmin {
   vacanteID: number;
   tituloVacante: string;
   descripcion: string;
-  empresa?: {
-    nombreEmpresa: string;
-    rnc: string;
-  };
-  categoria?: {
-    nombreCategoria: string;
-  };
+  nombreEmpresa: string;
+  rnc?: string;
+  nombreCategoria: string;
   fechaCierre: string;
   ubicacion: string;
   modalidad: string;
@@ -68,11 +64,11 @@ interface VacanteAdmin {
               </td>
               <td>
                 <div class="empresa-info">
-                  <strong>{{vacante.empresa?.nombreEmpresa || 'Sin empresa'}}</strong>
-                  <small>{{vacante.empresa?.rnc || 'Sin RNC'}}</small>
+                  <strong>{{vacante.nombreEmpresa || 'Sin empresa'}}</strong>
+                  <small>{{vacante.rnc || 'Sin RNC'}}</small>
                 </div>
               </td>
-              <td>{{vacante.categoria?.nombreCategoria || 'Sin categoría'}}</td>
+              <td>{{vacante.nombreCategoria || 'Sin categoría'}}</td>
               <td>
                 <span class="modalidad-badge" [class]="(vacante.modalidad || 'sin-modalidad').toLowerCase()">
                   {{vacante.modalidad || 'No especificada'}}
