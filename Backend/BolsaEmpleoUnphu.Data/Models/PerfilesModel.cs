@@ -61,6 +61,13 @@ public class PerfilesModel
     [Column("PromedioAcademico")]
     public decimal? PromedioAcademico { get; set; }
     
+    [StringLength(300)]
+    [Column("UrlCV")]
+    public string? UrlCV { get; set; }
+    
+    [Column("ExperienciaLaboral", TypeName = "NVARCHAR(MAX)")]
+    public string? ExperienciaLaboral { get; set; }
+    
     // Navegación
     [ForeignKey("UsuarioID")]
     public virtual UsuariosModel Usuario { get; set; } = null!;

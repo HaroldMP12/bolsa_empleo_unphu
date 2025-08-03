@@ -44,4 +44,12 @@ public class UpdatePerfilDto
     public string? Direccion { get; set; }
     
     public decimal? PromedioAcademico { get; set; }
+    
+    [StringLength(300)]
+    public string? UrlCV { get; set; }
+    
+    public string? ExperienciaLaboral { get; set; }
+    
+    [StringLength(20)]
+    public string? Telefono { get; set; }
 }

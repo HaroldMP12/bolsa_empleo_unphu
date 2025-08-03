@@ -721,11 +721,12 @@ export class PerfilComponent implements OnInit {
       tituloObtenido: null,
       fechaEgreso: null,
       añoGraduacion: null,
-      fechaNacimiento: this.personalForm.get('fechaNacimiento')?.value || null,
+      fechaNacimiento: this.personalForm.get('fechaNacimiento')?.value ? new Date(this.personalForm.get('fechaNacimiento')?.value) : null,
       direccion: this.personalForm.get('direccion')?.value || null,
       promedioAcademico: this.academicForm.get('promedio')?.value ? parseFloat(this.academicForm.get('promedio')?.value) : null,
-      urlCV: null,
-      experienciaLaboral: this.experiencias.length > 0 ? JSON.stringify(this.experiencias) : null
+      urlCV: this.cvSeleccionado || null,
+      experienciaLaboral: this.experiencias.length > 0 ? JSON.stringify(this.experiencias) : null,
+      telefono: this.personalForm.get('telefono')?.value || null
     };
     
     console.log('Datos a enviar:', perfilData);

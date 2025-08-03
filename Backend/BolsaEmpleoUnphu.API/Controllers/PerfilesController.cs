@@ -81,7 +81,9 @@ public class PerfilesController : ControllerBase
             RedesSociales = perfilDto.RedesSociales,
             FechaNacimiento = perfilDto.FechaNacimiento,
             Direccion = perfilDto.Direccion,
-            PromedioAcademico = perfilDto.PromedioAcademico
+            PromedioAcademico = perfilDto.PromedioAcademico,
+            UrlCV = perfilDto.UrlCV,
+            ExperienciaLaboral = perfilDto.ExperienciaLaboral
         };
 
         _context.Perfiles.Add(perfil);
@@ -129,6 +131,18 @@ public class PerfilesController : ControllerBase
         perfil.FechaNacimiento = perfilDto.FechaNacimiento;
         perfil.Direccion = perfilDto.Direccion;
         perfil.PromedioAcademico = perfilDto.PromedioAcademico;
+        perfil.UrlCV = perfilDto.UrlCV;
+        perfil.ExperienciaLaboral = perfilDto.ExperienciaLaboral;
+        
+        // Actualizar teléfono del usuario si se proporciona
+        if (!string.IsNullOrEmpty(perfilDto.Telefono))
+        {
+            var usuario = await _context.Usuarios.FindAsync(perfilDto.UsuarioID);
+            if (usuario != null)
+            {
+                usuario.Telefono = perfilDto.Telefono;
+            }
+        }
 
         try
         {
