@@ -515,7 +515,7 @@ import { Subscription } from 'rxjs';
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(30, 58, 138, 0.4);
+      background: rgba(15, 52, 96, 0.8);
       backdrop-filter: blur(4px);
       display: flex;
       justify-content: center;
@@ -539,7 +539,7 @@ import { Subscription } from 'rxjs';
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+      background: linear-gradient(135deg, var(--unphu-blue-dark) 0%, #1e40af 100%);
       color: white;
       border-radius: 12px 12px 0 0;
     }
@@ -816,18 +816,23 @@ export class PerfilEmpresaComponent implements OnInit, OnDestroy {
 
   verCandidatos(vacante: any): void {
     this.vacanteSeleccionada = vacante;
-    this.candidatos = this.dataSyncService.getVacanteApplications(vacante.vacanteID)
-      .map((postulacion: any) => {
-        const usuario = JSON.parse(localStorage.getItem('usuarios') || '[]')
-          .find((u: any) => u.usuarioID === postulacion.usuarioID);
-        
-        return {
-          nombreCompleto: usuario?.nombreCompleto || 'Usuario UNPHU',
-          correo: usuario?.correo || 'correo@unphu.edu.do',
-          fechaPostulacion: postulacion.fechaPostulacion,
-          estado: postulacion.estado || 'Pendiente'
-        };
-      });
+    
+    // Cargar postulaciones desde localStorage (datos mock)
+    const postulaciones = JSON.parse(localStorage.getItem('postulaciones') || '[]')
+      .filter((p: any) => p.vacanteID === vacante.vacanteID);
+    
+    this.candidatos = postulaciones.map((postulacion: any) => {
+      const usuario = JSON.parse(localStorage.getItem('usuarios') || '[]')
+        .find((u: any) => u.usuarioID === postulacion.usuarioID);
+      
+      return {
+        nombreCompleto: usuario?.nombreCompleto || postulacion.candidato || 'Usuario UNPHU',
+        correo: usuario?.correo || 'correo@unphu.edu.do',
+        fechaPostulacion: postulacion.fechaPostulacion,
+        estado: postulacion.estado || 'Pendiente'
+      };
+    });
+    
     this.mostrarModalCandidatos = true;
   }
 
