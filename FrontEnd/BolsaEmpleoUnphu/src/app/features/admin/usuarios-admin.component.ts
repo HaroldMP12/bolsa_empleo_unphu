@@ -71,8 +71,8 @@ interface Rol {
               <td>{{usuario.correo}}</td>
               <td>{{usuario.telefono || 'No especificado'}}</td>
               <td>
-                <span class="rol-badge" [class]="usuario.rol.nombreRol.toLowerCase()">
-                  {{usuario.rol.nombreRol}}
+                <span class="rol-badge" [class]="usuario.rol?.nombreRol?.toLowerCase() || 'sin-rol'">
+                  {{usuario.rol?.nombreRol || 'Sin rol'}}
                 </span>
               </td>
               <td>
@@ -223,6 +223,11 @@ interface Rol {
     .rol-badge.empresa {
       background: #fef9e7;
       color: #f39c12;
+    }
+
+    .rol-badge.sin-rol {
+      background: #f8f9fa;
+      color: #6c757d;
     }
 
     .estado-badge.activo {
@@ -439,7 +444,7 @@ export class UsuariosAdminComponent implements OnInit, OnDestroy {
   }
 
   editarUsuario(usuario: Usuario) {
-    this.usuarioEditando = { ...usuario, rolID: usuario.rol.rolID };
+    this.usuarioEditando = { ...usuario, rolID: usuario.rol?.rolID || 1 };
   }
 
   cerrarModal() {
