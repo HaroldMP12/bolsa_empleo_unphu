@@ -76,9 +76,9 @@ import { Subscription } from 'rxjs';
         <div class="vacantes-grid">
           <div *ngFor="let vacante of vacantesFiltradas" class="vacante-card">
             <div class="vacante-header">
-              <h3>{{ vacante.titulo }}</h3>
+              <h3>{{ vacante.tituloVacante || vacante.titulo }}</h3>
               <div class="vacante-meta">
-                <span class="empresa">{{ vacante.empresa }}</span>
+                <span class="empresa">{{ vacante.empresa?.nombreEmpresa || vacante.empresa }}</span>
                 <span class="modalidad modalidad-{{ vacante.modalidad ? vacante.modalidad.toLowerCase() : 'sin-modalidad' }}">{{ vacante.modalidad || 'No especificada' }}</span>
               </div>
             </div>
@@ -97,7 +97,7 @@ import { Subscription } from 'rxjs';
                 </div>
                 <div class="detail-item">
                   <span class="icon">📅</span>
-                  <span>Vence: {{ vacante.fechaVencimiento | date:'dd/MM/yyyy' }}</span>
+                  <span>Vence: {{ (vacante.fechaCierre || vacante.fechaVencimiento) | date:'dd/MM/yyyy' }}</span>
                 </div>
               </div>
             </div>
@@ -938,17 +938,21 @@ export class VacantesComponent implements OnInit, OnDestroy {
   eliminarVacante(vacante: Vacante): void {
     this.mostrarConfirmacionEliminar(
       'Eliminar Vacante',
-      `¿Estás seguro de que deseas eliminar la vacante "${vacante.titulo}"? Esta acción no se puede deshacer.`,
+      `¿Estás seguro de que deseas eliminar la vacante "${vacante.tituloVacante || vacante.titulo}"? Esta acción no se puede deshacer.`,
       () => {
         // Eliminar usando la API
+        console.log('Eliminando vacante ID:', vacante.vacanteID);
         this.apiService.delete(`vacantes/${vacante.vacanteID}`).subscribe({
           next: () => {
+            console.log('Vacante eliminada exitosamente');
             this.mostrarConfirmacion('Vacante Eliminada', 'La vacante ha sido eliminada exitosamente.');
             this.cargarVacantes(); // Recargar la lista
           },
           error: (error) => {
-            console.error('Error al eliminar vacante:', error);
-            this.mostrarConfirmacion('Error', 'No se pudo eliminar la vacante.');
+            console.error('Error completo al eliminar vacante:', error);
+            console.error('Status:', error.status);
+            console.error('Message:', error.message);
+            this.mostrarConfirmacion('Error', `No se pudo eliminar la vacante. Error: ${error.status}`);
           }
         });
       }
