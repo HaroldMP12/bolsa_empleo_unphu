@@ -227,9 +227,9 @@ export class VacantesAdminComponent implements OnInit, OnDestroy {
     if (this.busqueda) params.search = this.busqueda;
     if (this.filtroModalidad) params.modalidad = this.filtroModalidad;
 
-    this.apiService.get<VacanteAdmin[]>('vacantes', params).subscribe({
-      next: (vacantes) => {
-        this.vacantes = vacantes;
+    this.apiService.get<any>('vacantes', params).subscribe({
+      next: (response) => {
+        this.vacantes = response.data || response || [];
         this.cargando = false;
       },
       error: (error) => {

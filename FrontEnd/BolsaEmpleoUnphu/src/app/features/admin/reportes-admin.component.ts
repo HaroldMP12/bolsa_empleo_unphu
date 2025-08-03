@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { ApiService } from '../../core/services/api.service';
 
 interface EstadisticasGenerales {
@@ -15,7 +16,7 @@ interface EstadisticasGenerales {
 @Component({
   selector: 'app-reportes-admin',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   template: `
     <div class="reportes-admin">
       <div class="header">
