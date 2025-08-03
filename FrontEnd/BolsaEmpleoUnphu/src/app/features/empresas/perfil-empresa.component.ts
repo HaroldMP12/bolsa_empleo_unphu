@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { DataSyncService } from '../../core/services/data-sync.service';
 import { AuthResponse } from '../../core/models/auth.models';
@@ -13,8 +13,15 @@ import { Subscription } from 'rxjs';
   template: `
     <div class="perfil-empresa-page">
       <div class="page-header">
-        <h1>Perfil de Empresa</h1>
-        <p>Información y estadísticas de tu empresa</p>
+        <div class="header-content">
+          <div class="header-text">
+            <h1>Perfil de Empresa</h1>
+            <p>Información y estadísticas de tu empresa</p>
+          </div>
+          <div class="header-actions">
+            <button class="btn-secondary" (click)="navegarDashboard()">← Volver al Dashboard</button>
+          </div>
+        </div>
       </div>
 
       <!-- ESTADÍSTICAS PRINCIPALES -->
@@ -194,7 +201,16 @@ import { Subscription } from 'rxjs';
       border-radius: 12px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       margin-bottom: 2rem;
-      text-align: center;
+    }
+    
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .header-text {
+      text-align: left;
     }
     
     .page-header h1 {
@@ -683,7 +699,8 @@ export class PerfilEmpresaComponent implements OnInit, OnDestroy {
 
   constructor(
     private authService: AuthService,
-    private dataSyncService: DataSyncService
+    private dataSyncService: DataSyncService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -816,10 +833,14 @@ export class PerfilEmpresaComponent implements OnInit, OnDestroy {
 
   verCandidatos(vacante: any): void {
     this.vacanteSeleccionada = vacante;
+    console.log('Vacante seleccionada:', vacante);
     
     // Cargar postulaciones desde localStorage (datos mock)
-    const postulaciones = JSON.parse(localStorage.getItem('postulaciones') || '[]')
-      .filter((p: any) => p.vacanteID === vacante.vacanteID);
+    const todasPostulaciones = JSON.parse(localStorage.getItem('postulaciones') || '[]');
+    console.log('Todas las postulaciones:', todasPostulaciones);
+    
+    const postulaciones = todasPostulaciones.filter((p: any) => p.vacanteID === vacante.vacanteID);
+    console.log('Postulaciones filtradas:', postulaciones);
     
     this.candidatos = postulaciones.map((postulacion: any) => {
       const usuario = JSON.parse(localStorage.getItem('usuarios') || '[]')
@@ -833,6 +854,7 @@ export class PerfilEmpresaComponent implements OnInit, OnDestroy {
       };
     });
     
+    console.log('Candidatos procesados:', this.candidatos);
     this.mostrarModalCandidatos = true;
   }
 
@@ -840,5 +862,9 @@ export class PerfilEmpresaComponent implements OnInit, OnDestroy {
     this.mostrarModalCandidatos = false;
     this.vacanteSeleccionada = null;
     this.candidatos = [];
+  }
+
+  navegarDashboard(): void {
+    this.router.navigate(['/dashboard']);
   }
 }
