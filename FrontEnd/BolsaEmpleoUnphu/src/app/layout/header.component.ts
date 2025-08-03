@@ -32,6 +32,10 @@ import { AuthResponse } from '../core/models/auth.models';
             Perfil Empresa
           </a>
           
+          <a *ngIf="currentUser.rol === 'Admin'" routerLink="/admin" routerLinkActive="active" class="admin-link">
+            🛠️ Administración
+          </a>
+          
           <a routerLink="/perfil" routerLinkActive="active">Mi Perfil</a>
         </nav>
         
@@ -98,6 +102,15 @@ import { AuthResponse } from '../core/models/auth.models';
     .nav a:hover, .nav a.active {
       background: rgba(15, 56, 90, 0.1);
       color: var(--unphu-blue-dark);
+    }
+    .admin-link {
+      background: linear-gradient(135deg, #e74c3c, #c0392b) !important;
+      color: white !important;
+      font-weight: 600;
+    }
+    .admin-link:hover {
+      background: linear-gradient(135deg, #c0392b, #a93226) !important;
+      color: white !important;
     }
     .user-menu {
       display: flex;
