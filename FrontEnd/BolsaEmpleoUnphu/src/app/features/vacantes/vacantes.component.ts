@@ -847,9 +847,20 @@ export class VacantesComponent implements OnInit, OnDestroy {
           console.log('Todas las vacantes:', todasVacantes);
           console.log('Usuario actual:', this.currentUser);
           // Filtrar vacantes por empresa del usuario actual
-          this.vacantes = todasVacantes.filter((v: any) => {
-            console.log('Vacante empresaID:', v.empresaID, 'Usuario ID:', this.currentUser?.usuarioID);
-            return v.empresaID === this.currentUser?.usuarioID;
+          // Primero obtener el empresaID del usuario actual
+          this.apiService.get(`empresas/usuario/${this.currentUser?.usuarioID}`).subscribe({
+            next: (empresa: any) => {
+              if (empresa && empresa.empresaID) {
+                this.vacantes = todasVacantes.filter((v: any) => v.empresaID === empresa.empresaID);
+              } else {
+                this.vacantes = [];
+              }
+              this.vacantesFiltradas = [...this.vacantes];
+            },
+            error: () => {
+              this.vacantes = [];
+              this.vacantesFiltradas = [];
+            }
           });
           console.log('Vacantes filtradas:', this.vacantes);
           this.vacantesFiltradas = [...this.vacantes];
@@ -1073,22 +1084,39 @@ export class VacantesComponent implements OnInit, OnDestroy {
     
     console.log('Guardando vacante:', this.nuevaVacante);
     
-    // Preparar datos para la API
-    const vacanteData = {
-      empresaID: this.currentUser?.usuarioID,
-      tituloVacante: this.nuevaVacante.titulo,
-      descripcion: this.nuevaVacante.descripcion,
-      requisitos: this.nuevaVacante.requisitos,
-      fechaCierre: this.nuevaVacante.fechaVencimiento,
-      ubicacion: this.nuevaVacante.ubicacion,
-      tipoContrato: 'Fijo',
-      jornada: 'Tiempo completo',
-      modalidad: this.nuevaVacante.modalidad,
-      salario: this.nuevaVacante.salario || null,
-      cantidadVacantes: 1,
-      categoriaID: this.nuevaVacante.categoriaID
-    };
-    
+    // Obtener empresaID primero
+    this.apiService.get(`empresas/usuario/${this.currentUser?.usuarioID}`).subscribe({
+      next: (empresa: any) => {
+        if (!empresa || !empresa.empresaID) {
+          this.mostrarConfirmacion('Error', 'No se encontró información de la empresa.');
+          return;
+        }
+        
+        // Preparar datos para la API
+        const vacanteData = {
+          empresaID: empresa.empresaID,
+          tituloVacante: this.nuevaVacante.titulo,
+          descripcion: this.nuevaVacante.descripcion,
+          requisitos: this.nuevaVacante.requisitos,
+          fechaCierre: this.nuevaVacante.fechaVencimiento,
+          ubicacion: this.nuevaVacante.ubicacion,
+          tipoContrato: 'Fijo',
+          jornada: 'Tiempo completo',
+          modalidad: this.nuevaVacante.modalidad,
+          salario: this.nuevaVacante.salario || null,
+          cantidadVacantes: 1,
+          categoriaID: this.nuevaVacante.categoriaID
+        };
+        
+        this.crearOActualizarVacante(vacanteData);
+      },
+      error: () => {
+        this.mostrarConfirmacion('Error', 'No se pudo obtener información de la empresa.');
+      }
+    });
+  }
+  
+  private crearOActualizarVacante(vacanteData: any): void {
     if (this.vacanteEditando) {
       // Actualizar vacante existente
       this.apiService.put(`vacantes/${this.vacanteEditando.vacanteID}`, vacanteData).subscribe({
