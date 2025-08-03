@@ -1052,7 +1052,12 @@ export class VacantesComponent implements OnInit, OnDestroy {
       localStorage.setItem('usuarios', JSON.stringify(usuariosGuardados));
     }
     
-    // Enviar postulación al backend
+    // Guardar en localStorage (funciona inmediatamente)
+    const postulacionesExistentes = JSON.parse(localStorage.getItem('postulaciones') || '[]');
+    postulacionesExistentes.push(nuevaPostulacion);
+    localStorage.setItem('postulaciones', JSON.stringify(postulacionesExistentes));
+    
+    // Enviar al backend en segundo plano
     const postulacionBackend = {
       VacanteID: this.vacanteSeleccionada?.vacanteID,
       UsuarioID: usuarioID,
@@ -1060,21 +1065,13 @@ export class VacantesComponent implements OnInit, OnDestroy {
     };
     
     this.apiService.post('postulaciones', postulacionBackend).subscribe({
-      next: () => {
-        // También guardar en localStorage para compatibilidad
-        const postulacionesExistentes = JSON.parse(localStorage.getItem('postulaciones') || '[]');
-        postulacionesExistentes.push(nuevaPostulacion);
-        localStorage.setItem('postulaciones', JSON.stringify(postulacionesExistentes));
-        
-        window.dispatchEvent(new CustomEvent('postulacionesChanged'));
-        this.cerrarModalPostulacion();
-        this.mostrarConfirmacion('Postulación Enviada', '¡Tu postulación ha sido enviada exitosamente! Recibirás una notificación cuando sea revisada.');
-      },
-      error: (error) => {
-        console.error('Error al enviar postulación:', error);
-        this.mostrarConfirmacion('Error', 'No se pudo enviar la postulación. Inténtalo de nuevo.');
-      }
+      next: () => console.log('Postulación enviada al backend'),
+      error: (error) => console.error('Error al enviar al backend:', error)
     });
+    
+    window.dispatchEvent(new CustomEvent('postulacionesChanged'));
+    this.cerrarModalPostulacion();
+    this.mostrarConfirmacion('Postulación Enviada', '¡Tu postulación ha sido enviada exitosamente! Recibirás una notificación cuando sea revisada.');
   }
 
   agregarPregunta(): void {
