@@ -245,21 +245,37 @@ export class EmpresasAdminComponent implements OnInit, OnDestroy {
 
   cargarEmpresas() {
     this.cargando = true;
-    const params: any = { rolId: 3 }; // Rol empresa
+    const params: any = { rolId: 3, pageSize: 1000 }; // Rol empresa
     
     if (this.filtroEstado) params.estadoAprobacion = this.filtroEstado;
     if (this.busqueda) params.search = this.busqueda;
 
-    this.apiService.get<any>('usuarios', params).subscribe({
-      next: (response) => {
-        this.empresas = response.data || [];
-        this.cargando = false;
-      },
-      error: (error) => {
-        console.error('Error al cargar empresas:', error);
-        this.toastService.showError('Error al cargar las empresas');
-        this.cargando = false;
-      }
+    // Cargar usuarios empresa y sus datos de empresa
+    Promise.all([
+      this.apiService.get<any>('usuarios', params).toPromise(),
+      this.apiService.get<any>('empresas', { pageSize: 1000 }).toPromise()
+    ]).then(([usuariosResponse, empresasResponse]) => {
+      const usuarios = usuariosResponse?.data || [];
+      const empresasData = empresasResponse?.data || [];
+      
+      // Combinar datos de usuario con datos de empresa
+      this.empresas = usuarios.map((usuario: any) => {
+        const empresaInfo = empresasData.find((emp: any) => emp.usuarioID === usuario.usuarioID);
+        return {
+          ...usuario,
+          empresa: empresaInfo ? {
+            nombreEmpresa: empresaInfo.nombreEmpresa,
+            rnc: empresaInfo.rnc,
+            sector: empresaInfo.sector
+          } : null
+        };
+      });
+      
+      this.cargando = false;
+    }).catch(error => {
+      console.error('Error al cargar empresas:', error);
+      this.toastService.showError('Error al cargar las empresas');
+      this.cargando = false;
     });
   }
 
