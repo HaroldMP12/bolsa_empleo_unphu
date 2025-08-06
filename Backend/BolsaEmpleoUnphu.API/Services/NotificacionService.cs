@@ -35,10 +35,11 @@ public class NotificacionService : INotificacionService
         await _hubContext.Clients.Group($"User_{usuarioId}")
             .SendAsync("NuevaNotificacion", new
             {
-                notificacion.NotificacionID,
-                notificacion.Mensaje,
-                notificacion.FechaEnvio,
-                notificacion.ReferenciaTipo
+                notificacionID = notificacion.NotificacionID,
+                mensaje = notificacion.Mensaje,
+                fechaEnvio = notificacion.FechaEnvio,
+                estado = notificacion.Estado,
+                referenciaTipo = notificacion.ReferenciaTipo
             });
     }
 

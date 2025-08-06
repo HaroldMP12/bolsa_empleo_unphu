@@ -29,13 +29,17 @@ import { Subscription } from 'rxjs';
           
           <div *ngFor="let notification of notifications" 
                class="notification-item" 
-               [class.unread]="!notification.estado"
-               (click)="markAsRead(notification)">
-            <div class="notification-content">
+               [class.unread]="!notification.estado">
+            <div class="notification-content" (click)="markAsRead(notification)">
               <p class="notification-message">{{ notification.mensaje }}</p>
               <span class="notification-time">{{ formatTime(notification.fechaEnvio) }}</span>
             </div>
-            <div *ngIf="!notification.estado" class="unread-dot"></div>
+            <div class="notification-actions">
+              <div *ngIf="!notification.estado" class="unread-dot"></div>
+              <button class="delete-btn" (click)="deleteNotification(notification)" title="Eliminar notificación">
+                ✕
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -133,7 +137,6 @@ import { Subscription } from 'rxjs';
     .notification-item {
       padding: 1rem;
       border-bottom: 1px solid #f0f0f0;
-      cursor: pointer;
       display: flex;
       align-items: flex-start;
       gap: 0.75rem;
@@ -150,6 +153,35 @@ import { Subscription } from 'rxjs';
     
     .notification-content {
       flex: 1;
+      cursor: pointer;
+    }
+    
+    .notification-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .delete-btn {
+      background: none;
+      border: none;
+      color: #dc3545;
+      cursor: pointer;
+      font-size: 0.875rem;
+      padding: 0.25rem;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.7;
+      transition: all 0.2s;
+    }
+    
+    .delete-btn:hover {
+      background: rgba(220, 53, 69, 0.1);
+      opacity: 1;
     }
     
     .notification-message {
@@ -194,7 +226,7 @@ export class NotificationBellComponent implements OnInit, OnDestroy {
     // Suscribirse a las notificaciones
     this.subscriptions.push(
       this.notificationService.notifications$.subscribe(notifications => {
-        this.notifications = notifications.slice(0, 10); // Mostrar solo las últimas 10
+        this.notifications = notifications; // Mostrar todas las notificaciones
       })
     );
 
@@ -225,7 +257,7 @@ export class NotificationBellComponent implements OnInit, OnDestroy {
     if (!notification.estado) {
       this.notificationService.markAsRead(notification.notificacionID).subscribe(() => {
         notification.estado = true;
-        this.loadUnreadCount();
+        this.unreadCount = Math.max(0, this.unreadCount - 1);
       });
     }
   }
@@ -246,6 +278,15 @@ export class NotificationBellComponent implements OnInit, OnDestroy {
     if (diffInMinutes < 60) return `${diffInMinutes}m`;
     if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}h`;
     return `${Math.floor(diffInMinutes / 1440)}d`;
+  }
+
+  deleteNotification(notification: Notificacion): void {
+    this.notificationService.deleteNotification(notification.notificacionID).subscribe(() => {
+      this.notifications = this.notifications.filter(n => n.notificacionID !== notification.notificacionID);
+      if (!notification.estado) {
+        this.unreadCount = Math.max(0, this.unreadCount - 1);
+      }
+    });
   }
 
   private loadUnreadCount(): void {

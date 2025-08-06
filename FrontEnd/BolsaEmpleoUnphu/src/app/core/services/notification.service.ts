@@ -55,6 +55,7 @@ export class NotificationService {
       });
 
       this.hubConnection.on('NuevaNotificacion', (notification) => {
+        console.log('Nueva notificación recibida:', notification);
         const current = this.notificationsSubject.value;
         this.notificationsSubject.next([notification, ...current]);
         this.updateUnreadCount();
@@ -88,9 +89,13 @@ export class NotificationService {
     return this.http.put(`${environment.apiUrl}/notificaciones/marcar-todas-leidas`, {});
   }
 
+  deleteNotification(notificationId: number): Observable<any> {
+    return this.http.delete(`${environment.apiUrl}/notificaciones/${notificationId}`);
+  }
+
   private updateUnreadCount(): void {
-    const notifications = this.notificationsSubject.value;
-    const unreadCount = notifications.filter(n => !n.estado).length;
-    this.unreadCountSubject.next(unreadCount);
+    this.getUnreadCount().subscribe(response => {
+      this.unreadCountSubject.next(response.noLeidas);
+    });
   }
 }
