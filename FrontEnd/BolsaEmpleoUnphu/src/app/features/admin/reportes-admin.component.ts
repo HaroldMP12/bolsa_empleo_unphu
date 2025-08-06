@@ -382,14 +382,16 @@ export class ReportesAdminComponent implements OnInit {
     this.cargando = true;
     
     Promise.all([
-      this.apiService.get('usuarios').toPromise(),
-      this.apiService.get('empresas').toPromise(),
-      this.apiService.get('vacantes').toPromise(),
-      this.apiService.get('postulaciones').toPromise()
+      this.apiService.get<any>('usuarios?pageSize=1000').toPromise(),
+      this.apiService.get<any>('empresas?pageSize=1000').toPromise(),
+      this.apiService.get<any>('vacantes?pageSize=1000').toPromise(),
+      this.apiService.get<any>('postulaciones?pageSize=1000').toPromise()
     ]).then(([usuarios, empresas, vacantes, postulaciones]) => {
-      // Contar usuarios por estado de aprobación
-      const empresasData = empresas?.data || [];
-      const usuariosData = usuarios?.data || [];
+      // Extraer datos de PagedResult
+      const empresasData = (empresas as any)?.data || [];
+      const usuariosData = (usuarios as any)?.data || [];
+      const vacantesData = (vacantes as any)?.data || [];
+      const postulacionesData = (postulaciones as any)?.data || [];
       
       // Filtrar usuarios empresa
       const usuariosEmpresa = usuariosData.filter((u: any) => u.rol?.nombreRol === 'Empresa');
@@ -397,8 +399,8 @@ export class ReportesAdminComponent implements OnInit {
       this.estadisticas = {
         totalUsuarios: usuariosData.length,
         totalEmpresas: empresasData.length,
-        totalVacantes: vacantes?.data?.length || 0,
-        totalPostulaciones: postulaciones?.data?.length || 0,
+        totalVacantes: vacantesData.length,
+        totalPostulaciones: postulacionesData.length,
         empresasPendientes: usuariosEmpresa.filter((u: any) => u.estadoAprobacion === 'Pendiente').length,
         empresasAprobadas: usuariosEmpresa.filter((u: any) => u.estadoAprobacion === 'Aprobado').length,
         empresasRechazadas: usuariosEmpresa.filter((u: any) => u.estadoAprobacion === 'Rechazado').length
