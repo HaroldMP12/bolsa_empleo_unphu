@@ -129,6 +129,16 @@ public class NotificacionesController : ControllerBase
         return NoContent();
     }
 
+    // POST: api/notificaciones/test
+    [HttpPost("test")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> TestNotification()
+    {
+        var usuarioId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        await _notificacionService.EnviarNotificacionAsync(usuarioId, "Esta es una notificación de prueba del sistema", "Test");
+        return Ok(new { message = "Notificación de prueba enviada" });
+    }
+
     private bool NotificacionExists(int id)
     {
         return _context.Notificaciones.Any(e => e.NotificacionID == id);

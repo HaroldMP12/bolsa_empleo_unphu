@@ -58,6 +58,20 @@ public class NotificacionService : INotificacionService
         await EnviarNotificacionAsync(usuarioId, mensaje, "Vacante");
     }
 
+    public async Task EnviarNotificacionCambioEstadoAsync(int usuarioId, string tituloVacante, string nuevoEstado)
+    {
+        var mensaje = $"Tu postulación para '{tituloVacante}' ha cambiado a: {nuevoEstado}";
+        await EnviarNotificacionAsync(usuarioId, mensaje, "CambioEstado");
+    }
+
+    public async Task EnviarNotificacionAprobacionEmpresaAsync(int usuarioId, string nombreEmpresa, bool aprobada)
+    {
+        var mensaje = aprobada 
+            ? $"¡Felicidades! Tu empresa '{nombreEmpresa}' ha sido aprobada y ya puedes publicar vacantes."
+            : $"Tu empresa '{nombreEmpresa}' no ha sido aprobada. Contacta al administrador para más información.";
+        await EnviarNotificacionAsync(usuarioId, mensaje, "AprobacionEmpresa");
+    }
+
     public async Task MarcarComoLeidaAsync(int notificacionId, int usuarioId)
     {
         var notificacion = await _context.Notificaciones

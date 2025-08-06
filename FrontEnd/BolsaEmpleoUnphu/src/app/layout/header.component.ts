@@ -2,12 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../core/services/auth.service';
+import { NotificationService } from '../core/services/notification.service';
 import { AuthResponse } from '../core/models/auth.models';
+import { NotificationBellComponent } from '../shared/components/notification-bell.component';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, NotificationBellComponent],
   template: `
     <header class="header">
       <div class="header-content">
@@ -40,6 +42,7 @@ import { AuthResponse } from '../core/models/auth.models';
         </nav>
         
         <div class="user-menu" *ngIf="currentUser">
+          <app-notification-bell></app-notification-bell>
           <span class="user-name">{{ currentUser.nombreCompleto }}</span>
           <span class="user-role">{{ currentUser.rol }}</span>
           <button (click)="logout()" class="logout-btn">Salir</button>
@@ -224,12 +227,18 @@ export class HeaderComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
     this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
+      if (user) {
+        this.notificationService.startConnection();
+      } else {
+        this.notificationService.stopConnection();
+      }
     });
   }
 

@@ -156,11 +156,30 @@ public class PostulacionesController : ControllerBase
             return BadRequest();
         }
 
-        _context.Entry(postulacion).State = EntityState.Modified;
+        var postulacionAnterior = await _context.Postulaciones
+            .Include(p => p.Vacante)
+            .FirstOrDefaultAsync(p => p.PostulacionID == id);
+            
+        if (postulacionAnterior == null)
+        {
+            return NotFound();
+        }
+
+        var estadoAnterior = postulacionAnterior.Estado;
+        _context.Entry(postulacionAnterior).CurrentValues.SetValues(postulacion);
 
         try
         {
             await _context.SaveChangesAsync();
+            
+            // Enviar notificación si cambió el estado
+            if (estadoAnterior != postulacion.Estado)
+            {
+                await _notificacionService.EnviarNotificacionCambioEstadoAsync(
+                    postulacion.UsuarioID, 
+                    postulacionAnterior.Vacante.TituloVacante, 
+                    postulacion.Estado);
+            }
         }
         catch (DbUpdateConcurrencyException)
         {

@@ -5,6 +5,7 @@ using BolsaEmpleoUnphu.Data.Context;
 using BolsaEmpleoUnphu.Data.Models;
 using BolsaEmpleoUnphu.API.DTOs;
 using BolsaEmpleoUnphu.API.Extensions;
+using BolsaEmpleoUnphu.API.Services;
 using BCrypt.Net;
 
 namespace BolsaEmpleoUnphu.API.Controllers;
@@ -15,10 +16,12 @@ namespace BolsaEmpleoUnphu.API.Controllers;
 public class UsuariosController : ControllerBase
 {
     private readonly BolsaEmpleoUnphuContext _context;
+    private readonly INotificacionService _notificacionService;
 
-    public UsuariosController(BolsaEmpleoUnphuContext context)
+    public UsuariosController(BolsaEmpleoUnphuContext context, INotificacionService notificacionService)
     {
         _context = context;
+        _notificacionService = notificacionService;
     }
 
     // GET: api/usuarios
@@ -204,10 +207,12 @@ public class UsuariosController : ControllerBase
         
         await _context.SaveChangesAsync();
         
-        // Simulación de email de aprobación
-        Console.WriteLine($"[SIMULACIÓN] Email enviado a: {usuario.Correo}");
-        Console.WriteLine($"[SIMULACIÓN] Asunto: Cuenta de empresa aprobada - Bolsa de Empleo UNPHU");
-        Console.WriteLine($"[SIMULACIÓN] Mensaje: Su cuenta ha sido aprobada. Ya puede iniciar sesión.");
+        // Obtener información de la empresa
+        var empresa = await _context.Empresas.FirstOrDefaultAsync(e => e.UsuarioID == id);
+        var nombreEmpresa = empresa?.NombreEmpresa ?? usuario.NombreCompleto;
+        
+        // Enviar notificación de aprobación
+        await _notificacionService.EnviarNotificacionAprobacionEmpresaAsync(id, nombreEmpresa, true);
         
         return Ok(new { message = "Empresa aprobada exitosamente" });
     }
@@ -230,10 +235,12 @@ public class UsuariosController : ControllerBase
         
         await _context.SaveChangesAsync();
         
-        // Simulación de email de rechazo
-        Console.WriteLine($"[SIMULACIÓN] Email enviado a: {usuario.Correo}");
-        Console.WriteLine($"[SIMULACIÓN] Asunto: Solicitud de cuenta rechazada - Bolsa de Empleo UNPHU");
-        Console.WriteLine($"[SIMULACIÓN] Motivo: {motivo}");
+        // Obtener información de la empresa
+        var empresa = await _context.Empresas.FirstOrDefaultAsync(e => e.UsuarioID == id);
+        var nombreEmpresa = empresa?.NombreEmpresa ?? usuario.NombreCompleto;
+        
+        // Enviar notificación de rechazo
+        await _notificacionService.EnviarNotificacionAprobacionEmpresaAsync(id, nombreEmpresa, false);
         
         return Ok(new { message = "Empresa rechazada" });
     }
