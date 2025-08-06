@@ -381,19 +381,34 @@ export class ReportesAdminComponent implements OnInit {
   cargarEstadisticas() {
     this.cargando = true;
     
-    // Simular carga de estadísticas (en un caso real, esto vendría del backend)
-    setTimeout(() => {
+    Promise.all([
+      this.apiService.get('usuarios').toPromise(),
+      this.apiService.get('empresas').toPromise(),
+      this.apiService.get('vacantes').toPromise(),
+      this.apiService.get('postulaciones').toPromise()
+    ]).then(([usuarios, empresas, vacantes, postulaciones]) => {
+      // Contar usuarios por estado de aprobación
+      const empresasData = empresas?.data || [];
+      const usuariosData = usuarios?.data || [];
+      
+      // Filtrar usuarios empresa
+      const usuariosEmpresa = usuariosData.filter((u: any) => u.rol?.nombreRol === 'Empresa');
+      
       this.estadisticas = {
-        totalUsuarios: 150,
-        totalEmpresas: 45,
-        totalVacantes: 89,
-        totalPostulaciones: 234,
-        empresasPendientes: 8,
-        empresasAprobadas: 32,
-        empresasRechazadas: 5
+        totalUsuarios: usuariosData.length,
+        totalEmpresas: empresasData.length,
+        totalVacantes: vacantes?.data?.length || 0,
+        totalPostulaciones: postulaciones?.data?.length || 0,
+        empresasPendientes: usuariosEmpresa.filter((u: any) => u.estadoAprobacion === 'Pendiente').length,
+        empresasAprobadas: usuariosEmpresa.filter((u: any) => u.estadoAprobacion === 'Aprobado').length,
+        empresasRechazadas: usuariosEmpresa.filter((u: any) => u.estadoAprobacion === 'Rechazado').length
       };
+      
       this.cargando = false;
-    }, 1000);
+    }).catch(error => {
+      console.error('Error cargando estadísticas:', error);
+      this.cargando = false;
+    });
   }
 
   getPorcentajeEmpresas(tipo: 'pendientes' | 'aprobadas' | 'rechazadas'): number {
