@@ -151,6 +151,8 @@ public class PostulacionesController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> PutPostulacion(int id, PostulacionesModel postulacion)
     {
+        Console.WriteLine($"[PUT POSTULACION] ID: {id}, Nuevo Estado: {postulacion.Estado}");
+        
         if (id != postulacion.PostulacionID)
         {
             return BadRequest();
@@ -166,6 +168,8 @@ public class PostulacionesController : ControllerBase
         }
 
         var estadoAnterior = postulacionAnterior.Estado;
+        Console.WriteLine($"[PUT POSTULACION] Estado anterior: {estadoAnterior}, Nuevo: {postulacion.Estado}");
+        
         _context.Entry(postulacionAnterior).CurrentValues.SetValues(postulacion);
 
         try
@@ -175,6 +179,7 @@ public class PostulacionesController : ControllerBase
             // Enviar notificación si cambió el estado
             if (estadoAnterior != postulacion.Estado)
             {
+                Console.WriteLine($"[PUT POSTULACION] Enviando notificación a usuario {postulacion.UsuarioID}");
                 await _notificacionService.EnviarNotificacionCambioEstadoAsync(
                     postulacion.UsuarioID, 
                     postulacionAnterior.Vacante.TituloVacante, 
@@ -191,6 +196,39 @@ public class PostulacionesController : ControllerBase
         }
 
         return NoContent();
+    }
+
+    // PUT: api/postulaciones/5/estado
+    [HttpPut("{id}/estado")]
+    public async Task<IActionResult> CambiarEstadoPostulacion(int id, [FromBody] string nuevoEstado)
+    {
+        Console.WriteLine($"[CAMBIAR ESTADO] PostulacionID: {id}, Nuevo Estado: {nuevoEstado}");
+        
+        var postulacion = await _context.Postulaciones
+            .Include(p => p.Vacante)
+            .FirstOrDefaultAsync(p => p.PostulacionID == id);
+            
+        if (postulacion == null)
+        {
+            return NotFound();
+        }
+
+        var estadoAnterior = postulacion.Estado;
+        postulacion.Estado = nuevoEstado;
+        
+        await _context.SaveChangesAsync();
+        
+        // Enviar notificación si cambió el estado
+        if (estadoAnterior != nuevoEstado)
+        {
+            Console.WriteLine($"[CAMBIAR ESTADO] Enviando notificación a usuario {postulacion.UsuarioID}");
+            await _notificacionService.EnviarNotificacionCambioEstadoAsync(
+                postulacion.UsuarioID, 
+                postulacion.Vacante.TituloVacante, 
+                nuevoEstado);
+        }
+        
+        return Ok(new { message = "Estado actualizado exitosamente" });
     }
 
     // DELETE: api/postulaciones/5

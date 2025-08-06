@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface VacanteStats {
   totalVacantes: number;
@@ -32,7 +34,7 @@ export class DataSyncService {
     return this.postulacionesSubject.getValue();
   }
 
-  constructor() {
+  constructor(private http: HttpClient) {
     this.loadInitialData();
     this.setupEventListeners();
   }
@@ -149,5 +151,12 @@ export class DataSyncService {
 
   notifyPostulacionesChanged(): void {
     window.dispatchEvent(new CustomEvent('postulacionesChanged'));
+  }
+
+  // Cambiar estado de postulación via API
+  cambiarEstadoPostulacion(postulacionId: number, nuevoEstado: string): Observable<any> {
+    return this.http.put(`${environment.apiUrl}/postulaciones/${postulacionId}/estado`, `"${nuevoEstado}"`, {
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
 }

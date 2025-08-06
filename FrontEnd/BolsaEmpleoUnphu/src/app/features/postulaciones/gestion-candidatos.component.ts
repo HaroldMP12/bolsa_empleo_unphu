@@ -598,20 +598,32 @@ export class GestionCandidatosComponent implements OnInit, OnDestroy {
   cambiarEstado(postulacion: Postulacion): void {
     console.log('Cambiando estado de postulación:', postulacion.postulacionID, 'a:', postulacion.estado);
     
-    // Update in localStorage
-    const postulacionesGuardadas = JSON.parse(localStorage.getItem('postulaciones') || '[]');
-    const index = postulacionesGuardadas.findIndex((p: any) => p.postulacionID === postulacion.postulacionID);
-    
-    if (index !== -1) {
-      postulacionesGuardadas[index].estado = postulacion.estado;
-      localStorage.setItem('postulaciones', JSON.stringify(postulacionesGuardadas));
-      
-      // Notify data sync service of the change
-      this.dataSyncService.notifyPostulacionesChanged();
-    }
-    
-    // Actualizar filtros si es necesario
-    this.filtrarPorEstado(this.estadoSeleccionado);
+    // Llamar al API para cambiar el estado
+    this.dataSyncService.cambiarEstadoPostulacion(postulacion.postulacionID, postulacion.estado)
+      .subscribe({
+        next: () => {
+          console.log('Estado cambiado exitosamente');
+          // Update in localStorage
+          const postulacionesGuardadas = JSON.parse(localStorage.getItem('postulaciones') || '[]');
+          const index = postulacionesGuardadas.findIndex((p: any) => p.postulacionID === postulacion.postulacionID);
+          
+          if (index !== -1) {
+            postulacionesGuardadas[index].estado = postulacion.estado;
+            localStorage.setItem('postulaciones', JSON.stringify(postulacionesGuardadas));
+            
+            // Notify data sync service of the change
+            this.dataSyncService.notifyPostulacionesChanged();
+          }
+          
+          // Actualizar filtros si es necesario
+          this.filtrarPorEstado(this.estadoSeleccionado);
+        },
+        error: (error) => {
+          console.error('Error cambiando estado:', error);
+          // Revertir el cambio en la UI
+          this.cargarCandidatos();
+        }
+      });
   }
 
   verPerfil(postulacion: Postulacion): void {
