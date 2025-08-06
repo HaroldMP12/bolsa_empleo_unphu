@@ -154,9 +154,11 @@ export class DataSyncService {
   }
 
   // Cambiar estado de postulación via API
-  cambiarEstadoPostulacion(postulacionId: number, nuevoEstado: string): Observable<any> {
-    return this.http.put(`${environment.apiUrl}/postulaciones/${postulacionId}/estado`, `"${nuevoEstado}"`, {
-      headers: { 'Content-Type': 'application/json' }
+  cambiarEstadoPostulacion(usuarioId: number, tituloVacante: string, nuevoEstado: string): Observable<any> {
+    return this.http.put(`${environment.apiUrl}/postulaciones/cambiar-estado`, {
+      usuarioID: usuarioId,
+      tituloVacante: tituloVacante,
+      nuevoEstado: nuevoEstado
     });
   }
 }

@@ -599,7 +599,7 @@ export class GestionCandidatosComponent implements OnInit, OnDestroy {
     console.log('Cambiando estado de postulación:', postulacion.postulacionID, 'a:', postulacion.estado);
     
     // Llamar al API para cambiar el estado
-    this.dataSyncService.cambiarEstadoPostulacion(postulacion.postulacionID, postulacion.estado)
+    this.dataSyncService.cambiarEstadoPostulacion(postulacion.usuarioID, this.vacanteTitulo, postulacion.estado)
       .subscribe({
         next: () => {
           console.log('Estado cambiado exitosamente');

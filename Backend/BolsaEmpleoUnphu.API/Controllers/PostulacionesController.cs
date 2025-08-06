@@ -198,37 +198,26 @@ public class PostulacionesController : ControllerBase
         return NoContent();
     }
 
-    // PUT: api/postulaciones/5/estado
-    [HttpPut("{id}/estado")]
-    public async Task<IActionResult> CambiarEstadoPostulacion(int id, [FromBody] string nuevoEstado)
+    // PUT: api/postulaciones/cambiar-estado
+    [HttpPut("cambiar-estado")]
+    public async Task<IActionResult> CambiarEstadoPostulacion([FromBody] CambiarEstadoDto dto)
     {
-        Console.WriteLine($"[CAMBIAR ESTADO] PostulacionID: {id}, Nuevo Estado: {nuevoEstado}");
+        Console.WriteLine($"[CAMBIAR ESTADO] UsuarioID: {dto.UsuarioID}, Vacante: {dto.TituloVacante}, Nuevo Estado: {dto.NuevoEstado}");
         
-        var postulacion = await _context.Postulaciones
-            .Include(p => p.Vacante)
-            .FirstOrDefaultAsync(p => p.PostulacionID == id);
-            
-        if (postulacion == null)
-        {
-            return NotFound();
-        }
+        // Enviar notificación directamente
+        await _notificacionService.EnviarNotificacionCambioEstadoAsync(
+            dto.UsuarioID, 
+            dto.TituloVacante, 
+            dto.NuevoEstado);
+        
+        return Ok(new { message = "Notificación enviada exitosamente" });
+    }
 
-        var estadoAnterior = postulacion.Estado;
-        postulacion.Estado = nuevoEstado;
-        
-        await _context.SaveChangesAsync();
-        
-        // Enviar notificación si cambió el estado
-        if (estadoAnterior != nuevoEstado)
-        {
-            Console.WriteLine($"[CAMBIAR ESTADO] Enviando notificación a usuario {postulacion.UsuarioID}");
-            await _notificacionService.EnviarNotificacionCambioEstadoAsync(
-                postulacion.UsuarioID, 
-                postulacion.Vacante.TituloVacante, 
-                nuevoEstado);
-        }
-        
-        return Ok(new { message = "Estado actualizado exitosamente" });
+    public class CambiarEstadoDto
+    {
+        public int UsuarioID { get; set; }
+        public string TituloVacante { get; set; } = string.Empty;
+        public string NuevoEstado { get; set; } = string.Empty;
     }
 
     // DELETE: api/postulaciones/5
