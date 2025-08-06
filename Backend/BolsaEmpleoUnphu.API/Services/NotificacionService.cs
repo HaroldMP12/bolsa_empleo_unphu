@@ -19,6 +19,8 @@ public class NotificacionService : INotificacionService
 
     public async Task EnviarNotificacionAsync(int usuarioId, string mensaje, string? referenciaTipo = null)
     {
+        Console.WriteLine($"[NOTIFICACION] Enviando a UsuarioID: {usuarioId}, Mensaje: {mensaje}");
+        
         var notificacion = new NotificacionesModel
         {
             UsuarioID = usuarioId,
@@ -31,6 +33,8 @@ public class NotificacionService : INotificacionService
         _context.Notificaciones.Add(notificacion);
         await _context.SaveChangesAsync();
 
+        Console.WriteLine($"[NOTIFICACION] Guardada en BD con ID: {notificacion.NotificacionID}");
+
         // Enviar notificación en tiempo real
         await _hubContext.Clients.Group($"User_{usuarioId}")
             .SendAsync("NuevaNotificacion", new
@@ -41,16 +45,14 @@ public class NotificacionService : INotificacionService
                 estado = notificacion.Estado,
                 referenciaTipo = notificacion.ReferenciaTipo
             });
+            
+        Console.WriteLine($"[NOTIFICACION] Enviada por SignalR al grupo User_{usuarioId}");
     }
 
-    public async Task EnviarNotificacionPostulacionAsync(int empresaId, string nombreUsuario, string tituloVacante)
+    public async Task EnviarNotificacionPostulacionAsync(int usuarioEmpresaId, string nombreUsuario, string tituloVacante)
     {
-        var empresa = await _context.Empresas.FirstOrDefaultAsync(e => e.EmpresaID == empresaId);
-        if (empresa != null)
-        {
-            var mensaje = $"Nueva postulación de {nombreUsuario} para la vacante: {tituloVacante}";
-            await EnviarNotificacionAsync(empresa.UsuarioID, mensaje, "Postulacion");
-        }
+        var mensaje = $"Nueva postulación de {nombreUsuario} para la vacante: {tituloVacante}";
+        await EnviarNotificacionAsync(usuarioEmpresaId, mensaje, "Postulacion");
     }
 
     public async Task EnviarNotificacionVacanteAsync(int usuarioId, string tituloVacante, string nombreEmpresa)

@@ -29,30 +29,22 @@ export class NotificationService {
 
   startConnection(): void {
     if (this.authService.isAuthenticated()) {
+      // Cargar notificaciones primero
+      this.loadNotifications();
+      
       this.hubConnection = new HubConnectionBuilder()
         .withUrl(environment.signalRUrl, {
-          accessTokenFactory: () => this.authService.getToken() || '',
-          skipNegotiation: true,
-          transport: 1 // WebSockets
+          accessTokenFactory: () => this.authService.getToken() || ''
         })
         .build();
 
       this.hubConnection.start()
         .then(() => {
           console.log('SignalR Connected');
-          this.loadNotifications();
         })
         .catch(err => {
           console.error('SignalR Connection Error: ', err);
-          // Retry connection after 5 seconds
-          setTimeout(() => this.startConnection(), 5000);
         });
-
-      this.hubConnection.onclose(() => {
-        console.log('SignalR Disconnected');
-        // Attempt to reconnect after 5 seconds
-        setTimeout(() => this.startConnection(), 5000);
-      });
 
       this.hubConnection.on('NuevaNotificacion', (notification) => {
         console.log('Nueva notificación recibida:', notification);
@@ -69,11 +61,17 @@ export class NotificationService {
     }
   }
 
-  loadNotifications(): void {
+  public loadNotifications(): void {
     this.http.get<Notificacion[]>(`${environment.apiUrl}/notificaciones`)
-      .subscribe(notifications => {
-        this.notificationsSubject.next(notifications);
-        this.updateUnreadCount();
+      .subscribe({
+        next: (notifications) => {
+          console.log('Notificaciones cargadas:', notifications);
+          this.notificationsSubject.next(notifications);
+          this.updateUnreadCount();
+        },
+        error: (err) => {
+          console.error('Error cargando notificaciones:', err);
+        }
       });
   }
 
@@ -91,6 +89,10 @@ export class NotificationService {
 
   deleteNotification(notificationId: number): Observable<any> {
     return this.http.delete(`${environment.apiUrl}/notificaciones/${notificationId}`);
+  }
+
+  isConnected(): boolean {
+    return this.hubConnection?.state === 'Connected';
   }
 
   private updateUnreadCount(): void {

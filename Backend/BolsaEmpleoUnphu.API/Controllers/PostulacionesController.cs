@@ -139,7 +139,7 @@ public class PostulacionesController : ControllerBase
         if (empresa != null)
         {
             await _notificacionService.EnviarNotificacionPostulacionAsync(
-                empresa.EmpresaID, 
+                empresa.UsuarioID, 
                 usuario.NombreCompleto, 
                 vacante.TituloVacante);
         }

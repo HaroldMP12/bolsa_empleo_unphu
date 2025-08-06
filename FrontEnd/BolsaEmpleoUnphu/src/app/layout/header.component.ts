@@ -234,9 +234,9 @@ export class HeaderComponent implements OnInit {
   ngOnInit(): void {
     this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
-      if (user) {
+      if (user && !this.notificationService.isConnected()) {
         this.notificationService.startConnection();
-      } else {
+      } else if (!user) {
         this.notificationService.stopConnection();
       }
     });

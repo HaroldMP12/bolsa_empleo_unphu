@@ -226,7 +226,8 @@ export class NotificationBellComponent implements OnInit, OnDestroy {
     // Suscribirse a las notificaciones
     this.subscriptions.push(
       this.notificationService.notifications$.subscribe(notifications => {
-        this.notifications = notifications; // Mostrar todas las notificaciones
+        console.log('Notificaciones recibidas en campanita:', notifications);
+        this.notifications = notifications;
       })
     );
 
@@ -237,7 +238,8 @@ export class NotificationBellComponent implements OnInit, OnDestroy {
       })
     );
 
-    // Cargar contador inicial
+    // Cargar notificaciones y contador inicial
+    this.notificationService.loadNotifications();
     this.loadUnreadCount();
   }
 
