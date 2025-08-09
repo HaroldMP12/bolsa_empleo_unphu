@@ -55,7 +55,7 @@ public class RecomendacionService : IRecomendacionService
             .Include(v => v.Empresa)
             .Include(v => v.Categoria)
             .Where(v => categoriasRecomendadas.Contains(v.CategoriaID) && 
-                       v.FechaCierre > DateTime.Now && v.Estado)
+                       v.FechaCierre > DateTime.Now)
             .OrderByDescending(v => v.FechaPublicacion)
             .Take(10)
             .ToListAsync();

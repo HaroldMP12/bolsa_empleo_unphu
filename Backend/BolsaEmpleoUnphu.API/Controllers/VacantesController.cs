@@ -335,24 +335,7 @@ public class VacantesController : ControllerBase
         return Ok(vacantesRecomendadas.Select(v => v.ToResponseDto()));
     }
 
-    // PUT: api/vacantes/{id}/estado
-    [HttpPut("{id}/estado")]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> CambiarEstadoVacante(int id, [FromBody] bool estado)
-    {
-        var vacante = await _context.Vacantes.FindAsync(id);
-        if (vacante == null)
-        {
-            return NotFound();
-        }
 
-        vacante.Estado = estado;
-        vacante.FechaModificacion = DateTime.Now;
-        
-        await _context.SaveChangesAsync();
-        
-        return Ok(new { message = $"Vacante {(estado ? "activada" : "desactivada")} exitosamente" });
-    }
 
     private bool VacanteExists(int id)
     {

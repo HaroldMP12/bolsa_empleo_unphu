@@ -18,7 +18,6 @@ interface VacanteAdmin {
   modalidad: string;
   salario: number;
   cantidadVacantes: number;
-  estado: boolean;
 }
 
 @Component({
@@ -53,8 +52,6 @@ interface VacanteAdmin {
               <th>Salario</th>
               <th>Fecha Cierre</th>
               <th>Plazas</th>
-              <th>Estado</th>
-              <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -80,19 +77,6 @@ interface VacanteAdmin {
               <td>{{vacante.salario ? ('RD$ ' + (vacante.salario | number)) : 'No especificado'}}</td>
               <td>{{formatearFecha(vacante.fechaCierre)}}</td>
               <td>{{vacante.cantidadVacantes || 1}}</td>
-              <td>
-                <span class="estado-badge" [class.activa]="vacante.estado" [class.inactiva]="!vacante.estado">
-                  {{vacante.estado ? 'Activa' : 'Inactiva'}}
-                </span>
-              </td>
-              <td>
-                <button class="btn-toggle" 
-                        [class.btn-activar]="!vacante.estado" 
-                        [class.btn-desactivar]="vacante.estado"
-                        (click)="cambiarEstadoVacante(vacante)">
-                  {{vacante.estado ? 'Desactivar' : 'Activar'}}
-                </button>
-              </td>
             </tr>
           </tbody>
         </table>
@@ -145,27 +129,13 @@ interface VacanteAdmin {
     table {
       width: 100%;
       border-collapse: collapse;
-      table-layout: fixed;
     }
 
     th, td {
-      padding: 0.75rem;
+      padding: 1rem;
       text-align: left;
       border-bottom: 1px solid #eee;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
-
-    th:nth-child(1), td:nth-child(1) { width: 20%; } /* Vacante */
-    th:nth-child(2), td:nth-child(2) { width: 15%; } /* Empresa */
-    th:nth-child(3), td:nth-child(3) { width: 12%; } /* Categoría */
-    th:nth-child(4), td:nth-child(4) { width: 10%; } /* Modalidad */
-    th:nth-child(5), td:nth-child(5) { width: 10%; } /* Ubicación */
-    th:nth-child(6), td:nth-child(6) { width: 10%; } /* Salario */
-    th:nth-child(7), td:nth-child(7) { width: 10%; } /* Fecha */
-    th:nth-child(8), td:nth-child(8) { width: 5%; }  /* Plazas */
-    th:nth-child(9), td:nth-child(9) { width: 8%; }  /* Estado */
-    th:nth-child(10), td:nth-child(10) { width: 10%; } /* Acciones */
 
     th {
       background: #f8f9fa;
@@ -212,52 +182,6 @@ interface VacanteAdmin {
     .modalidad-badge.híbrido {
       background: #fff3e0;
       color: #f57c00;
-    }
-
-    .estado-badge {
-      padding: 0.25rem 0.75rem;
-      border-radius: 12px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      text-transform: uppercase;
-    }
-
-    .estado-badge.activa {
-      background: #d4edda;
-      color: #155724;
-    }
-
-    .estado-badge.inactiva {
-      background: #f8d7da;
-      color: #721c24;
-    }
-
-    .btn-toggle {
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 0.8rem;
-      font-weight: 600;
-      transition: all 0.3s;
-    }
-
-    .btn-activar {
-      background: #28a745;
-      color: white;
-    }
-
-    .btn-activar:hover {
-      background: #218838;
-    }
-
-    .btn-desactivar {
-      background: #dc3545;
-      color: white;
-    }
-
-    .btn-desactivar:hover {
-      background: #c82333;
     }
 
     .empty-state, .loading {
@@ -315,24 +239,5 @@ export class VacantesAdminComponent implements OnInit, OnDestroy {
 
   formatearFecha(fecha: string): string {
     return new Date(fecha).toLocaleDateString('es-ES');
-  }
-
-  cambiarEstadoVacante(vacante: VacanteAdmin): void {
-    const nuevoEstado = !vacante.estado;
-    const accion = nuevoEstado ? 'activar' : 'desactivar';
-    
-    if (confirm(`¿Estás seguro de que deseas ${accion} la vacante "${vacante.tituloVacante}"?`)) {
-      this.apiService.put(`vacantes/${vacante.vacanteID}/estado`, nuevoEstado).subscribe({
-        next: () => {
-          vacante.estado = nuevoEstado;
-          this.toastService.showSuccess(`Vacante ${nuevoEstado ? 'activada' : 'desactivada'} exitosamente`);
-          this.syncService.notifyRefresh();
-        },
-        error: (error) => {
-          console.error('Error al cambiar estado:', error);
-          this.toastService.showError('Error al cambiar el estado de la vacante');
-        }
-      });
-    }
   }
 }

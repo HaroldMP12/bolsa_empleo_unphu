@@ -66,9 +66,6 @@ public class VacantesModel
     [Column("CategoriaID")]
     public int CategoriaID { get; set; }
     
-    [Column("Estado")]
-    public bool Estado { get; set; } = true;
-    
     // Navegación
     [ForeignKey("EmpresaID")]
     public virtual EmpresasModel Empresa { get; set; } = null!;
