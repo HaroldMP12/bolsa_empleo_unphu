@@ -8,7 +8,13 @@ interface Carrera {
   carreraID: number;
   nombreCarrera: string;
   facultad: string;
-  perfiles?: any[];
+  perfiles?: {
+    perfilID: number;
+    usuarioID: number;
+    tipoPerfil: 'Estudiante' | 'Egresado' | 'Ambos';
+    matricula?: string;
+    semestre?: number;
+  }[];
 }
 
 @Component({
@@ -20,6 +26,25 @@ interface Carrera {
       <div class="header">
         <h2>Gestión de Carreras</h2>
         <button class="btn-nuevo" (click)="nuevaCarrera()">+ Nueva Carrera</button>
+      </div>
+
+      <div class="estadisticas-resumen" *ngIf="carreras.length > 0">
+        <div class="stat-card">
+          <h4>{{carreras.length}}</h4>
+          <p>Total Carreras</p>
+        </div>
+        <div class="stat-card">
+          <h4>{{getTotalEstudiantes()}}</h4>
+          <p>Total Estudiantes</p>
+        </div>
+        <div class="stat-card">
+          <h4>{{facultades.length}}</h4>
+          <p>Facultades</p>
+        </div>
+        <div class="stat-card">
+          <h4>{{getCarrerasSinEstudiantes()}}</h4>
+          <p>Sin Estudiantes</p>
+        </div>
       </div>
 
       <div class="filtros">
@@ -42,7 +67,22 @@ interface Carrera {
           </div>
           <div class="carrera-info">
             <p><strong>Facultad:</strong> {{carrera.facultad}}</p>
-            <p><strong>Estudiantes registrados:</strong> {{carrera.perfiles?.length || 0}}</p>
+            <p><strong>Estudiantes registrados:</strong> 
+              <span class="contador-estudiantes" [class.sin-estudiantes]="(carrera.perfiles?.length || 0) === 0">
+                {{carrera.perfiles?.length || 0}}
+              </span>
+            </p>
+            <div class="tipos-perfil" *ngIf="carrera.perfiles && carrera.perfiles.length > 0">
+              <span class="tipo-badge estudiante" *ngIf="getEstudiantesCount(carrera) > 0">
+                {{getEstudiantesCount(carrera)}} Estudiantes
+              </span>
+              <span class="tipo-badge egresado" *ngIf="getEgresadosCount(carrera) > 0">
+                {{getEgresadosCount(carrera)}} Egresados
+              </span>
+              <span class="tipo-badge ambos" *ngIf="getAmbosCount(carrera) > 0">
+                {{getAmbosCount(carrera)}} Ambos
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -188,6 +228,42 @@ interface Carrera {
       color: #555;
     }
 
+    .contador-estudiantes {
+      font-weight: bold;
+      color: #27ae60;
+    }
+
+    .contador-estudiantes.sin-estudiantes {
+      color: #e74c3c;
+    }
+
+    .tipos-perfil {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .tipo-badge {
+      padding: 0.25rem 0.5rem;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: white;
+    }
+
+    .tipo-badge.estudiante {
+      background: #3498db;
+    }
+
+    .tipo-badge.egresado {
+      background: #9b59b6;
+    }
+
+    .tipo-badge.ambos {
+      background: #f39c12;
+    }
+
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -273,6 +349,35 @@ interface Carrera {
     .btn-guardar:disabled {
       background: #bdc3c7;
       cursor: not-allowed;
+    }
+
+    .estadisticas-resumen {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      text-align: center;
+      border-left: 4px solid #3498db;
+    }
+
+    .stat-card h4 {
+      margin: 0;
+      font-size: 2rem;
+      color: #2c3e50;
+      font-weight: bold;
+    }
+
+    .stat-card p {
+      margin: 0.5rem 0 0 0;
+      color: #7f8c8d;
+      font-weight: 600;
     }
 
     .empty-state, .loading {
@@ -404,5 +509,27 @@ export class CarrerasAdminComponent implements OnInit {
         }
       });
     }
+  }
+
+  getEstudiantesCount(carrera: Carrera): number {
+    return carrera.perfiles?.filter(p => p.tipoPerfil === 'Estudiante').length || 0;
+  }
+
+  getEgresadosCount(carrera: Carrera): number {
+    return carrera.perfiles?.filter(p => p.tipoPerfil === 'Egresado').length || 0;
+  }
+
+  getAmbosCount(carrera: Carrera): number {
+    return carrera.perfiles?.filter(p => p.tipoPerfil === 'Ambos').length || 0;
+  }
+
+  getTotalEstudiantes(): number {
+    return this.carreras.reduce((total, carrera) => {
+      return total + (carrera.perfiles?.length || 0);
+    }, 0);
+  }
+
+  getCarrerasSinEstudiantes(): number {
+    return this.carreras.filter(carrera => (carrera.perfiles?.length || 0) === 0).length;
   }
 }

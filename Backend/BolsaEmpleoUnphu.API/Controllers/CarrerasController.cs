@@ -20,7 +20,9 @@ public class CarrerasController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<CarrerasModel>>> GetCarreras()
     {
-        return await _context.Carreras.ToListAsync();
+        return await _context.Carreras
+            .Include(c => c.Perfiles)
+            .ToListAsync();
     }
 
     // GET: api/carreras/5
