@@ -33,12 +33,6 @@ import { NotificationBellComponent } from '../shared/components/notification-bel
           <a *ngIf="currentUser.rol === 'Admin'" routerLink="/admin" routerLinkActive="active" class="admin-link">
             🛠️ Administración
           </a>
-          <a *ngIf="currentUser.rol === 'Admin'" routerLink="/admin/usuarios" routerLinkActive="active">
-            Usuarios
-          </a>
-          <a *ngIf="currentUser.rol === 'Admin'" routerLink="/admin/vacantes" routerLinkActive="active">
-            Vacantes
-          </a>
         </nav>
         
         <div class="user-menu" *ngIf="currentUser">
