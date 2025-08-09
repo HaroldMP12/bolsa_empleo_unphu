@@ -24,6 +24,8 @@ public class BolsaEmpleoUnphuContext : DbContext
     public DbSet<UsuariosModel> Usuarios { get; set; }
     public DbSet<VacantesModel> Vacantes { get; set; }
     public DbSet<PasswordResetTokensModel> PasswordResetTokens { get; set; }
+    public DbSet<ConversacionesModel> Conversaciones { get; set; }
+    public DbSet<MensajesModel> Mensajes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

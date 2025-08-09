@@ -23,10 +23,12 @@ import { NotificationBellComponent } from '../shared/components/notification-bel
           <!-- Opciones para Estudiantes/Egresados -->
           <a *ngIf="currentUser.rol === 'Estudiante' || currentUser.rol === 'Egresado'" routerLink="/vacantes" routerLinkActive="active">Vacantes</a>
           <a *ngIf="currentUser.rol === 'Estudiante' || currentUser.rol === 'Egresado'" routerLink="/postulaciones" routerLinkActive="active">Mis Postulaciones</a>
+          <a *ngIf="currentUser.rol === 'Estudiante' || currentUser.rol === 'Egresado'" routerLink="/mensajes" routerLinkActive="active">Mensajes</a>
           <a *ngIf="currentUser.rol === 'Estudiante' || currentUser.rol === 'Egresado'" routerLink="/perfil" routerLinkActive="active">Mi Perfil</a>
           
           <!-- Opciones para Empresas -->
           <a *ngIf="currentUser.rol === 'Empresa'" routerLink="/mis-vacantes" routerLinkActive="active">Mis Vacantes</a>
+          <a *ngIf="currentUser.rol === 'Empresa'" routerLink="/mensajes" routerLinkActive="active">Mensajes</a>
           <a *ngIf="currentUser.rol === 'Empresa'" routerLink="/perfil-empresa" routerLinkActive="active">Perfil Empresa</a>
           
           <!-- Opciones para Admin -->

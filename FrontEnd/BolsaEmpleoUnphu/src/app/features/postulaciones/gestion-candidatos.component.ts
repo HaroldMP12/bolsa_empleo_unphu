@@ -3,7 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DataSyncService } from '../../core/services/data-sync.service';
+import { MensajeService } from '../../core/services/mensaje.service';
 import { Postulacion, UpdateEstadoPostulacionDto } from '../../core/models/postulacion.models';
+import { CreateMensajeDto } from '../../core/models/mensaje.models';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -88,7 +90,8 @@ import { Subscription } from 'rxjs';
             
             <div class="candidato-footer">
               <button class="btn-outline" (click)="verPerfil(postulacion)">Ver Perfil Completo</button>
-              <button class="btn-outline" (click)="contactarCandidato(postulacion)">Contactar</button>
+              <button class="btn-outline" (click)="contactarCandidato(postulacion)">Email</button>
+              <button class="btn-primary" (click)="enviarMensaje(postulacion)">💬 Mensaje</button>
               <button 
                 *ngIf="postulacion.estado === 'Aceptado'" 
                 class="btn-success">
@@ -185,7 +188,8 @@ import { Subscription } from 'rxjs';
         
         <div class="modal-footer">
           <button class="btn-secondary" (click)="cerrarModalPerfil()">Cerrar</button>
-          <button class="btn-primary" (click)="contactarCandidato(candidatoSeleccionado!)">Contactar</button>
+          <button class="btn-outline" (click)="contactarCandidato(candidatoSeleccionado!)">Email</button>
+          <button class="btn-primary" (click)="enviarMensaje(candidatoSeleccionado!)">💬 Mensaje</button>
         </div>
       </div>
     </div>
@@ -525,7 +529,8 @@ export class GestionCandidatosComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private dataSyncService: DataSyncService
+    private dataSyncService: DataSyncService,
+    private mensajeService: MensajeService
   ) {}
 
   ngOnInit(): void {
@@ -638,7 +643,24 @@ export class GestionCandidatosComponent implements OnInit, OnDestroy {
 
   contactarCandidato(postulacion: Postulacion): void {
     console.log('Contactar candidato:', postulacion.usuario?.nombreCompleto);
-    // TODO: Open email client or show contact modal
     window.open(`mailto:${postulacion.usuario?.correo}?subject=Oportunidad laboral - ${this.vacanteTitulo}`);
+  }
+
+  enviarMensaje(postulacion: Postulacion): void {
+    const mensaje: CreateMensajeDto = {
+      receptorID: postulacion.usuarioID,
+      vacanteID: this.vacanteId,
+      contenido: `Hola ${postulacion.usuario?.nombreCompleto}, me interesa conversar contigo sobre tu postulación para la vacante "${this.vacanteTitulo}".`,
+      tipoMensaje: 'texto'
+    };
+
+    this.mensajeService.enviarMensaje(mensaje).subscribe({
+      next: () => {
+        this.router.navigate(['/mensajes']);
+      },
+      error: (error) => {
+        console.error('Error al enviar mensaje:', error);
+      }
+    });
   }
 }

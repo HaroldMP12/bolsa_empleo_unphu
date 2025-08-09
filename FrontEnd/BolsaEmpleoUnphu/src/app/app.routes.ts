@@ -20,6 +20,7 @@ export const routes: Routes = [
       { path: 'candidatos/:id', loadComponent: () => import('./features/postulaciones/gestion-candidatos.component').then(m => m.GestionCandidatosComponent) },
       { path: 'perfil', loadComponent: () => import('./features/perfil/perfil.component').then(m => m.PerfilComponent) },
       { path: 'perfil-empresa', loadComponent: () => import('./features/empresas/perfil-empresa.component').then(m => m.PerfilEmpresaComponent) },
+      { path: 'mensajes', loadComponent: () => import('./features/mensajes/mensajes.component').then(m => m.MensajesComponent) },
       
       // Rutas de Administración (protegidas con AdminGuard)
       { path: 'admin', loadComponent: () => import('./features/admin/admin-dashboard.component').then(m => m.AdminDashboardComponent), canActivate: [AdminGuard] },
