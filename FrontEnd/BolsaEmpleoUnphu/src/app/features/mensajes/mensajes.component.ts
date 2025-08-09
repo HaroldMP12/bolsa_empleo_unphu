@@ -86,7 +86,7 @@ import { Subscription } from 'rxjs';
         <div class="chat-input">
           <div class="input-container">
             <textarea [(ngModel)]="nuevoMensaje" 
-                     (keydown.enter)="enviarMensajeEnter($event)"
+                     (keydown.enter)="enviarMensaje()"
                      placeholder="Escribe tu mensaje..."
                      rows="1"></textarea>
             <button (click)="enviarMensaje()" 
@@ -445,13 +445,6 @@ export class MensajesComponent implements OnInit, OnDestroy {
         console.error('Error al cargar mensajes:', error);
       }
     });
-  }
-
-  enviarMensajeEnter(event: KeyboardEvent): void {
-    if (!event.shiftKey) {
-      event.preventDefault();
-      this.enviarMensaje();
-    }
   }
 
   enviarMensaje(): void {
