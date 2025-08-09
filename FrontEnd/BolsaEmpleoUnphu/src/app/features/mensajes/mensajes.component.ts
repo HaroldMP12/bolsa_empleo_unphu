@@ -86,7 +86,7 @@ import { Subscription } from 'rxjs';
         <div class="chat-input">
           <div class="input-container">
             <textarea [(ngModel)]="nuevoMensaje" 
-                     (keydown.enter)="enviarMensaje($event)"
+                     (keydown.enter)="enviarMensajeEnter($event)"
                      placeholder="Escribe tu mensaje..."
                      rows="1"></textarea>
             <button (click)="enviarMensaje()" 
@@ -447,13 +447,14 @@ export class MensajesComponent implements OnInit, OnDestroy {
     });
   }
 
-  enviarMensaje(event?: KeyboardEvent): void {
-    if (event && !event.shiftKey) {
+  enviarMensajeEnter(event: KeyboardEvent): void {
+    if (!event.shiftKey) {
       event.preventDefault();
-    } else if (event) {
-      return;
+      this.enviarMensaje();
     }
+  }
 
+  enviarMensaje(): void {
     if (!this.nuevoMensaje.trim() || !this.conversacionSeleccionada) return;
 
     const mensaje: CreateMensajeDto = {
