@@ -6,6 +6,7 @@ using BolsaEmpleoUnphu.Data.Context;
 using BolsaEmpleoUnphu.Data.Models;
 using BolsaEmpleoUnphu.API.DTOs;
 using BolsaEmpleoUnphu.API.Extensions;
+using BolsaEmpleoUnphu.API.Services;
 
 namespace BolsaEmpleoUnphu.API.Controllers;
 
@@ -14,10 +15,12 @@ namespace BolsaEmpleoUnphu.API.Controllers;
 public class VacantesController : ControllerBase
 {
     private readonly BolsaEmpleoUnphuContext _context;
+    private readonly IRecomendacionService _recomendacionService;
 
-    public VacantesController(BolsaEmpleoUnphuContext context)
+    public VacantesController(BolsaEmpleoUnphuContext context, IRecomendacionService recomendacionService)
     {
         _context = context;
+        _recomendacionService = recomendacionService;
     }
 
     // GET: api/vacantes
@@ -319,6 +322,17 @@ public class VacantesController : ControllerBase
             TotalPostulaciones = totalPostulaciones,
             VacantesPopulares = vacantesPopulares
         };
+    }
+
+    // GET: api/vacantes/recomendadas
+    [HttpGet("recomendadas")]
+    [Authorize(Roles = "Estudiante,Egresado")]
+    public async Task<ActionResult<IEnumerable<VacanteResponseDto>>> GetVacantesRecomendadas()
+    {
+        var usuarioId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        var vacantesRecomendadas = await _recomendacionService.GetVacantesRecomendadasAsync(usuarioId);
+        
+        return Ok(vacantesRecomendadas.Select(v => v.ToResponseDto()));
     }
 
     private bool VacanteExists(int id)

@@ -40,10 +40,32 @@ import { Subscription } from 'rxjs';
         <!-- ESTUDIANTE/EGRESADO DASHBOARD -->
         <div *ngIf="isStudent()" class="student-dashboard">
           <div class="dashboard-grid">
+            <!-- Vacantes Recomendadas -->
+            <div class="widget large recomendadas" *ngIf="vacantesRecomendadas.length > 0">
+              <div class="widget-header">
+                <h3>🎯 Recomendadas para ti</h3>
+                <a routerLink="/vacantes" class="view-all">Ver todas</a>
+              </div>
+              <div class="recomendacion-info">
+                <p>Basadas en tu carrera: <strong>{{ carreraUsuario }}</strong></p>
+              </div>
+              <div class="vacantes-list">
+                <div class="vacante-item recomendada" *ngFor="let vacante of vacantesRecomendadas">
+                  <div class="vacante-info">
+                    <h4>{{ vacante.titulo }}</h4>
+                    <p>{{ vacante.empresa }}</p>
+                    <span class="vacante-location">{{ vacante.ubicacion }}</span>
+                    <span class="recomendacion-badge">Recomendada</span>
+                  </div>
+                  <button class="btn-apply" (click)="postularse(vacante)">Postular</button>
+                </div>
+              </div>
+            </div>
+
             <!-- Vacantes Recientes -->
             <div class="widget large">
               <div class="widget-header">
-                <h3>Vacantes Recientes</h3>
+                <h3>{{ vacantesRecomendadas.length > 0 ? 'Otras Vacantes' : 'Vacantes Recientes' }}</h3>
                 <a routerLink="/vacantes" class="view-all">Ver todas</a>
               </div>
               <div class="vacantes-list">
@@ -526,6 +548,32 @@ import { Subscription } from 'rxjs';
       color: white;
     }
     
+    /* Recomendaciones */
+    .widget.recomendadas {
+      border: 2px solid var(--unphu-green-primary);
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    }
+    .recomendacion-info {
+      padding: 0 1.5rem;
+      color: #666;
+      font-size: 0.9rem;
+    }
+    .recomendacion-info p {
+      margin: 0;
+    }
+    .vacante-item.recomendada {
+      position: relative;
+    }
+    .recomendacion-badge {
+      background: var(--unphu-green-primary);
+      color: white;
+      padding: 0.2rem 0.5rem;
+      border-radius: 10px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-left: 0.5rem;
+    }
+    
     /* Usar el mismo formato de stats para admin */
     .admin-dashboard .stats-grid {
       display: flex;
@@ -564,6 +612,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   perfilProgreso = 0;
   
   recentVacantes: any[] = [];
+  vacantesRecomendadas: any[] = [];
+  carreraUsuario = '';
   misVacantes: any[] = [];
   postulacionesRecientes: any[] = [];
   mostrarModalPostulacion = false;
@@ -630,14 +680,39 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.stats.postulacionesPendientes = studentStats.pendientes;
     this.stats.postulacionesRevisadas = studentStats.enRevision;
     
-    // Cargar vacantes desde la API
+    // Cargar vacantes recomendadas
+    fetch('https://localhost:7236/api/vacantes/recomendadas', {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    })
+    .then(res => res.json())
+    .then(vacantesData => {
+      this.vacantesRecomendadas = vacantesData.slice(0, 3).map((v: any) => ({
+        ...v,
+        titulo: v.tituloVacante,
+        empresa: v.nombreEmpresa,
+        fechaVencimiento: v.fechaCierre
+      }));
+      
+      // Obtener carrera del usuario
+      this.obtenerCarreraUsuario();
+    })
+    .catch(() => {
+      this.vacantesRecomendadas = [];
+    });
+    
+    // Cargar todas las vacantes
     fetch('https://localhost:7236/api/vacantes', {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
     })
     .then(res => res.json())
     .then(response => {
       const vacantes = response.data || response || [];
-      this.recentVacantes = vacantes.slice(0, 3).map((v: any) => ({
+      // Filtrar vacantes que no están en recomendadas
+      const vacantesNoRecomendadas = vacantes.filter((v: any) => 
+        !this.vacantesRecomendadas.some(r => r.vacanteID === v.vacanteID)
+      );
+      
+      this.recentVacantes = vacantesNoRecomendadas.slice(0, 3).map((v: any) => ({
         ...v,
         titulo: v.tituloVacante,
         empresa: v.nombreEmpresa,
@@ -647,6 +722,23 @@ export class DashboardComponent implements OnInit, OnDestroy {
     .catch(() => {
       this.recentVacantes = [];
     });
+  }
+
+  private obtenerCarreraUsuario(): void {
+    if (this.currentUser?.usuarioID) {
+      fetch(`https://localhost:7236/api/perfiles/usuario/${this.currentUser.usuarioID}`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      })
+      .then(res => res.json())
+      .then(perfil => {
+        if (perfil && perfil.carrera) {
+          this.carreraUsuario = perfil.carrera.nombreCarrera || 'No especificada';
+        }
+      })
+      .catch(() => {
+        this.carreraUsuario = 'No especificada';
+      });
+    }
   }
   
   private loadCompanyData(): void {

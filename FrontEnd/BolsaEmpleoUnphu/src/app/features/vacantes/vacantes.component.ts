@@ -71,8 +71,53 @@ import { Subscription } from 'rxjs';
         </div>
       </div>
 
+      <!-- SECCIÓN DE RECOMENDACIONES -->
+      <div *ngIf="!isCompany() && vacantesRecomendadas.length > 0" class="recomendaciones-section">
+        <div class="section-header">
+          <h2>🎯 Recomendadas para ti</h2>
+          <p>Basadas en tu carrera: <strong>{{ carreraUsuario }}</strong></p>
+        </div>
+        <div class="recomendaciones-grid">
+          <div *ngFor="let vacante of vacantesRecomendadas" class="vacante-card recomendada">
+            <div class="recomendacion-badge">Recomendada</div>
+            <div class="vacante-header">
+              <h3>{{ getTituloVacante(vacante) }}</h3>
+              <div class="vacante-meta">
+                <span class="empresa">{{ getEmpresaNombre(vacante.empresa) }}</span>
+                <span class="modalidad modalidad-{{ vacante.modalidad ? vacante.modalidad.toLowerCase() : 'sin-modalidad' }}">{{ vacante.modalidad || 'No especificada' }}</span>
+              </div>
+            </div>
+            
+            <div class="vacante-body">
+              <p class="descripcion">{{ vacante.descripcion.length > 100 ? (vacante.descripcion | slice:0:100) + '...' : vacante.descripcion }}</p>
+              
+              <div class="vacante-details">
+                <div class="detail-item">
+                  <span class="icon">📍</span>
+                  <span>{{ vacante.ubicacion }}</span>
+                </div>
+                <div class="detail-item" *ngIf="vacante.salario">
+                  <span class="icon">💰</span>
+                  <span>RD$ {{ vacante.salario | number }}</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="vacante-footer">
+              <div class="student-actions">
+                <button class="btn-outline" (click)="verDetalles(vacante)">Ver Detalles</button>
+                <button class="btn-primary" (click)="postularse(vacante)">Postularse</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- LISTA DE VACANTES -->
       <div class="vacantes-content">
+        <div class="section-header" *ngIf="!isCompany()">
+          <h2>Todas las vacantes</h2>
+        </div>
         <div class="vacantes-grid">
           <div *ngFor="let vacante of vacantesFiltradas" class="vacante-card">
             <div class="vacante-header">
@@ -414,11 +459,63 @@ import { Subscription } from 'rxjs';
       cursor: pointer;
     }
     
+    /* Recomendaciones */
+    .recomendaciones-section {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      padding: 2rem;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+      border: 2px solid var(--unphu-green-primary);
+    }
+    .recomendaciones-section .section-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .recomendaciones-section .section-header h2 {
+      color: var(--unphu-blue-dark);
+      margin: 0 0 0.5rem 0;
+      font-size: 1.5rem;
+    }
+    .recomendaciones-section .section-header p {
+      color: #666;
+      margin: 0;
+    }
+    .recomendaciones-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 1.5rem;
+    }
+    .vacante-card.recomendada {
+      position: relative;
+      border: 2px solid var(--unphu-green-primary);
+      box-shadow: 0 4px 12px rgba(39, 174, 96, 0.2);
+    }
+    .recomendacion-badge {
+      position: absolute;
+      top: -10px;
+      right: 15px;
+      background: var(--unphu-green-primary);
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      z-index: 1;
+    }
+    
     /* Vacantes Grid */
     .vacantes-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
       gap: 1.5rem;
+    }
+    .section-header {
+      margin-bottom: 1.5rem;
+    }
+    .section-header h2 {
+      color: var(--unphu-blue-dark);
+      margin: 0;
+      font-size: 1.5rem;
     }
     .vacante-card {
       background: white;
@@ -780,6 +877,8 @@ export class VacantesComponent implements OnInit, OnDestroy {
   currentUser: AuthResponse | null = null;
   vacantes: Vacante[] = [];
   vacantesFiltradas: Vacante[] = [];
+  vacantesRecomendadas: Vacante[] = [];
+  carreraUsuario = '';
   filtros: VacanteFiltros = {};
   
   mostrarModal = false;
@@ -879,24 +978,65 @@ export class VacantesComponent implements OnInit, OnDestroy {
         }
       });
     } else {
-      // Para estudiantes, usar todas las vacantes activas
-      this.apiService.get<any>('vacantes').subscribe({
-        next: (response) => {
-          const vacantesData = response.data || response || [];
-          // Mapear los datos del backend al formato esperado por el frontend
-          this.vacantes = vacantesData.map((v: any) => ({
-            ...v,
-            titulo: v.tituloVacante,
-            empresa: v.nombreEmpresa,
-            categoria: v.nombreCategoria,
-            fechaVencimiento: v.fechaCierre
-          }));
-          this.vacantesFiltradas = [...this.vacantes];
+      // Para estudiantes, cargar recomendaciones y todas las vacantes
+      this.cargarVacantesRecomendadas();
+      this.cargarTodasLasVacantes();
+    }
+  }
+
+  cargarVacantesRecomendadas(): void {
+    this.apiService.get<any>('vacantes/recomendadas').subscribe({
+      next: (vacantesData) => {
+        this.vacantesRecomendadas = vacantesData.map((v: any) => ({
+          ...v,
+          titulo: v.tituloVacante,
+          empresa: v.nombreEmpresa,
+          categoria: v.nombreCategoria,
+          fechaVencimiento: v.fechaCierre
+        }));
+        
+        // Obtener carrera del usuario para mostrar en la UI
+        this.obtenerCarreraUsuario();
+      },
+      error: (error) => {
+        console.error('Error al cargar recomendaciones:', error);
+        this.vacantesRecomendadas = [];
+      }
+    });
+  }
+
+  cargarTodasLasVacantes(): void {
+    this.apiService.get<any>('vacantes').subscribe({
+      next: (response) => {
+        const vacantesData = response.data || response || [];
+        // Mapear los datos del backend al formato esperado por el frontend
+        this.vacantes = vacantesData.map((v: any) => ({
+          ...v,
+          titulo: v.tituloVacante,
+          empresa: v.nombreEmpresa,
+          categoria: v.nombreCategoria,
+          fechaVencimiento: v.fechaCierre
+        }));
+        this.vacantesFiltradas = [...this.vacantes];
+      },
+      error: (error) => {
+        console.error('Error al cargar vacantes:', error);
+        this.vacantes = [];
+        this.vacantesFiltradas = [];
+      }
+    });
+  }
+
+  obtenerCarreraUsuario(): void {
+    if (this.currentUser?.usuarioID) {
+      this.apiService.get(`perfiles/usuario/${this.currentUser.usuarioID}`).subscribe({
+        next: (perfil: any) => {
+          if (perfil && perfil.carrera) {
+            this.carreraUsuario = perfil.carrera.nombreCarrera || 'No especificada';
+          }
         },
-        error: (error) => {
-          console.error('Error al cargar vacantes:', error);
-          this.vacantes = [];
-          this.vacantesFiltradas = [];
+        error: () => {
+          this.carreraUsuario = 'No especificada';
         }
       });
     }
