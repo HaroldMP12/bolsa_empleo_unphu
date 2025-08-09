@@ -145,13 +145,27 @@ interface VacanteAdmin {
     table {
       width: 100%;
       border-collapse: collapse;
+      table-layout: fixed;
     }
 
     th, td {
-      padding: 1rem;
+      padding: 0.75rem;
       text-align: left;
       border-bottom: 1px solid #eee;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
+
+    th:nth-child(1), td:nth-child(1) { width: 20%; } /* Vacante */
+    th:nth-child(2), td:nth-child(2) { width: 15%; } /* Empresa */
+    th:nth-child(3), td:nth-child(3) { width: 12%; } /* Categoría */
+    th:nth-child(4), td:nth-child(4) { width: 10%; } /* Modalidad */
+    th:nth-child(5), td:nth-child(5) { width: 10%; } /* Ubicación */
+    th:nth-child(6), td:nth-child(6) { width: 10%; } /* Salario */
+    th:nth-child(7), td:nth-child(7) { width: 10%; } /* Fecha */
+    th:nth-child(8), td:nth-child(8) { width: 5%; }  /* Plazas */
+    th:nth-child(9), td:nth-child(9) { width: 8%; }  /* Estado */
+    th:nth-child(10), td:nth-child(10) { width: 10%; } /* Acciones */
 
     th {
       background: #f8f9fa;
