@@ -40,4 +40,8 @@ export class AdminSyncService {
   notifyCareerChange() {
     this.triggerRefresh();
   }
+
+  notifyRefresh() {
+    this.triggerRefresh();
+  }
 }
