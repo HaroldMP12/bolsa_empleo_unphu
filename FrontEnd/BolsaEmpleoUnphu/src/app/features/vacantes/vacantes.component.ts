@@ -492,7 +492,7 @@ import { Subscription } from 'rxjs';
     }
     .recomendacion-badge {
       position: absolute;
-      top: 12px;
+      top: -8px;
       right: 12px;
       background: var(--unphu-green-primary);
       color: white;
