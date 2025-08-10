@@ -14,21 +14,60 @@ import { Router } from '@angular/router';
   imports: [CommonModule, ReactiveFormsModule, FormsModule, ConfirmationModalComponent],
   template: `
     <div class="perfil-page">
-      <div class="page-header">
-        <h1>Mi Perfil</h1>
-        <p>Completa tu información para mejorar tus oportunidades</p>
+      <!-- HERO SECTION -->
+      <div class="profile-hero">
+        <div class="hero-background"></div>
+        <div class="hero-content">
+          <div class="profile-avatar">
+            <div class="avatar-circle">
+              <span class="avatar-initials">{{ getInitials() }}</span>
+            </div>
+            <button class="avatar-edit-btn" (click)="editarFoto()">
+              <span>📷</span>
+            </button>
+          </div>
+          <div class="profile-info">
+            <h1>{{ currentUser?.nombreCompleto }}</h1>
+            <p class="profile-title">{{ getProfileTitle() }}</p>
+            <p class="profile-location">📍 República Dominicana</p>
+          </div>
+          <div class="profile-actions">
+            <button class="btn-edit-profile" (click)="toggleEditMode()">
+              {{ editMode ? '👁️ Ver Perfil' : '✏️ Editar Perfil' }}
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- PERFIL ESTUDIANTE/EGRESADO -->
       <div *ngIf="isStudent()" class="perfil-content">
-        <div class="perfil-grid">
-          <!-- Información Personal -->
-          <div class="perfil-section">
-            <div class="section-header">
-              <h3>Información Personal</h3>
-            </div>
-            <form [formGroup]="personalForm" class="form-content">
-              <div class="form-row">
+        <div class="profile-layout">
+          <!-- SIDEBAR -->
+          <div class="profile-sidebar">
+            <!-- Información Personal Card -->
+            <div class="profile-card">
+              <div class="card-header">
+                <h3>📋 Información Personal</h3>
+              </div>
+              <div class="card-content" *ngIf="!editMode">
+                <div class="info-item">
+                  <span class="info-label">Email:</span>
+                  <span class="info-value">{{ currentUser?.correo }}</span>
+                </div>
+                <div class="info-item" *ngIf="personalForm.get('telefono')?.value">
+                  <span class="info-label">Teléfono:</span>
+                  <span class="info-value">{{ personalForm.get('telefono')?.value }}</span>
+                </div>
+                <div class="info-item" *ngIf="personalForm.get('fechaNacimiento')?.value">
+                  <span class="info-label">Fecha de Nacimiento:</span>
+                  <span class="info-value">{{ personalForm.get('fechaNacimiento')?.value | date:'dd/MM/yyyy' }}</span>
+                </div>
+                <div class="info-item" *ngIf="personalForm.get('direccion')?.value">
+                  <span class="info-label">Dirección:</span>
+                  <span class="info-value">{{ personalForm.get('direccion')?.value }}</span>
+                </div>
+              </div>
+              <form [formGroup]="personalForm" class="card-content" *ngIf="editMode">
                 <div class="form-group">
                   <label>Nombre Completo</label>
                   <input type="text" formControlName="nombreCompleto" class="form-control">
@@ -37,8 +76,6 @@ import { Router } from '@angular/router';
                   <label>Correo Electrónico</label>
                   <input type="email" formControlName="correo" class="form-control" readonly>
                 </div>
-              </div>
-              <div class="form-row">
                 <div class="form-group">
                   <label>Teléfono</label>
                   <input type="tel" formControlName="telefono" class="form-control">
@@ -47,142 +84,180 @@ import { Router } from '@angular/router';
                   <label>Fecha de Nacimiento</label>
                   <input type="date" formControlName="fechaNacimiento" class="form-control">
                 </div>
+                <div class="form-group">
+                  <label>Dirección</label>
+                  <textarea formControlName="direccion" class="form-control" rows="2"></textarea>
+                </div>
+              </form>
+            </div>
+
+            <!-- Documentos Card -->
+            <div class="profile-card">
+              <div class="card-header">
+                <h3>📄 Documentos</h3>
               </div>
-              <div class="form-group">
-                <label>Dirección</label>
-                <textarea formControlName="direccion" class="form-control" rows="2"></textarea>
+              <div class="card-content">
+                <div class="document-item">
+                  <div class="document-info">
+                    <span class="document-icon">📄</span>
+                    <div>
+                      <p class="document-name">Curriculum Vitae</p>
+                      <p class="document-status">{{ cvSeleccionado || 'No subido' }}</p>
+                    </div>
+                  </div>
+                  <button class="btn-upload" (click)="triggerFileInput('cv')" *ngIf="editMode">Subir</button>
+                </div>
+                <input type="file" #cvInput accept=".pdf" (change)="onFileSelect($event, 'cv')" style="display: none;">
               </div>
-            </form>
+            </div>
           </div>
 
-          <!-- Información Académica -->
-          <div class="perfil-section">
-            <div class="section-header">
-              <h3>Información Académica</h3>
-            </div>
-            <form [formGroup]="academicForm" class="form-content">
-              <div class="form-row">
-                <div class="form-group">
-                  <label>Carrera</label>
-                  <select formControlName="carrera" class="form-control">
-                    <option value="">Seleccionar carrera</option>
-                    <option value="1">Ingeniería en Sistemas</option>
-                    <option value="2">Ingeniería Civil</option>
-                    <option value="3">Medicina</option>
-                    <option value="4">Enfermería</option>
-                    <option value="5">Administración de Empresas</option>
-                    <option value="6">Contabilidad</option>
-                    <option value="7">Derecho</option>
-                    <option value="8">Psicología</option>
-                    <option value="9">Comunicación Social</option>
-                    <option value="10">Arquitectura</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label>Matrícula</label>
-                  <input type="text" formControlName="matricula" class="form-control" placeholder="Ej: 2020-1234">
+          <!-- MAIN CONTENT -->
+          <div class="profile-main">
+            <!-- Información Académica Card -->
+            <div class="profile-card">
+              <div class="card-header">
+                <h3>🎓 Información Académica</h3>
+              </div>
+              <div class="card-content" *ngIf="!editMode">
+                <div class="academic-summary">
+                  <div class="university-info">
+                    <h4>Universidad Nacional Pedro Henríquez Ureña</h4>
+                    <p class="degree">{{ getCarreraName() }}</p>
+                    <p class="status">{{ getSemestreStatus() }}</p>
+                  </div>
+                  <div class="academic-details">
+                    <div class="detail-item" *ngIf="academicForm.get('matricula')?.value">
+                      <span class="detail-label">Matrícula:</span>
+                      <span class="detail-value">{{ academicForm.get('matricula')?.value }}</span>
+                    </div>
+                    <div class="detail-item" *ngIf="academicForm.get('anoIngreso')?.value">
+                      <span class="detail-label">Año de Ingreso:</span>
+                      <span class="detail-value">{{ academicForm.get('anoIngreso')?.value }}</span>
+                    </div>
+                    <div class="detail-item" *ngIf="academicForm.get('promedio')?.value">
+                      <span class="detail-label">Promedio:</span>
+                      <span class="detail-value">{{ academicForm.get('promedio')?.value }}/4.0</span>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div class="form-row">
-                <div class="form-group">
-                  <label>Semestre Actual</label>
-                  <select formControlName="semestre" class="form-control">
-                    <option value="">Seleccionar</option>
-                    <option value="1">1er Semestre</option>
-                    <option value="2">2do Semestre</option>
-                    <option value="3">3er Semestre</option>
-                    <option value="4">4to Semestre</option>
-                    <option value="5">5to Semestre</option>
-                    <option value="6">6to Semestre</option>
-                    <option value="7">7mo Semestre</option>
-                    <option value="8">8vo Semestre</option>
-                    <option value="graduado">Graduado</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label>Año de Ingreso</label>
-                  <input type="number" formControlName="anoIngreso" class="form-control" min="2000" max="2024">
-                </div>
-              </div>
-              <div class="form-group">
-                <label>Promedio Académico (Opcional)</label>
-                <input type="number" formControlName="promedio" class="form-control" min="0" max="4" step="0.01">
-              </div>
-            </form>
-          </div>
-
-          <!-- Experiencia Laboral -->
-          <div class="perfil-section">
-            <div class="section-header">
-              <h3>Experiencia Laboral</h3>
-              <button type="button" class="btn-add" (click)="agregarExperiencia()">+ Agregar</button>
-            </div>
-            <div class="form-content">
-              <div *ngFor="let exp of experiencias; let i = index" class="experiencia-item">
+              <form [formGroup]="academicForm" class="card-content" *ngIf="editMode">
                 <div class="form-row">
                   <div class="form-group">
-                    <label>Empresa</label>
-                    <input type="text" [(ngModel)]="exp.empresa" class="form-control">
+                    <label>Carrera</label>
+                    <select formControlName="carrera" class="form-control">
+                      <option value="">Seleccionar carrera</option>
+                      <option value="1">Ingeniería en Sistemas</option>
+                      <option value="2">Ingeniería Civil</option>
+                      <option value="3">Medicina</option>
+                      <option value="4">Enfermería</option>
+                      <option value="5">Administración de Empresas</option>
+                      <option value="6">Contabilidad</option>
+                      <option value="7">Derecho</option>
+                      <option value="8">Psicología</option>
+                      <option value="9">Comunicación Social</option>
+                      <option value="10">Arquitectura</option>
+                    </select>
                   </div>
                   <div class="form-group">
-                    <label>Cargo</label>
-                    <input type="text" [(ngModel)]="exp.cargo" class="form-control">
+                    <label>Matrícula</label>
+                    <input type="text" formControlName="matricula" class="form-control" placeholder="Ej: 2020-1234">
                   </div>
                 </div>
                 <div class="form-row">
                   <div class="form-group">
-                    <label>Fecha Inicio</label>
-                    <input type="date" [(ngModel)]="exp.fechaInicio" class="form-control">
+                    <label>Semestre Actual</label>
+                    <select formControlName="semestre" class="form-control">
+                      <option value="">Seleccionar</option>
+                      <option value="1">1er Semestre</option>
+                      <option value="2">2do Semestre</option>
+                      <option value="3">3er Semestre</option>
+                      <option value="4">4to Semestre</option>
+                      <option value="5">5to Semestre</option>
+                      <option value="6">6to Semestre</option>
+                      <option value="7">7mo Semestre</option>
+                      <option value="8">8vo Semestre</option>
+                      <option value="graduado">Graduado</option>
+                    </select>
                   </div>
                   <div class="form-group">
-                    <label>Fecha Fin</label>
-                    <input type="date" [(ngModel)]="exp.fechaFin" class="form-control" [disabled]="exp.actual">
+                    <label>Año de Ingreso</label>
+                    <input type="number" formControlName="anoIngreso" class="form-control" min="2000" max="2024">
                   </div>
                 </div>
                 <div class="form-group">
-                  <label class="checkbox-label">
-                    <input type="checkbox" [(ngModel)]="exp.actual"> Trabajo actual
-                  </label>
+                  <label>Promedio Académico (Opcional)</label>
+                  <input type="number" formControlName="promedio" class="form-control" min="0" max="4" step="0.01">
                 </div>
-                <div class="form-group">
-                  <label>Descripción</label>
-                  <textarea [(ngModel)]="exp.descripcion" class="form-control" rows="2"></textarea>
-                </div>
-                <button type="button" class="btn-remove" (click)="removerExperiencia(i)">Eliminar</button>
-              </div>
-              <div *ngIf="experiencias.length === 0" class="empty-state">
-                <p>No has agregado experiencia laboral</p>
-              </div>
+              </form>
             </div>
-          </div>
 
-          <!-- Archivos -->
-          <div class="perfil-section">
-            <div class="section-header">
-              <h3>Documentos</h3>
-            </div>
-            <div class="form-content">
-              <div class="upload-section">
-                <div class="upload-item">
-                  <label>Foto de Perfil</label>
-                  <div class="file-upload">
-                    <input type="file" id="foto" accept="image/*" (change)="onFileSelect($event, 'foto')">
-                    <label for="foto" class="upload-btn">Seleccionar Imagen</label>
-                    <span class="file-info">{{ fotoSeleccionada || 'Ningún archivo seleccionado' }}</span>
-                  </div>
+            <!-- Experiencia Laboral Card -->
+            <div class="profile-card">
+              <div class="card-header">
+                <h3>💼 Experiencia Laboral</h3>
+                <button type="button" class="btn-add" (click)="agregarExperiencia()" *ngIf="editMode">+ Agregar</button>
+              </div>
+              <div class="card-content">
+                <div *ngIf="experiencias.length === 0 && !editMode" class="empty-experience">
+                  <div class="empty-icon">💼</div>
+                  <p>Aún no has agregado experiencia laboral</p>
+                  <button class="btn-add-first" (click)="toggleEditMode(); agregarExperiencia()">Agregar primera experiencia</button>
                 </div>
-                <div class="upload-item">
-                  <label>Curriculum Vitae (PDF)</label>
-                  <div class="file-upload">
-                    <input type="file" id="cv" accept=".pdf" (change)="onFileSelect($event, 'cv')">
-                    <label for="cv" class="upload-btn">Seleccionar PDF</label>
-                    <span class="file-info">{{ cvSeleccionado || 'Ningún archivo seleccionado' }}</span>
+                
+                <div *ngFor="let exp of experiencias; let i = index" class="experience-item">
+                  <div class="experience-header" *ngIf="!editMode">
+                    <div class="company-logo">🏢</div>
+                    <div class="experience-info">
+                      <h4>{{ exp.cargo }}</h4>
+                      <p class="company-name">{{ exp.empresa }}</p>
+                      <p class="experience-period">
+                        {{ exp.fechaInicio | date:'MMM yyyy' }} - 
+                        {{ exp.actual ? 'Presente' : (exp.fechaFin | date:'MMM yyyy') }}
+                      </p>
+                      <p class="experience-description" *ngIf="exp.descripcion">{{ exp.descripcion }}</p>
+                    </div>
+                  </div>
+                  
+                  <div class="experience-form" *ngIf="editMode">
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label>Empresa</label>
+                        <input type="text" [(ngModel)]="exp.empresa" class="form-control">
+                      </div>
+                      <div class="form-group">
+                        <label>Cargo</label>
+                        <input type="text" [(ngModel)]="exp.cargo" class="form-control">
+                      </div>
+                    </div>
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label>Fecha Inicio</label>
+                        <input type="date" [(ngModel)]="exp.fechaInicio" class="form-control">
+                      </div>
+                      <div class="form-group">
+                        <label>Fecha Fin</label>
+                        <input type="date" [(ngModel)]="exp.fechaFin" class="form-control" [disabled]="exp.actual">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="checkbox-label">
+                        <input type="checkbox" [(ngModel)]="exp.actual"> Trabajo actual
+                      </label>
+                    </div>
+                    <div class="form-group">
+                      <label>Descripción</label>
+                      <textarea [(ngModel)]="exp.descripcion" class="form-control" rows="3" placeholder="Describe tus responsabilidades y logros..."></textarea>
+                    </div>
+                    <button type="button" class="btn-remove" (click)="removerExperiencia(i)">🗑️ Eliminar</button>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
       </div>
 
       <!-- PERFIL EMPRESA -->
@@ -302,9 +377,11 @@ import { Router } from '@angular/router';
       </div>
 
       <!-- Botones de Acción -->
-      <div class="action-buttons">
-        <button type="button" class="btn-secondary" (click)="cancelar()">Cancelar</button>
-        <button type="button" class="btn-primary" (click)="guardarPerfil()" [disabled]="guardando">{{ guardando ? 'Guardando...' : 'Guardar Cambios' }}</button>
+      <div class="action-buttons" *ngIf="editMode">
+        <button type="button" class="btn-secondary" (click)="cancelarEdicion()">Cancelar</button>
+        <button type="button" class="btn-primary" (click)="guardarPerfil()" [disabled]="guardando">
+          {{ guardando ? '⏳ Guardando...' : '💾 Guardar Cambios' }}
+        </button>
       </div>
     </div>
 
@@ -320,60 +397,337 @@ import { Router } from '@angular/router';
   `,
   styles: [`
     .perfil-page {
-      padding: 2rem;
+      background: var(--unphu-background);
+      min-height: 100vh;
     }
-    .page-header {
+    
+    /* HERO SECTION */
+    .profile-hero {
+      position: relative;
       background: white;
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       margin-bottom: 2rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
-    .page-header h1 {
-      color: var(--unphu-blue-dark);
-      margin: 0 0 0.5rem 0;
-      font-size: 2rem;
-      font-weight: 600;
+    .hero-background {
+      height: 200px;
+      background: linear-gradient(135deg, var(--unphu-blue-dark) 0%, var(--unphu-green-primary) 100%);
+      position: relative;
     }
-    .page-header p {
-      color: #666;
-      margin: 0;
-      font-size: 1.1rem;
-    }
-    .perfil-grid {
-      display: grid;
+    .hero-content {
+      position: relative;
+      padding: 0 2rem 2rem;
+      display: flex;
+      align-items: flex-end;
       gap: 2rem;
     }
-    .perfil-section {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      overflow: hidden;
+    .profile-avatar {
+      position: relative;
+      margin-top: -80px;
     }
-    .section-header {
+    .avatar-circle {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      background: var(--unphu-green-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 6px solid white;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .avatar-initials {
+      font-size: 3rem;
+      font-weight: 700;
+      color: white;
+    }
+    .avatar-edit-btn {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--unphu-blue-dark);
+      border: 3px solid white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      transition: all 0.3s;
+    }
+    .avatar-edit-btn:hover {
+      transform: scale(1.1);
+    }
+    .profile-info {
+      flex: 1;
+      padding-top: 1rem;
+    }
+    .profile-info h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--unphu-blue-dark);
+      margin: 0 0 0.5rem 0;
+    }
+    .profile-title {
+      font-size: 1.25rem;
+      color: var(--unphu-gray-medium);
+      margin: 0 0 0.5rem 0;
+      font-weight: 500;
+    }
+    .profile-location {
+      color: #666;
+      margin: 0;
+      font-size: 1rem;
+    }
+    .profile-actions {
+      padding-top: 1rem;
+    }
+    .btn-edit-profile {
       background: var(--unphu-blue-dark);
       color: white;
-      padding: 1.5rem;
+      border: none;
+      padding: 0.75rem 2rem;
+      border-radius: 25px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 1rem;
+    }
+    .btn-edit-profile:hover {
+      background: #0a2a3f;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(15, 56, 90, 0.3);
+    }
+    
+    /* LAYOUT */
+    .perfil-content {
+      padding: 0 2rem 2rem;
+    }
+    .profile-layout {
+      display: grid;
+      grid-template-columns: 350px 1fr;
+      gap: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .profile-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .profile-main {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    
+    /* CARDS */
+    .profile-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      overflow: hidden;
+      border: 1px solid #e0e0e0;
+    }
+    .card-header {
+      background: linear-gradient(135deg, var(--unphu-blue-dark) 0%, #1a4a6b 100%);
+      color: white;
+      padding: 1.25rem 1.5rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-    .section-header h3 {
+    .card-header h3 {
       margin: 0;
       font-weight: 600;
+      font-size: 1.1rem;
     }
-    .btn-add {
+    .card-content {
+      padding: 1.5rem;
+    }
+    
+    /* INFO ITEMS */
+    .info-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .info-item:last-child {
+      border-bottom: none;
+    }
+    .info-label {
+      font-weight: 600;
+      color: var(--unphu-blue-dark);
+      min-width: 100px;
+    }
+    .info-value {
+      color: #333;
+      text-align: right;
+      flex: 1;
+    }
+    
+    /* ACADEMIC SECTION */
+    .academic-summary {
+      text-align: center;
+    }
+    .university-info h4 {
+      color: var(--unphu-blue-dark);
+      font-size: 1.1rem;
+      margin: 0 0 0.5rem 0;
+      font-weight: 600;
+    }
+    .degree {
+      color: var(--unphu-green-primary);
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 0 0 0.5rem 0;
+    }
+    .status {
+      color: #666;
+      margin: 0 0 1.5rem 0;
+    }
+    .academic-details {
+      display: grid;
+      gap: 0.5rem;
+    }
+    .detail-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .detail-item:last-child {
+      border-bottom: none;
+    }
+    .detail-label {
+      font-weight: 500;
+      color: var(--unphu-blue-dark);
+    }
+    .detail-value {
+      color: #333;
+      font-weight: 600;
+    }
+    
+    /* EXPERIENCE SECTION */
+    .empty-experience {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: #666;
+    }
+    .empty-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+    .btn-add-first {
+      background: var(--unphu-green-primary);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: 500;
+      margin-top: 1rem;
+      transition: all 0.3s;
+    }
+    .btn-add-first:hover {
+      background: #3a7f39;
+      transform: translateY(-2px);
+    }
+    .experience-item {
+      border-bottom: 1px solid #f0f0f0;
+      padding-bottom: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .experience-item:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+    }
+    .experience-header {
+      display: flex;
+      gap: 1rem;
+    }
+    .company-logo {
+      width: 48px;
+      height: 48px;
+      background: var(--unphu-background);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+    .experience-info h4 {
+      color: var(--unphu-blue-dark);
+      margin: 0 0 0.25rem 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+    .company-name {
+      color: #666;
+      margin: 0 0 0.25rem 0;
+      font-weight: 500;
+    }
+    .experience-period {
+      color: var(--unphu-gray-medium);
+      font-size: 0.9rem;
+      margin: 0 0 0.75rem 0;
+    }
+    .experience-description {
+      color: #333;
+      line-height: 1.5;
+      margin: 0;
+    }
+    
+    /* DOCUMENTS */
+    .document-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      background: var(--unphu-background);
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+    .document-item:last-child {
+      margin-bottom: 0;
+    }
+    .document-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .document-icon {
+      font-size: 1.5rem;
+    }
+    .document-name {
+      font-weight: 600;
+      color: var(--unphu-blue-dark);
+      margin: 0 0 0.25rem 0;
+    }
+    .document-status {
+      color: #666;
+      font-size: 0.9rem;
+      margin: 0;
+    }
+    .btn-upload {
       background: var(--unphu-green-primary);
       color: white;
       border: none;
       padding: 0.5rem 1rem;
-      border-radius: 4px;
+      border-radius: 6px;
       cursor: pointer;
       font-size: 0.875rem;
+      transition: background 0.3s;
     }
-    .form-content {
-      padding: 2rem;
+    .btn-upload:hover {
+      background: #3a7f39;
     }
+    
+    /* FORMS */
     .form-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -386,111 +740,127 @@ import { Router } from '@angular/router';
     .form-group label {
       display: block;
       margin-bottom: 0.5rem;
-      font-weight: 500;
+      font-weight: 600;
       color: var(--unphu-blue-dark);
+      font-size: 0.9rem;
     }
     .form-control {
       width: 100%;
       padding: 0.75rem;
-      border: 1px solid #ddd;
-      border-radius: 6px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
       font-size: 1rem;
-      transition: border-color 0.3s;
+      transition: all 0.3s;
+      background: white;
     }
     .form-control:focus {
       outline: none;
-      border-color: var(--unphu-blue-dark);
+      border-color: var(--unphu-green-primary);
+      box-shadow: 0 0 0 3px rgba(67, 148, 65, 0.1);
     }
     .checkbox-label {
       display: flex;
       align-items: center;
       gap: 0.5rem;
       cursor: pointer;
+      font-weight: 500;
     }
-    .experiencia-item {
-      border: 1px solid #eee;
-      border-radius: 8px;
-      padding: 1.5rem;
-      margin-bottom: 1rem;
-      position: relative;
+    
+    /* BUTTONS */
+    .btn-add {
+      background: var(--unphu-green-primary);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+    .btn-add:hover {
+      background: #3a7f39;
     }
     .btn-remove {
       background: #dc3545;
       color: white;
       border: none;
       padding: 0.5rem 1rem;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 0.875rem;
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-    }
-    .upload-section {
-      display: grid;
-      gap: 1.5rem;
-    }
-    .upload-item label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: 500;
-      color: var(--unphu-blue-dark);
-    }
-    .file-upload {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-    .file-upload input[type="file"] {
-      display: none;
-    }
-    .upload-btn {
-      background: var(--unphu-blue-dark);
-      color: white;
-      padding: 0.75rem 1.5rem;
       border-radius: 6px;
       cursor: pointer;
       font-size: 0.875rem;
-      transition: background 0.3s;
+      margin-top: 1rem;
+      transition: all 0.3s;
     }
-    .upload-btn:hover {
-      background: #0a2a3f;
-    }
-    .file-info {
-      color: #666;
-      font-size: 0.875rem;
-    }
-    .empty-state {
-      text-align: center;
-      padding: 2rem;
-      color: #666;
+    .btn-remove:hover {
+      background: #c82333;
     }
     .action-buttons {
       display: flex;
-      justify-content: flex-end;
+      justify-content: center;
       gap: 1rem;
       margin-top: 2rem;
+      padding: 2rem;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     }
     .btn-primary {
-      background: var(--unphu-blue-dark);
+      background: var(--unphu-green-primary);
       color: white;
       border: none;
       padding: 0.75rem 2rem;
-      border-radius: 6px;
-      font-weight: 500;
+      border-radius: 25px;
+      font-weight: 600;
       cursor: pointer;
-      transition: background 0.3s;
+      transition: all 0.3s;
+      font-size: 1rem;
     }
-    .btn-primary:hover {
-      background: #0a2a3f;
+    .btn-primary:hover:not(:disabled) {
+      background: #3a7f39;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(67, 148, 65, 0.3);
+    }
+    .btn-primary:disabled {
+      background: #ccc;
+      transform: none;
+      box-shadow: none;
     }
     .btn-secondary {
-      background: #f8f9fa;
+      background: white;
       color: var(--unphu-blue-dark);
-      border: 1px solid #dee2e6;
+      border: 2px solid var(--unphu-blue-dark);
       padding: 0.75rem 2rem;
-      border-radius: 6px;
+      border-radius: 25px;
       cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+      font-size: 1rem;
+    }
+    .btn-secondary:hover {
+      background: var(--unphu-blue-dark);
+      color: white;
+      transform: translateY(-2px);
+    }
+    
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .profile-layout {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      .hero-content {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 1rem;
+      }
+      .profile-info {
+        padding-top: 0;
+      }
+      .form-row {
+        grid-template-columns: 1fr;
+      }
     }
   `]
 })
@@ -507,6 +877,7 @@ export class PerfilComponent implements OnInit {
   logoSeleccionado = '';
   portadaSeleccionada = '';
   
+  editMode = false;
   guardando = false;
   showModal = false;
   modalType: 'success' | 'error' | 'warning' | 'info' = 'success';
@@ -890,6 +1261,75 @@ export class PerfilComponent implements OnInit {
     }
     
     return resumen;
+  }
+
+  getInitials(): string {
+    if (!this.currentUser?.nombreCompleto) return 'U';
+    return this.currentUser.nombreCompleto
+      .split(' ')
+      .map(name => name.charAt(0))
+      .join('')
+      .substring(0, 2)
+      .toUpperCase();
+  }
+
+  getProfileTitle(): string {
+    if (!this.currentUser) return '';
+    
+    if (this.isStudent()) {
+      const carrera = this.getCarreraName();
+      const semestre = this.getSemestreStatus();
+      return `${semestre} - ${carrera}`;
+    }
+    
+    return 'Empresa';
+  }
+
+  getCarreraName(): string {
+    const carreraId = this.academicForm?.get('carrera')?.value;
+    const carreras: { [key: string]: string } = {
+      '1': 'Ingeniería en Sistemas',
+      '2': 'Ingeniería Civil',
+      '3': 'Medicina',
+      '4': 'Enfermería',
+      '5': 'Administración de Empresas',
+      '6': 'Contabilidad',
+      '7': 'Derecho',
+      '8': 'Psicología',
+      '9': 'Comunicación Social',
+      '10': 'Arquitectura'
+    };
+    return carreras[carreraId] || 'Carrera no especificada';
+  }
+
+  getSemestreStatus(): string {
+    const semestre = this.academicForm?.get('semestre')?.value;
+    if (semestre === 'graduado') return 'Egresado';
+    if (semestre) return `${semestre}° Semestre`;
+    return 'Estudiante';
+  }
+
+  toggleEditMode(): void {
+    this.editMode = !this.editMode;
+  }
+
+  editarFoto(): void {
+    if (this.editMode) {
+      this.triggerFileInput('foto');
+    }
+  }
+
+  triggerFileInput(tipo: string): void {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = tipo === 'cv' ? '.pdf' : 'image/*';
+    input.onchange = (event: any) => this.onFileSelect(event, tipo);
+    input.click();
+  }
+
+  cancelarEdicion(): void {
+    this.editMode = false;
+    this.loadExistingProfile(); // Recargar datos originales
   }
 
   cancelar(): void {
