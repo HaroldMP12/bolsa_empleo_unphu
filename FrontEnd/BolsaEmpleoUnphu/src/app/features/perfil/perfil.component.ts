@@ -4,14 +4,13 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule, Validators } 
 import { AuthService } from '../../core/services/auth.service';
 import { PerfilService, PerfilEstudiante, PerfilEmpresa } from '../../core/services/perfil.service';
 import { ToastService } from '../../core/services/toast.service';
-import { ConfirmationModalComponent } from '../../shared/components/confirmation-modal.component';
 import { AuthResponse } from '../../core/models/auth.models';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-perfil',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, ConfirmationModalComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   template: `
     <div class="perfil-page">
       <!-- HERO SECTION -->
@@ -348,8 +347,6 @@ import { Router } from '@angular/router';
               </div>
             </div>
           </div>
-        </div>
-
             <!-- Descripción Personal/Empresa -->
             <div class="profile-card">
               <div class="card-header">
@@ -392,14 +389,19 @@ import { Router } from '@angular/router';
     </div>
 
     <!-- Modal de Confirmación -->
-    <app-confirmation-modal
-      [isVisible]="showModal"
-      [type]="modalType"
-      [title]="modalTitle"
-      [message]="modalMessage"
-      [confirmText]="modalConfirmText"
-      (confirmed)="onModalConfirmed()">
-    </app-confirmation-modal>
+    <div *ngIf="showModal" class="modal-overlay" (click)="showModal = false">
+      <div class="confirmation-modal" (click)="$event.stopPropagation()">
+        <div class="confirmation-header">
+          <h3>{{ modalTitle }}</h3>
+        </div>
+        <div class="confirmation-body">
+          <p>{{ modalMessage }}</p>
+        </div>
+        <div class="confirmation-footer">
+          <button class="btn-confirm" (click)="onModalConfirmed()">{{ modalConfirmText }}</button>
+        </div>
+      </div>
+    </div>
   `,
   styles: [`
     .perfil-page {
@@ -902,6 +904,67 @@ import { Router } from '@angular/router';
       .avatar-initials {
         font-size: 2.5rem;
       }
+    }
+    
+    /* MODAL */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+    .confirmation-modal {
+      background: white;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+    .confirmation-header {
+      background: var(--unphu-green-primary);
+      color: white;
+      padding: 1.5rem;
+      border-radius: 12px 12px 0 0;
+      text-align: center;
+    }
+    .confirmation-header h3 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .confirmation-body {
+      padding: 2rem;
+      text-align: center;
+    }
+    .confirmation-body p {
+      margin: 0;
+      color: #666;
+      line-height: 1.5;
+      font-size: 1rem;
+    }
+    .confirmation-footer {
+      padding: 1.5rem;
+      display: flex;
+      justify-content: center;
+    }
+    .btn-confirm {
+      background: var(--unphu-blue-dark);
+      color: white;
+      border: none;
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    .btn-confirm:hover {
+      background: #0a2a3f;
     }
   `]
 })
@@ -1442,8 +1505,9 @@ export class PerfilComponent implements OnInit {
   }
 
   onModalConfirmed(): void {
+    this.showModal = false;
     if (this.modalType === 'success') {
-      this.router.navigate(['/dashboard']);
+      this.editMode = false;
     }
   }
 }
