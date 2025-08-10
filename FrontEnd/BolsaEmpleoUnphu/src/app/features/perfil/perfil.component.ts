@@ -1009,9 +1009,20 @@ export class PerfilComponent implements OnInit {
   }
 
   private loadExistingProfile(): void {
-    if (!this.currentUser) return;
+    console.log('=== CARGANDO PERFIL ===');
+    console.log('Usuario actual:', this.currentUser);
+    
+    if (!this.currentUser) {
+      console.log('No hay usuario actual');
+      return;
+    }
+
+    console.log('Rol del usuario:', this.currentUser.rol);
+    console.log('Es estudiante?', this.isStudent());
+    console.log('Es empresa?', this.isCompany());
 
     if (this.isStudent()) {
+      console.log('Cargando perfil de estudiante...');
       this.perfilService.obtenerPerfilEstudiante(this.currentUser.usuarioID).subscribe({
         next: (perfil) => {
           if (perfil && perfil.perfilID) {
@@ -1037,6 +1048,8 @@ export class PerfilComponent implements OnInit {
           console.error('Error al cargar perfil de empresa:', error);
         }
       });
+    } else {
+      console.log('Tipo de usuario no reconocido');
     }
   }
 

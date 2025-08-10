@@ -316,11 +316,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   goToProfile(): void {
-    if (this.currentUser?.rol === 'Empresa') {
-      this.router.navigate(['/perfil-empresa']);
-    } else {
-      this.router.navigate(['/perfil']);
-    }
+    // Ahora todos van al perfil unificado
+    this.router.navigate(['/perfil']);
   }
 
   logout(): void {
