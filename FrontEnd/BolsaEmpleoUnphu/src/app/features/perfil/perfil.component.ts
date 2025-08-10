@@ -39,65 +39,104 @@ import { Router } from '@angular/router';
         </div>
       </div>
 
-      <!-- PERFIL ESTUDIANTE/EGRESADO -->
-      <div *ngIf="isStudent()" class="perfil-content">
+      <!-- PERFIL UNIFICADO -->
+      <div class="perfil-content">
         <div class="profile-layout">
           <!-- SIDEBAR -->
           <div class="profile-sidebar">
-            <!-- Información Personal Card -->
+            <!-- Información Personal/Empresa Card -->
             <div class="profile-card">
               <div class="card-header">
-                <h3>📋 Información Personal</h3>
+                <h3>📋 {{ isCompany() ? 'Información de Contacto' : 'Información Personal' }}</h3>
               </div>
               <div class="card-content" *ngIf="!editMode">
                 <div class="info-item">
                   <span class="info-label">Email:</span>
                   <span class="info-value">{{ currentUser?.correo }}</span>
                 </div>
-                <div class="info-item" *ngIf="personalForm.get('telefono')?.value">
+                <div class="info-item" *ngIf="getTelefono()">
                   <span class="info-label">Teléfono:</span>
-                  <span class="info-value">{{ personalForm.get('telefono')?.value }}</span>
+                  <span class="info-value">{{ getTelefono() }}</span>
                 </div>
-                <div class="info-item" *ngIf="personalForm.get('fechaNacimiento')?.value">
+                <div class="info-item" *ngIf="!isCompany() && personalForm.get('fechaNacimiento')?.value">
                   <span class="info-label">Fecha de Nacimiento:</span>
                   <span class="info-value">{{ personalForm.get('fechaNacimiento')?.value | date:'dd/MM/yyyy' }}</span>
                 </div>
-                <div class="info-item" *ngIf="personalForm.get('direccion')?.value">
+                <div class="info-item" *ngIf="getDireccion()">
                   <span class="info-label">Dirección:</span>
-                  <span class="info-value">{{ personalForm.get('direccion')?.value }}</span>
+                  <span class="info-value">{{ getDireccion() }}</span>
+                </div>
+                <div class="info-item" *ngIf="isCompany() && empresaForm.get('rnc')?.value">
+                  <span class="info-label">RNC:</span>
+                  <span class="info-value">{{ empresaForm.get('rnc')?.value }}</span>
+                </div>
+                <div class="info-item" *ngIf="isCompany() && empresaForm.get('sitioWeb')?.value">
+                  <span class="info-label">Sitio Web:</span>
+                  <span class="info-value">{{ empresaForm.get('sitioWeb')?.value }}</span>
                 </div>
               </div>
-              <form [formGroup]="personalForm" class="card-content" *ngIf="editMode">
-                <div class="form-group">
-                  <label>Nombre Completo</label>
-                  <input type="text" formControlName="nombreCompleto" class="form-control">
+              <div class="card-content" *ngIf="editMode">
+                <!-- Formulario para Estudiantes -->
+                <form [formGroup]="personalForm" *ngIf="!isCompany()">
+                  <div class="form-group">
+                    <label>Nombre Completo</label>
+                    <input type="text" formControlName="nombreCompleto" class="form-control">
+                  </div>
+                  <div class="form-group">
+                    <label>Correo Electrónico</label>
+                    <input type="email" formControlName="correo" class="form-control" readonly>
+                  </div>
+                  <div class="form-group">
+                    <label>Teléfono</label>
+                    <input type="tel" formControlName="telefono" class="form-control">
+                  </div>
+                  <div class="form-group">
+                    <label>Fecha de Nacimiento</label>
+                    <input type="date" formControlName="fechaNacimiento" class="form-control">
+                  </div>
+                  <div class="form-group">
+                    <label>Dirección</label>
+                    <textarea formControlName="direccion" class="form-control" rows="2"></textarea>
+                  </div>
+                </form>
+                
+                <!-- Formulario para Empresas -->
+                <div *ngIf="isCompany()">
+                  <form [formGroup]="empresaForm">
+                    <div class="form-group">
+                      <label>Nombre de la Empresa</label>
+                      <input type="text" formControlName="nombreEmpresa" class="form-control">
+                    </div>
+                    <div class="form-group">
+                      <label>RNC</label>
+                      <input type="text" formControlName="rnc" class="form-control">
+                    </div>
+                    <div class="form-group">
+                      <label>Sitio Web</label>
+                      <input type="url" formControlName="sitioWeb" class="form-control" placeholder="https://www.ejemplo.com">
+                    </div>
+                  </form>
+                  <form [formGroup]="contactoForm">
+                    <div class="form-group">
+                      <label>Teléfono Principal</label>
+                      <input type="tel" formControlName="telefono" class="form-control">
+                    </div>
+                    <div class="form-group">
+                      <label>Dirección</label>
+                      <textarea formControlName="direccion" class="form-control" rows="2"></textarea>
+                    </div>
+                  </form>
                 </div>
-                <div class="form-group">
-                  <label>Correo Electrónico</label>
-                  <input type="email" formControlName="correo" class="form-control" readonly>
-                </div>
-                <div class="form-group">
-                  <label>Teléfono</label>
-                  <input type="tel" formControlName="telefono" class="form-control">
-                </div>
-                <div class="form-group">
-                  <label>Fecha de Nacimiento</label>
-                  <input type="date" formControlName="fechaNacimiento" class="form-control">
-                </div>
-                <div class="form-group">
-                  <label>Dirección</label>
-                  <textarea formControlName="direccion" class="form-control" rows="2"></textarea>
-                </div>
-              </form>
+              </div>
             </div>
 
             <!-- Documentos Card -->
             <div class="profile-card">
               <div class="card-header">
-                <h3>📄 Documentos</h3>
+                <h3>📄 {{ isCompany() ? 'Archivos Corporativos' : 'Documentos' }}</h3>
               </div>
               <div class="card-content">
-                <div class="document-item">
+                <div class="document-item" *ngIf="!isCompany()">
                   <div class="document-info">
                     <span class="document-icon">📄</span>
                     <div>
@@ -107,6 +146,16 @@ import { Router } from '@angular/router';
                   </div>
                   <button class="btn-upload" (click)="triggerFileInput('cv')" *ngIf="editMode">Subir</button>
                 </div>
+                <div class="document-item" *ngIf="isCompany()">
+                  <div class="document-info">
+                    <span class="document-icon">🏢</span>
+                    <div>
+                      <p class="document-name">Logo de la Empresa</p>
+                      <p class="document-status">{{ logoSeleccionado || 'No subido' }}</p>
+                    </div>
+                  </div>
+                  <button class="btn-upload" (click)="triggerFileInput('logo')" *ngIf="editMode">Subir</button>
+                </div>
                 <input type="file" #cvInput accept=".pdf" (change)="onFileSelect($event, 'cv')" style="display: none;">
               </div>
             </div>
@@ -114,8 +163,8 @@ import { Router } from '@angular/router';
 
           <!-- MAIN CONTENT -->
           <div class="profile-main">
-            <!-- Información Académica Card -->
-            <div class="profile-card">
+            <!-- Información Académica/Empresa Card -->
+            <div class="profile-card" *ngIf="!isCompany()">
               <div class="card-header">
                 <h3>🎓 Información Académica</h3>
               </div>
@@ -192,9 +241,52 @@ import { Router } from '@angular/router';
                 </div>
               </form>
             </div>
+            
+            <!-- Información Empresarial Card -->
+            <div class="profile-card" *ngIf="isCompany()">
+              <div class="card-header">
+                <h3>🏢 Información Empresarial</h3>
+              </div>
+              <div class="card-content" *ngIf="!editMode">
+                <div class="company-info">
+                  <div class="detail-item" *ngIf="empresaForm.get('sector')?.value">
+                    <span class="detail-label">Sector:</span>
+                    <span class="detail-value">{{ getSectorName() }}</span>
+                  </div>
+                  <div class="detail-item" *ngIf="empresaForm.get('tamano')?.value">
+                    <span class="detail-label">Tamaño:</span>
+                    <span class="detail-value">{{ getTamanoName() }}</span>
+                  </div>
+                </div>
+              </div>
+              <form [formGroup]="empresaForm" class="card-content" *ngIf="editMode">
+                <div class="form-group">
+                  <label>Sector</label>
+                  <select formControlName="sector" class="form-control">
+                    <option value="">Seleccionar sector</option>
+                    <option value="tecnologia">Tecnología</option>
+                    <option value="financiero">Financiero</option>
+                    <option value="salud">Salud</option>
+                    <option value="educacion">Educación</option>
+                    <option value="manufactura">Manufactura</option>
+                    <option value="servicios">Servicios</option>
+                    <option value="comercio">Comercio</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Tamaño de Empresa</label>
+                  <select formControlName="tamano" class="form-control">
+                    <option value="">Seleccionar</option>
+                    <option value="pequena">Pequeña (1-50 empleados)</option>
+                    <option value="mediana">Mediana (51-200 empleados)</option>
+                    <option value="grande">Grande (200+ empleados)</option>
+                  </select>
+                </div>
+              </form>
+            </div>
 
             <!-- Experiencia Laboral Card -->
-            <div class="profile-card">
+            <div class="profile-card" *ngIf="!isCompany()">
               <div class="card-header">
                 <h3>💼 Experiencia Laboral</h3>
                 <button type="button" class="btn-add" (click)="agregarExperiencia()" *ngIf="editMode">+ Agregar</button>
@@ -258,117 +350,31 @@ import { Router } from '@angular/router';
           </div>
         </div>
 
-      </div>
-
-      <!-- PERFIL EMPRESA -->
-      <div *ngIf="isCompany()" class="perfil-content">
-        <div class="perfil-grid">
-          <!-- Información Corporativa -->
-          <div class="perfil-section">
-            <div class="section-header">
-              <h3>Información Corporativa</h3>
-            </div>
-            <form [formGroup]="empresaForm" class="form-content">
-              <div class="form-row">
-                <div class="form-group">
-                  <label>Nombre de la Empresa</label>
-                  <input type="text" formControlName="nombreEmpresa" class="form-control">
-                </div>
-                <div class="form-group">
-                  <label>RNC</label>
-                  <input type="text" formControlName="rnc" class="form-control">
+            <!-- Descripción Personal/Empresa -->
+            <div class="profile-card">
+              <div class="card-header">
+                <h3>📝 {{ isCompany() ? 'Acerca de la Empresa' : 'Acerca de mí' }}</h3>
+              </div>
+              <div class="card-content" *ngIf="!editMode">
+                <div class="description-content">
+                  <p *ngIf="getDescripcion(); else noDescription">{{ getDescripcion() }}</p>
+                  <ng-template #noDescription>
+                    <div class="empty-description">
+                      <p>{{ isCompany() ? 'Agrega una descripción de tu empresa' : 'Cuéntanos sobre ti, tus objetivos y experiencias' }}</p>
+                      <button class="btn-add-first" (click)="toggleEditMode()">Agregar descripción</button>
+                    </div>
+                  </ng-template>
                 </div>
               </div>
-              <div class="form-row">
+              <div class="card-content" *ngIf="editMode">
                 <div class="form-group">
-                  <label>Sector</label>
-                  <select formControlName="sector" class="form-control">
-                    <option value="">Seleccionar sector</option>
-                    <option value="tecnologia">Tecnología</option>
-                    <option value="financiero">Financiero</option>
-                    <option value="salud">Salud</option>
-                    <option value="educacion">Educación</option>
-                    <option value="manufactura">Manufactura</option>
-                    <option value="servicios">Servicios</option>
-                    <option value="comercio">Comercio</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label>Tamaño de Empresa</label>
-                  <select formControlName="tamano" class="form-control">
-                    <option value="">Seleccionar</option>
-                    <option value="pequena">Pequeña (1-50 empleados)</option>
-                    <option value="mediana">Mediana (51-200 empleados)</option>
-                    <option value="grande">Grande (200+ empleados)</option>
-                  </select>
-                </div>
-              </div>
-              <div class="form-group">
-                <label>Descripción de la Empresa</label>
-                <textarea formControlName="descripcion" class="form-control" rows="4" placeholder="Describe tu empresa, misión, visión y valores..."></textarea>
-              </div>
-              <div class="form-group">
-                <label>Sitio Web</label>
-                <input type="url" formControlName="sitioWeb" class="form-control" placeholder="https://www.ejemplo.com">
-              </div>
-            </form>
-          </div>
-
-          <!-- Datos de Contacto -->
-          <div class="perfil-section">
-            <div class="section-header">
-              <h3>Datos de Contacto</h3>
-            </div>
-            <form [formGroup]="contactoForm" class="form-content">
-              <div class="form-row">
-                <div class="form-group">
-                  <label>Teléfono Principal</label>
-                  <input type="tel" formControlName="telefono" class="form-control">
-                </div>
-                <div class="form-group">
-                  <label>Teléfono Secundario</label>
-                  <input type="tel" formControlName="telefonoSecundario" class="form-control">
-                </div>
-              </div>
-              <div class="form-group">
-                <label>Dirección</label>
-                <textarea formControlName="direccion" class="form-control" rows="2"></textarea>
-              </div>
-              <div class="form-row">
-                <div class="form-group">
-                  <label>Persona de Contacto</label>
-                  <input type="text" formControlName="personaContacto" class="form-control">
-                </div>
-                <div class="form-group">
-                  <label>Cargo del Contacto</label>
-                  <input type="text" formControlName="cargoContacto" class="form-control">
-                </div>
-              </div>
-            </form>
-          </div>
-
-          <!-- Imágenes Corporativas -->
-          <div class="perfil-section">
-            <div class="section-header">
-              <h3>Imágenes Corporativas</h3>
-            </div>
-            <div class="form-content">
-              <div class="upload-section">
-                <div class="upload-item">
-                  <label>Logo de la Empresa</label>
-                  <div class="file-upload">
-                    <input type="file" id="logo" accept="image/*" (change)="onFileSelect($event, 'logo')">
-                    <label for="logo" class="upload-btn">Seleccionar Logo</label>
-                    <span class="file-info">{{ logoSeleccionado || 'Ningún archivo seleccionado' }}</span>
-                  </div>
-                </div>
-                <div class="upload-item">
-                  <label>Portada de Empresa</label>
-                  <div class="file-upload">
-                    <input type="file" id="portada" accept="image/*" (change)="onFileSelect($event, 'portada')">
-                    <label for="portada" class="upload-btn">Seleccionar Portada</label>
-                    <span class="file-info">{{ portadaSeleccionada || 'Ningún archivo seleccionado' }}</span>
-                  </div>
+                  <label>{{ isCompany() ? 'Descripción de la Empresa' : 'Descripción Personal' }}</label>
+                  <textarea 
+                    [(ngModel)]="descripcionPersonal" 
+                    class="form-control" 
+                    rows="4" 
+                    [placeholder]="isCompany() ? 'Describe tu empresa, misión, visión y valores...' : 'Cuéntanos sobre ti, tus objetivos profesionales, habilidades y lo que te apasiona...'">
+                  </textarea>
                 </div>
               </div>
             </div>
@@ -682,6 +688,31 @@ import { Router } from '@angular/router';
       margin: 0;
     }
     
+    /* DESCRIPTION SECTION */
+    .description-content {
+      line-height: 1.6;
+    }
+    .description-content p {
+      color: #333;
+      margin: 0;
+      text-align: justify;
+    }
+    .empty-description {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: #666;
+    }
+    .empty-description p {
+      margin-bottom: 1rem;
+      text-align: center !important;
+    }
+    
+    /* COMPANY INFO */
+    .company-info {
+      display: grid;
+      gap: 0.5rem;
+    }
+    
     /* DOCUMENTS */
     .document-item {
       display: flex;
@@ -861,6 +892,16 @@ import { Router } from '@angular/router';
       .form-row {
         grid-template-columns: 1fr;
       }
+      .profile-info h1 {
+        font-size: 2rem;
+      }
+      .avatar-circle {
+        width: 120px;
+        height: 120px;
+      }
+      .avatar-initials {
+        font-size: 2.5rem;
+      }
     }
   `]
 })
@@ -876,6 +917,7 @@ export class PerfilComponent implements OnInit {
   cvSeleccionado = '';
   logoSeleccionado = '';
   portadaSeleccionada = '';
+  descripcionPersonal = '';
   
   editMode = false;
   guardando = false;
@@ -966,6 +1008,9 @@ export class PerfilComponent implements OnInit {
       this.fotoSeleccionada = perfil.urlImagen;
     }
     
+    // Cargar descripción personal
+    this.descripcionPersonal = perfil.resumen || '';
+    
     console.log('Formulario actualizado:', this.academicForm.value);
   }
 
@@ -994,6 +1039,9 @@ export class PerfilComponent implements OnInit {
     if (empresa.imagenPortada) {
       this.portadaSeleccionada = empresa.imagenPortada;
     }
+    
+    // Cargar descripción de la empresa
+    this.descripcionPersonal = empresa.descripcion || '';
   }
 
   initializeForms(): void {
@@ -1105,7 +1153,7 @@ export class PerfilComponent implements OnInit {
       carreraID: parseInt(this.academicForm.get('carrera')?.value) || 1,
       semestre: semestreValue && semestreValue !== 'graduado' && semestreValue !== '' ? parseInt(semestreValue) : null,
       fechaIngreso: anoIngresoValue ? new Date(anoIngresoValue + '-01-01') : null,
-      resumen: this.buildResumenEstudiante(),
+      resumen: this.descripcionPersonal || this.buildResumenEstudiante(),
       urlImagen: this.fotoSeleccionada || null,
       redesSociales: null,
       tituloObtenido: null,
@@ -1185,7 +1233,7 @@ export class PerfilComponent implements OnInit {
       telefonoEmpresa: this.contactoForm.get('telefono')?.value || null,
       direccion: this.contactoForm.get('direccion')?.value || null,
       sitioWeb: this.empresaForm.get('sitioWeb')?.value || null,
-      descripcion: this.empresaForm.get('descripcion')?.value || null,
+      descripcion: this.descripcionPersonal || this.empresaForm.get('descripcion')?.value || null,
       cantidadEmpleados: this.empresaForm.get('tamano')?.value || null,
       imagenLogo: this.logoSeleccionado || null,
       imagenPortada: this.portadaSeleccionada || null,
@@ -1282,7 +1330,12 @@ export class PerfilComponent implements OnInit {
       return `${semestre} - ${carrera}`;
     }
     
-    return 'Empresa';
+    if (this.isCompany()) {
+      const sector = this.getSectorName();
+      return sector || 'Empresa';
+    }
+    
+    return 'Usuario';
   }
 
   getCarreraName(): string {
@@ -1330,6 +1383,51 @@ export class PerfilComponent implements OnInit {
   cancelarEdicion(): void {
     this.editMode = false;
     this.loadExistingProfile(); // Recargar datos originales
+  }
+
+  getDescripcion(): string {
+    if (this.isCompany()) {
+      return this.empresaForm?.get('descripcion')?.value || this.descripcionPersonal;
+    }
+    return this.descripcionPersonal;
+  }
+
+  getTelefono(): string {
+    if (this.isCompany()) {
+      return this.contactoForm?.get('telefono')?.value;
+    }
+    return this.personalForm?.get('telefono')?.value;
+  }
+
+  getDireccion(): string {
+    if (this.isCompany()) {
+      return this.contactoForm?.get('direccion')?.value;
+    }
+    return this.personalForm?.get('direccion')?.value;
+  }
+
+  getSectorName(): string {
+    const sector = this.empresaForm?.get('sector')?.value;
+    const sectores: { [key: string]: string } = {
+      'tecnologia': 'Tecnología',
+      'financiero': 'Financiero',
+      'salud': 'Salud',
+      'educacion': 'Educación',
+      'manufactura': 'Manufactura',
+      'servicios': 'Servicios',
+      'comercio': 'Comercio'
+    };
+    return sectores[sector] || '';
+  }
+
+  getTamanoName(): string {
+    const tamano = this.empresaForm?.get('tamano')?.value;
+    const tamanos: { [key: string]: string } = {
+      'pequena': 'Pequeña (1-50 empleados)',
+      'mediana': 'Mediana (51-200 empleados)',
+      'grande': 'Grande (200+ empleados)'
+    };
+    return tamanos[tamano] || '';
   }
 
   cancelar(): void {
