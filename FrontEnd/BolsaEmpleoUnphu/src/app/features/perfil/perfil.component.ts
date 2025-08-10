@@ -377,14 +377,14 @@ import { Router } from '@angular/router';
             </div>
           </div>
         </div>
-        
-        <!-- Botones de Acción -->
-        <div class="action-buttons" *ngIf="editMode">
-          <button type="button" class="btn-secondary" (click)="cancelarEdicion()">Cancelar</button>
-          <button type="button" class="btn-primary" (click)="guardarPerfil()" [disabled]="guardando">
-            {{ guardando ? '⏳ Guardando...' : '💾 Guardar Cambios' }}
-          </button>
-        </div>
+      </div>
+      
+      <!-- Botones de Acción -->
+      <div class="action-buttons" *ngIf="editMode">
+        <button type="button" class="btn-secondary" (click)="cancelarEdicion()">Cancelar</button>
+        <button type="button" class="btn-primary" (click)="guardarPerfil()" [disabled]="guardando">
+          {{ guardando ? '⏳ Guardando...' : '💾 Guardar Cambios' }}
+        </button>
       </div>
     </div>
 
