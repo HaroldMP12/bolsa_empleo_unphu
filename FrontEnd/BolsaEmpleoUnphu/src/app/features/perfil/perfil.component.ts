@@ -346,7 +346,7 @@ import { Router } from '@angular/router';
                 </div>
               </div>
             </div>
-          </div>
+            
             <!-- Descripción Personal/Empresa -->
             <div class="profile-card">
               <div class="card-header">
