@@ -492,15 +492,20 @@ import { Subscription } from 'rxjs';
     }
     .recomendacion-badge {
       position: absolute;
-      top: -10px;
-      right: 15px;
+      top: 12px;
+      right: 12px;
       background: var(--unphu-green-primary);
       color: white;
-      padding: 0.25rem 0.75rem;
-      border-radius: 12px;
-      font-size: 0.8rem;
+      padding: 0.4rem 1rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
       font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 8px rgba(39, 174, 96, 0.3);
+      border: 2px solid rgba(255, 255, 255, 0.2);
       z-index: 1;
+      backdrop-filter: blur(10px);
     }
     
     /* Vacantes Grid */
