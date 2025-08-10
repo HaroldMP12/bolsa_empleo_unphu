@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../core/services/auth.service';
@@ -24,12 +24,10 @@ import { NotificationBellComponent } from '../shared/components/notification-bel
           <a *ngIf="currentUser.rol === 'Estudiante' || currentUser.rol === 'Egresado'" routerLink="/vacantes" routerLinkActive="active">Vacantes</a>
           <a *ngIf="currentUser.rol === 'Estudiante' || currentUser.rol === 'Egresado'" routerLink="/postulaciones" routerLinkActive="active">Mis Postulaciones</a>
           <a *ngIf="currentUser.rol === 'Estudiante' || currentUser.rol === 'Egresado'" routerLink="/mensajes" routerLinkActive="active">Mensajes</a>
-          <a *ngIf="currentUser.rol === 'Estudiante' || currentUser.rol === 'Egresado'" routerLink="/perfil" routerLinkActive="active">Mi Perfil</a>
           
           <!-- Opciones para Empresas -->
           <a *ngIf="currentUser.rol === 'Empresa'" routerLink="/mis-vacantes" routerLinkActive="active">Mis Vacantes</a>
           <a *ngIf="currentUser.rol === 'Empresa'" routerLink="/mensajes" routerLinkActive="active">Mensajes</a>
-          <a *ngIf="currentUser.rol === 'Empresa'" routerLink="/perfil-empresa" routerLinkActive="active">Perfil Empresa</a>
           
           <!-- Opciones para Admin -->
           <a *ngIf="currentUser.rol === 'Admin'" routerLink="/admin" routerLinkActive="active" class="admin-link">
@@ -39,9 +37,22 @@ import { NotificationBellComponent } from '../shared/components/notification-bel
         
         <div class="user-menu" *ngIf="currentUser">
           <app-notification-bell></app-notification-bell>
-          <span class="user-name">{{ currentUser.nombreCompleto }}</span>
-          <span class="user-role">{{ currentUser.rol }}</span>
-          <button (click)="logout()" class="logout-btn">Salir</button>
+          <div class="user-dropdown" [class.open]="dropdownOpen">
+            <button class="user-button" (click)="toggleDropdown()">
+              <span class="user-display">({{ currentUser.rol }}) {{ currentUser.nombreCompleto }}</span>
+              <span class="dropdown-arrow" [class.rotated]="dropdownOpen">▼</span>
+            </button>
+            <div class="dropdown-menu" *ngIf="dropdownOpen">
+              <a class="dropdown-item" (click)="goToProfile(); closeDropdown()">
+                <span class="dropdown-icon">👤</span>
+                Mi Perfil
+              </a>
+              <a class="dropdown-item logout" (click)="logout(); closeDropdown()">
+                <span class="dropdown-icon">🚪</span>
+                Cerrar Sesión
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </header>
@@ -116,30 +127,75 @@ import { NotificationBellComponent } from '../shared/components/notification-bel
       align-items: center;
       gap: 1rem;
     }
-    .user-name {
-      font-weight: 500;
-      color: #333;
+    .user-dropdown {
+      position: relative;
     }
-    .user-role {
-      background: var(--unphu-blue-dark);
-      color: white;
-      padding: 0.25rem 0.75rem;
-      border-radius: 12px;
-      font-size: 0.875rem;
-      font-weight: 500;
-    }
-    .logout-btn {
-      background: #dc3545;
-      color: white;
+    .user-button {
+      background: none;
       border: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
       padding: 0.5rem 1rem;
-      border-radius: 4px;
+      border-radius: 8px;
       cursor: pointer;
-      font-size: 0.875rem;
-      transition: background 0.3s;
+      transition: all 0.2s;
+      color: #333;
+      font-weight: 500;
     }
-    .logout-btn:hover {
-      background: #c82333;
+    .user-button:hover {
+      background: rgba(15, 56, 90, 0.1);
+    }
+    .user-display {
+      font-size: 0.9rem;
+    }
+    .dropdown-arrow {
+      font-size: 0.8rem;
+      transition: transform 0.2s;
+      color: #666;
+    }
+    .dropdown-arrow.rotated {
+      transform: rotate(180deg);
+    }
+    .dropdown-menu {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      min-width: 180px;
+      z-index: 1001;
+      margin-top: 0.5rem;
+    }
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      text-decoration: none;
+      color: #333;
+      cursor: pointer;
+      transition: background 0.2s;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+    .dropdown-item:hover {
+      background: #f8f9fa;
+    }
+    .dropdown-item.logout {
+      color: #dc3545;
+      border-top: 1px solid #e0e0e0;
+    }
+    .dropdown-item.logout:hover {
+      background: #fff5f5;
+    }
+    .dropdown-icon {
+      font-size: 1rem;
     }
     
     /* Modal de Confirmación */
@@ -218,14 +274,23 @@ import { NotificationBellComponent } from '../shared/components/notification-bel
     }
   `]
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnDestroy {
   currentUser: AuthResponse | null = null;
+  dropdownOpen = false;
 
   constructor(
     private authService: AuthService,
     private router: Router,
     private notificationService: NotificationService
   ) {}
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.user-dropdown')) {
+      this.dropdownOpen = false;
+    }
+  }
 
   ngOnInit(): void {
     this.authService.currentUser$.subscribe(user => {
@@ -236,6 +301,26 @@ export class HeaderComponent implements OnInit {
         this.notificationService.stopConnection();
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    // Cleanup si es necesario
+  }
+
+  toggleDropdown(): void {
+    this.dropdownOpen = !this.dropdownOpen;
+  }
+
+  closeDropdown(): void {
+    this.dropdownOpen = false;
+  }
+
+  goToProfile(): void {
+    if (this.currentUser?.rol === 'Empresa') {
+      this.router.navigate(['/perfil-empresa']);
+    } else {
+      this.router.navigate(['/perfil']);
+    }
   }
 
   logout(): void {
