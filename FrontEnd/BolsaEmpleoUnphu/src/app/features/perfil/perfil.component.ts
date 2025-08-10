@@ -1023,14 +1023,18 @@ export class PerfilComponent implements OnInit {
         }
       });
     } else if (this.isCompany()) {
+      console.log('Cargando perfil de empresa para usuario:', this.currentUser.usuarioID);
       this.perfilService.obtenerPerfilEmpresa(this.currentUser.usuarioID).subscribe({
         next: (empresa) => {
+          console.log('Respuesta del servicio de empresa:', empresa);
           if (empresa && empresa.empresaID) {
             this.populateCompanyForm(empresa);
+          } else {
+            console.log('No se encontró perfil de empresa existente');
           }
         },
-        error: () => {
-          // No hay perfil existente, mantener formulario vacío
+        error: (error) => {
+          console.error('Error al cargar perfil de empresa:', error);
         }
       });
     }
@@ -1078,21 +1082,23 @@ export class PerfilComponent implements OnInit {
   }
 
   private populateCompanyForm(empresa: any): void {
+    console.log('Cargando datos de empresa:', empresa);
+    
     this.empresaForm.patchValue({
-      nombreEmpresa: empresa.nombreEmpresa,
-      rnc: empresa.rnc,
-      sector: empresa.sector,
-      sitioWeb: empresa.sitioWeb,
-      descripcion: empresa.descripcion,
-      tamano: empresa.cantidadEmpleados
+      nombreEmpresa: empresa.nombreEmpresa || '',
+      rnc: empresa.rnc || '',
+      sector: empresa.sector || '',
+      sitioWeb: empresa.sitioWeb || '',
+      descripcion: empresa.descripcion || '',
+      tamano: empresa.cantidadEmpleados || ''
     });
 
     this.contactoForm.patchValue({
-      telefono: empresa.telefonoEmpresa,
-      telefonoSecundario: empresa.telefonoSecundario,
-      direccion: empresa.direccion,
-      personaContacto: empresa.personaContacto,
-      cargoContacto: empresa.cargoContacto
+      telefono: empresa.telefonoEmpresa || '',
+      telefonoSecundario: empresa.telefonoSecundario || '',
+      direccion: empresa.direccion || '',
+      personaContacto: empresa.personaContacto || '',
+      cargoContacto: empresa.cargoContacto || ''
     });
     
     if (empresa.imagenLogo) {
@@ -1105,6 +1111,12 @@ export class PerfilComponent implements OnInit {
     
     // Cargar descripción de la empresa
     this.descripcionPersonal = empresa.descripcion || '';
+    
+    console.log('Formularios actualizados:', {
+      empresa: this.empresaForm.value,
+      contacto: this.contactoForm.value,
+      descripcion: this.descripcionPersonal
+    });
   }
 
   initializeForms(): void {
