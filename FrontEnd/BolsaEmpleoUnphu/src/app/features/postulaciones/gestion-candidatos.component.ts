@@ -785,7 +785,10 @@ export class GestionCandidatosComponent implements OnInit, OnDestroy {
     })
     .then(res => res.json())
     .then(perfil => {
-      console.log('Perfil cargado:', perfil);
+      console.log('Perfil cargado completo:', perfil);
+      console.log('Promedio en perfil:', perfil.promedio);
+      console.log('Tipo de promedio:', typeof perfil.promedio);
+      
       if (this.candidatoSeleccionado && perfil) {
         // Actualizar datos del usuario con información real del perfil
         (this.candidatoSeleccionado.usuario as any) = {
@@ -793,10 +796,11 @@ export class GestionCandidatosComponent implements OnInit, OnDestroy {
           carrera: perfil.carrera?.nombreCarrera || 'No especificada',
           matricula: perfil.matricula || 'No disponible',
           semestre: perfil.semestre || 'No disponible',
-          promedio: perfil.promedio || 'No disponible',
+          promedio: perfil.promedio !== null && perfil.promedio !== undefined ? perfil.promedio : 'No disponible',
           fotoPerfil: perfil.fotoPerfil,
           cv: perfil.cv
         };
+        console.log('Usuario actualizado:', this.candidatoSeleccionado.usuario);
       }
     })
     .catch(error => {
