@@ -1494,15 +1494,24 @@ export class PerfilComponent implements OnInit {
   }
 
   guardarPerfil(): void {
+    console.log('=== INICIANDO GUARDADO DE PERFIL ===');
+    console.log('Usuario actual:', this.currentUser);
+    console.log('Es estudiante?', this.isStudent());
+    console.log('Es empresa?', this.isCompany());
+    
     if (!this.currentUser) {
       this.toastService.showError('No se pudo identificar el usuario');
       return;
     }
 
     if (this.isStudent()) {
+      console.log('Llamando a guardarPerfilEstudiante()');
       this.guardarPerfilEstudiante();
     } else if (this.isCompany()) {
+      console.log('Llamando a guardarPerfilEmpresa()');
       this.guardarPerfilEmpresa();
+    } else {
+      console.log('Tipo de usuario no reconocido para guardar');
     }
   }
 
