@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-file-preview-modal',
@@ -13,11 +14,16 @@ import { CommonModule } from '@angular/common';
           <button class="close-btn" (click)="close()">✕</button>
         </div>
         <div class="modal-body">
+          <!-- Debug info -->
+          <div style="position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.7); color: white; padding: 5px; font-size: 12px; z-index: 1000;">
+            Type: {{ fileType }} | URL: {{ fileUrl?.substring(0, 50) }}...
+          </div>
+          
           <!-- Preview de imagen -->
-          <img *ngIf="fileType === 'image'" [src]="fileUrl" [alt]="title" class="preview-image">
+          <img *ngIf="fileType === 'image'" [src]="fileUrl" [alt]="title" class="preview-image" (error)="onImageError($event)">
           
           <!-- Preview de PDF -->
-          <iframe *ngIf="fileType === 'pdf'" [src]="fileUrl" class="preview-pdf" frameborder="0"></iframe>
+          <iframe *ngIf="fileType === 'pdf'" [src]="getSafeUrl()" class="preview-pdf" frameborder="0"></iframe>
           
           <!-- Mensaje si no hay archivo -->
           <div *ngIf="!fileUrl" class="no-file">
@@ -147,6 +153,17 @@ export class FilePreviewModalComponent {
   @Input() fileType: 'image' | 'pdf' = 'image';
   @Input() title = 'Vista previa';
   @Output() closeModal = new EventEmitter<void>();
+
+  constructor(private sanitizer: DomSanitizer) {}
+
+  getSafeUrl(): SafeResourceUrl {
+    console.log('Sanitizing URL:', this.fileUrl);
+    return this.sanitizer.bypassSecurityTrustResourceUrl(this.fileUrl);
+  }
+
+  onImageError(event: any): void {
+    console.error('Error loading image:', event, 'URL:', this.fileUrl);
+  }
 
   close(): void {
     this.closeModal.emit();

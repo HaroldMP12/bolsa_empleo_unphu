@@ -1372,53 +1372,23 @@ export class PerfilComponent implements OnInit {
       
       // Crear URL temporal para preview inmediato
       const fileUrl = URL.createObjectURL(file);
+      console.log('Archivo seleccionado:', file.name, 'URL temporal:', fileUrl);
       
-      // Subir archivo al servidor
-      const tipoUpload = tipo === 'foto' ? 'perfil' : tipo === 'logo' ? 'empresa' : 'cv';
-      
-      this.fileService.uploadFile(file, tipoUpload as 'cv' | 'perfil' | 'empresa').subscribe({
-        next: (response) => {
-          // Usar la URL del servidor para el archivo subido
-          const serverUrl = response.url;
-          
-          switch (tipo) {
-            case 'foto':
-              this.fotoSeleccionada = serverUrl;
-              break;
-            case 'cv':
-              this.cvSeleccionado = serverUrl;
-              break;
-            case 'logo':
-              this.logoSeleccionado = serverUrl;
-              break;
-            case 'portada':
-              this.portadaSeleccionada = serverUrl;
-              break;
-          }
-          
-          this.toastService.showSuccess('Archivo subido exitosamente');
-        },
-        error: (error) => {
-          console.error('Error al subir archivo:', error);
-          this.toastService.showError('Error al subir el archivo');
-          
-          // Mantener preview temporal en caso de error
-          switch (tipo) {
-            case 'foto':
-              this.fotoSeleccionada = fileUrl;
-              break;
-            case 'cv':
-              this.cvSeleccionado = fileUrl;
-              break;
-            case 'logo':
-              this.logoSeleccionado = fileUrl;
-              break;
-            case 'portada':
-              this.portadaSeleccionada = fileUrl;
-              break;
-          }
-        }
-      });
+      // Asignar URL temporal inmediatamente para preview
+      switch (tipo) {
+        case 'foto':
+          this.fotoSeleccionada = fileUrl;
+          break;
+        case 'cv':
+          this.cvSeleccionado = fileUrl;
+          break;
+        case 'logo':
+          this.logoSeleccionado = fileUrl;
+          break;
+        case 'portada':
+          this.portadaSeleccionada = fileUrl;
+          break;
+      }
     }
   }
 
@@ -1852,7 +1822,8 @@ export class PerfilComponent implements OnInit {
   // Métodos para preview de archivos
   mostrarFotoPerfil(): void {
     if (this.fotoSeleccionada) {
-      this.previewFileUrl = this.getImageUrl(this.fotoSeleccionada);
+      console.log('Mostrando preview foto:', this.fotoSeleccionada);
+      this.previewFileUrl = this.fotoSeleccionada;
       this.previewFileType = 'image';
       this.previewTitle = 'Foto de Perfil';
       this.showPreviewModal = true;
@@ -1861,7 +1832,8 @@ export class PerfilComponent implements OnInit {
 
   mostrarPreviewCV(): void {
     if (this.cvSeleccionado) {
-      this.previewFileUrl = this.getFileUrl(this.cvSeleccionado);
+      console.log('Mostrando preview CV:', this.cvSeleccionado);
+      this.previewFileUrl = this.cvSeleccionado;
       this.previewFileType = 'pdf';
       this.previewTitle = 'Curriculum Vitae';
       this.showPreviewModal = true;
@@ -1870,7 +1842,8 @@ export class PerfilComponent implements OnInit {
 
   mostrarPreviewLogo(): void {
     if (this.logoSeleccionado) {
-      this.previewFileUrl = this.getImageUrl(this.logoSeleccionado);
+      console.log('Mostrando preview logo:', this.logoSeleccionado);
+      this.previewFileUrl = this.logoSeleccionado;
       this.previewFileType = 'image';
       this.previewTitle = 'Logo de la Empresa';
       this.showPreviewModal = true;
@@ -1883,6 +1856,8 @@ export class PerfilComponent implements OnInit {
   }
 
   getImageUrl(fileName: string): string {
+    if (!fileName) return '';
+    if (fileName.startsWith('blob:') || fileName.startsWith('http')) return fileName;
     return this.fileService.getFileUrl(fileName, 'perfil');
   }
 
