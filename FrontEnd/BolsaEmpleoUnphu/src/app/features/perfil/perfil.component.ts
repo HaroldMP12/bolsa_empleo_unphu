@@ -1619,33 +1619,70 @@ export class PerfilComponent implements OnInit {
   }
 
   cargarEstadisticasEmpresa(empresaID: number): void {
-    // Cargar desde localStorage (datos locales)
-    const vacantes = JSON.parse(localStorage.getItem('vacantes') || '[]');
-    const postulaciones = JSON.parse(localStorage.getItem('postulaciones') || '[]');
+    console.log('Cargando estadísticas para empresa ID:', empresaID);
     
-    const vacantesEmpresa = vacantes.filter((v: any) => v.empresaID === empresaID);
-    const hoy = new Date();
-    const vacantesActivas = vacantesEmpresa.filter((v: any) => {
-      const fechaVencimiento = new Date(v.fechaVencimiento || v.fechaCierre);
-      return fechaVencimiento > hoy;
+    // Obtener vacantes reales de la API
+    fetch(`https://localhost:7236/api/vacantes/empresa/${empresaID}`, {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    })
+    .then(res => res.json())
+    .then(response => {
+      const vacantes = response.data || response || [];
+      console.log('Vacantes de la API:', vacantes);
+      
+      const hoy = new Date();
+      const vacantesActivas = vacantes.filter((v: any) => {
+        const fechaVencimiento = new Date(v.fechaCierre);
+        return fechaVencimiento > hoy;
+      });
+      
+      // Obtener postulaciones reales de la API
+      fetch(`https://localhost:7236/api/postulaciones`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      })
+      .then(res => res.json())
+      .then(postulacionesResponse => {
+        const todasPostulaciones = postulacionesResponse.data || postulacionesResponse || [];
+        console.log('Todas las postulaciones de la API:', todasPostulaciones);
+        
+        // Filtrar postulaciones de esta empresa
+        const postulacionesEmpresa = todasPostulaciones.filter((p: any) => 
+          vacantes.some((v: any) => v.vacanteID === p.vacanteID)
+        );
+        
+        const candidatosPendientes = postulacionesEmpresa.filter((p: any) => 
+          p.estado === 'Pendiente'
+        );
+        
+        this.estadisticasEmpresa = {
+          totalVacantes: vacantes.length,
+          vacantesActivas: vacantesActivas.length,
+          totalPostulaciones: postulacionesEmpresa.length,
+          candidatosPendientes: candidatosPendientes.length
+        };
+        
+        console.log('Estadísticas calculadas con datos reales:', this.estadisticasEmpresa);
+      })
+      .catch(error => {
+        console.error('Error al obtener postulaciones:', error);
+        // Fallback: solo mostrar estadísticas de vacantes
+        this.estadisticasEmpresa = {
+          totalVacantes: vacantes.length,
+          vacantesActivas: vacantesActivas.length,
+          totalPostulaciones: 0,
+          candidatosPendientes: 0
+        };
+      });
+    })
+    .catch(error => {
+      console.error('Error al obtener vacantes:', error);
+      this.estadisticasEmpresa = {
+        totalVacantes: 0,
+        vacantesActivas: 0,
+        totalPostulaciones: 0,
+        candidatosPendientes: 0
+      };
     });
-    
-    const postulacionesEmpresa = postulaciones.filter((p: any) => 
-      vacantesEmpresa.some((v: any) => v.vacanteID === p.vacanteID)
-    );
-    
-    const candidatosPendientes = postulacionesEmpresa.filter((p: any) => 
-      p.estado === 'Pendiente'
-    );
-    
-    this.estadisticasEmpresa = {
-      totalVacantes: vacantesEmpresa.length,
-      vacantesActivas: vacantesActivas.length,
-      totalPostulaciones: postulacionesEmpresa.length,
-      candidatosPendientes: candidatosPendientes.length
-    };
-    
-    console.log('Estadísticas cargadas:', this.estadisticasEmpresa);
   }
 
   verEstadisticasCompletas(): void {
