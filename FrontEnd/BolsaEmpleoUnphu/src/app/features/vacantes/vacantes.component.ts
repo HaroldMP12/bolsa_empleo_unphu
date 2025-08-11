@@ -1116,8 +1116,16 @@ export class VacantesComponent implements OnInit, OnDestroy {
   }
 
   editarVacante(vacante: Vacante): void {
+    console.log('Editando vacante:', vacante);
     this.vacanteEditando = vacante;
     const fechaVencimiento = vacante.fechaVencimiento || vacante.fechaCierre;
+    
+    // Obtener categoriaID desde diferentes fuentes posibles
+    let categoriaID = vacante.categoriaID;
+    if (!categoriaID && vacante.categoria) {
+      categoriaID = this.getCategoriaIdByName(vacante.categoria) || 0;
+    }
+    
     this.nuevaVacante = {
       titulo: vacante.titulo || vacante.tituloVacante || '',
       descripcion: vacante.descripcion,
@@ -1125,13 +1133,15 @@ export class VacantesComponent implements OnInit, OnDestroy {
       salario: vacante.salario,
       modalidad: vacante.modalidad || '',
       ubicacion: vacante.ubicacion,
-      categoriaID: vacante.categoriaID,
+      categoriaID: categoriaID,
       fechaVencimiento: fechaVencimiento ? new Date(fechaVencimiento).toISOString().split('T')[0] : '',
       preguntas: (vacante.preguntas || []).map(p => ({
         ...p,
         opcionesTexto: p.opciones ? p.opciones.join(', ') : ''
       }))
     };
+    
+    console.log('Datos cargados para edición:', this.nuevaVacante);
     this.mostrarModal = true;
   }
 
@@ -1283,8 +1293,13 @@ export class VacantesComponent implements OnInit, OnDestroy {
   }
 
   guardarVacante(): void {
+    console.log('Iniciando guardarVacante()');
+    
     // Validar campos requeridos
-    if (!this.validarFormulario()) {
+    const esValido = this.validarFormulario();
+    console.log('Resultado de validación:', esValido);
+    
+    if (!esValido) {
       this.mostrarConfirmacion('Error de Validación', 'Por favor completa todos los campos requeridos marcados con *');
       return;
     }
@@ -1346,6 +1361,8 @@ export class VacantesComponent implements OnInit, OnDestroy {
           Opciones: p.tipo === 'opcion_multiple' ? p.opcionesTexto?.split(',').map(o => o.trim()) : null
         }))
       };
+      console.log('Ejecutando PUT a /api/vacantes/' + this.vacanteEditando.vacanteID);
+      console.log('Datos de actualización:', JSON.stringify(updateData, null, 2));
       this.apiService.put(`vacantes/${this.vacanteEditando.vacanteID}`, updateData).subscribe({
         next: () => {
           this.mostrarConfirmacion('Vacante Actualizada', 'La vacante ha sido actualizada exitosamente.');
@@ -1415,8 +1432,8 @@ export class VacantesComponent implements OnInit, OnDestroy {
       console.log('Falta ubicación');
       return false;
     }
-    if (!this.nuevaVacante.categoriaID || this.nuevaVacante.categoriaID === 0) {
-      console.log('Falta categoría, valor actual:', this.nuevaVacante.categoriaID);
+    if (!this.nuevaVacante.categoriaID || this.nuevaVacante.categoriaID === 0 || this.nuevaVacante.categoriaID === '') {
+      console.log('Falta categoría, valor actual:', this.nuevaVacante.categoriaID, 'tipo:', typeof this.nuevaVacante.categoriaID);
       return false;
     }
     if (!this.nuevaVacante.fechaVencimiento?.trim()) {
