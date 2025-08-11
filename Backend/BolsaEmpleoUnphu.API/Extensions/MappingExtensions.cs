@@ -43,7 +43,14 @@ public static class MappingExtensions
             SectorEmpresa = vacante.Empresa?.Sector,
             SitioWebEmpresa = vacante.Empresa?.SitioWeb,
             NombreCategoria = vacante.Categoria?.NombreCategoria ?? "",
-            TotalPostulaciones = vacante.Postulaciones?.Count ?? 0
+            TotalPostulaciones = vacante.Postulaciones?.Count ?? 0,
+            PreguntasVacantes = vacante.PreguntasVacantes?.Select(p => new {
+                PreguntaID = p.PreguntaID,
+                Pregunta = p.Pregunta,
+                Tipo = p.Tipo,
+                Requerida = p.Requerida,
+                Opciones = p.Opciones
+            }).ToList() ?? new List<object>()
         };
     }
 

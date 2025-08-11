@@ -27,4 +27,7 @@ public class VacanteResponseDto
     
     // Estadísticas
     public int TotalPostulaciones { get; set; }
+    
+    // Preguntas de la vacante
+    public List<object> PreguntasVacantes { get; set; } = new List<object>();
 }
