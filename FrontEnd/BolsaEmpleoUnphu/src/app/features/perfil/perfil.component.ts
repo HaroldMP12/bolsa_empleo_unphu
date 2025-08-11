@@ -1515,7 +1515,7 @@ export class PerfilComponent implements OnInit {
       semestre: semestreValue && semestreValue !== 'graduado' && semestreValue !== '' ? parseInt(semestreValue) : null,
       fechaIngreso: anoIngresoValue ? new Date(anoIngresoValue + '-01-01') : null,
       resumen: this.descripcionPersonal || this.buildResumenEstudiante(),
-      urlImagen: this.fotoSeleccionada && this.fotoSeleccionada.includes('/uploads/') ? this.fotoSeleccionada.replace('https://localhost:7236', '') : null,
+      urlImagen: this.fotoSeleccionada ? this.fotoSeleccionada.replace('https://localhost:7236', '') : null,
       redesSociales: null,
       tituloObtenido: null,
       fechaEgreso: null,
@@ -1523,7 +1523,7 @@ export class PerfilComponent implements OnInit {
       fechaNacimiento: this.personalForm.get('fechaNacimiento')?.value || null,
       direccion: this.personalForm.get('direccion')?.value || null,
       promedioAcademico: this.academicForm.get('promedio')?.value ? parseFloat(this.academicForm.get('promedio')?.value) : null,
-      urlCV: this.cvSeleccionado && this.cvSeleccionado.includes('/uploads/') ? this.cvSeleccionado.replace('https://localhost:7236', '') : null,
+      urlCV: this.cvSeleccionado ? this.cvSeleccionado.replace('https://localhost:7236', '') : null,
       experienciaLaboral: this.experiencias.length > 0 ? JSON.stringify(this.experiencias) : null,
       telefono: this.personalForm.get('telefono')?.value || null
     };
