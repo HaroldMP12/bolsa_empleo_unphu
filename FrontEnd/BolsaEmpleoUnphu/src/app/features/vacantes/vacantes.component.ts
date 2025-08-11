@@ -1118,31 +1118,67 @@ export class VacantesComponent implements OnInit, OnDestroy {
   editarVacante(vacante: Vacante): void {
     console.log('Editando vacante:', vacante);
     this.vacanteEditando = vacante;
-    const fechaVencimiento = vacante.fechaVencimiento || vacante.fechaCierre;
     
-    // Obtener categoriaID desde diferentes fuentes posibles
-    let categoriaID = vacante.categoriaID;
-    if (!categoriaID && vacante.categoria) {
-      categoriaID = this.getCategoriaIdByName(vacante.categoria) || 0;
-    }
-    
-    this.nuevaVacante = {
-      titulo: vacante.titulo || vacante.tituloVacante || '',
-      descripcion: vacante.descripcion,
-      requisitos: vacante.requisitos,
-      salario: vacante.salario,
-      modalidad: vacante.modalidad || '',
-      ubicacion: vacante.ubicacion,
-      categoriaID: categoriaID,
-      fechaVencimiento: fechaVencimiento ? new Date(fechaVencimiento).toISOString().split('T')[0] : '',
-      preguntas: (vacante.preguntas || []).map(p => ({
-        ...p,
-        opcionesTexto: p.opciones ? p.opciones.join(', ') : ''
-      }))
-    };
-    
-    console.log('Datos cargados para edición:', this.nuevaVacante);
-    this.mostrarModal = true;
+    // Cargar preguntas de la vacante desde la API
+    this.apiService.get(`vacantes/${vacante.vacanteID}`).subscribe({
+      next: (vacanteCompleta: any) => {
+        console.log('Vacante completa con preguntas:', vacanteCompleta);
+        
+        const fechaVencimiento = vacante.fechaVencimiento || vacante.fechaCierre;
+        
+        // Obtener categoriaID desde diferentes fuentes posibles
+        let categoriaID = vacante.categoriaID;
+        if (!categoriaID && vacante.categoria) {
+          categoriaID = this.getCategoriaIdByName(vacante.categoria) || 0;
+        }
+        
+        this.nuevaVacante = {
+          titulo: vacante.titulo || vacante.tituloVacante || '',
+          descripcion: vacante.descripcion,
+          requisitos: vacante.requisitos,
+          salario: vacante.salario,
+          modalidad: vacante.modalidad || '',
+          ubicacion: vacante.ubicacion,
+          categoriaID: categoriaID,
+          fechaVencimiento: fechaVencimiento ? new Date(fechaVencimiento).toISOString().split('T')[0] : '',
+          preguntas: (vacanteCompleta.preguntasVacantes || vacanteCompleta.preguntas || []).map((p: any) => ({
+            preguntaID: p.preguntaID,
+            vacanteID: p.vacanteID,
+            pregunta: p.pregunta,
+            tipo: p.tipo,
+            requerida: p.requerida,
+            opciones: p.opciones,
+            opcionesTexto: p.opciones ? p.opciones.join(', ') : ''
+          }))
+        };
+        
+        console.log('Datos cargados para edición:', this.nuevaVacante);
+        this.mostrarModal = true;
+      },
+      error: (error) => {
+        console.error('Error al cargar detalles de vacante:', error);
+        // Fallback sin preguntas
+        const fechaVencimiento = vacante.fechaVencimiento || vacante.fechaCierre;
+        let categoriaID = vacante.categoriaID;
+        if (!categoriaID && vacante.categoria) {
+          categoriaID = this.getCategoriaIdByName(vacante.categoria) || 0;
+        }
+        
+        this.nuevaVacante = {
+          titulo: vacante.titulo || vacante.tituloVacante || '',
+          descripcion: vacante.descripcion,
+          requisitos: vacante.requisitos,
+          salario: vacante.salario,
+          modalidad: vacante.modalidad || '',
+          ubicacion: vacante.ubicacion,
+          categoriaID: categoriaID,
+          fechaVencimiento: fechaVencimiento ? new Date(fechaVencimiento).toISOString().split('T')[0] : '',
+          preguntas: []
+        };
+        
+        this.mostrarModal = true;
+      }
+    });
   }
 
   eliminarVacante(vacante: Vacante): void {
