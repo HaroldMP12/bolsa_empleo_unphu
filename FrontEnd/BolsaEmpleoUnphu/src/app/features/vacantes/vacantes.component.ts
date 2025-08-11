@@ -1432,7 +1432,7 @@ export class VacantesComponent implements OnInit, OnDestroy {
       console.log('Falta ubicación');
       return false;
     }
-    if (!this.nuevaVacante.categoriaID || this.nuevaVacante.categoriaID === 0 || this.nuevaVacante.categoriaID === '') {
+    if (!this.nuevaVacante.categoriaID || this.nuevaVacante.categoriaID === 0) {
       console.log('Falta categoría, valor actual:', this.nuevaVacante.categoriaID, 'tipo:', typeof this.nuevaVacante.categoriaID);
       return false;
     }
