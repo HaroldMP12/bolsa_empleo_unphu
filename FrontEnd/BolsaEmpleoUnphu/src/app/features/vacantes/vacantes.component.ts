@@ -57,9 +57,7 @@ import { Subscription } from 'rxjs';
             <label>Ubicación</label>
             <select [(ngModel)]="filtros.ubicacion" (change)="aplicarFiltros()" class="form-control">
               <option value="">Todas</option>
-              <option value="Santo Domingo">Santo Domingo</option>
-              <option value="Santiago">Santiago</option>
-              <option value="La Romana">La Romana</option>
+              <option *ngFor="let ubicacion of ubicacionesDisponibles" [value]="ubicacion">{{ ubicacion }}</option>
             </select>
           </div>
           <button class="btn-secondary" (click)="limpiarFiltros()">Limpiar</button>
@@ -878,6 +876,7 @@ export class VacantesComponent implements OnInit, OnDestroy {
   carreraUsuario = '';
   filtros: VacanteFiltros = {};
   categorias: any[] = [];
+  ubicacionesDisponibles: string[] = [];
   
   mostrarModal = false;
   mostrarModalPostulacion = false;
@@ -1026,6 +1025,9 @@ export class VacantesComponent implements OnInit, OnDestroy {
           preguntas: v.preguntasVacantes || v.preguntas || []
         }));
         this.vacantesFiltradas = [...this.vacantes];
+        
+        // Extraer ubicaciones únicas para el filtro
+        this.ubicacionesDisponibles = [...new Set(vacantesData.map((v: any) => v.ubicacion).filter(u => u))].sort();
       },
       error: (error) => {
         console.error('Error al cargar vacantes:', error);
@@ -1318,7 +1320,7 @@ export class VacantesComponent implements OnInit, OnDestroy {
           }))
         };
         
-        console.log('Datos a enviar:', vacanteData);
+        console.log('Datos a enviar al backend:', JSON.stringify(vacanteData, null, 2));
         
         this.crearOActualizarVacante(vacanteData);
       },
@@ -1381,14 +1383,37 @@ export class VacantesComponent implements OnInit, OnDestroy {
   }
   
   validarFormulario(): boolean {
+    console.log('Validando formulario:', this.nuevaVacante);
+    
     // Validar campos requeridos
-    if (!this.nuevaVacante.titulo?.trim()) return false;
-    if (!this.nuevaVacante.descripcion.trim()) return false;
-    if (!this.nuevaVacante.requisitos.trim()) return false;
-    if (!this.nuevaVacante.modalidad?.trim()) return false;
-    if (!this.nuevaVacante.ubicacion.trim()) return false;
-    if (!this.nuevaVacante.categoriaID || this.nuevaVacante.categoriaID === 0) return false;
-    if (!this.nuevaVacante.fechaVencimiento?.trim()) return false;
+    if (!this.nuevaVacante.titulo?.trim()) {
+      console.log('Falta título');
+      return false;
+    }
+    if (!this.nuevaVacante.descripcion.trim()) {
+      console.log('Falta descripción');
+      return false;
+    }
+    if (!this.nuevaVacante.requisitos.trim()) {
+      console.log('Falta requisitos');
+      return false;
+    }
+    if (!this.nuevaVacante.modalidad?.trim()) {
+      console.log('Falta modalidad');
+      return false;
+    }
+    if (!this.nuevaVacante.ubicacion.trim()) {
+      console.log('Falta ubicación');
+      return false;
+    }
+    if (!this.nuevaVacante.categoriaID || this.nuevaVacante.categoriaID === 0) {
+      console.log('Falta categoría, valor actual:', this.nuevaVacante.categoriaID);
+      return false;
+    }
+    if (!this.nuevaVacante.fechaVencimiento?.trim()) {
+      console.log('Falta fecha vencimiento');
+      return false;
+    }
     
     // Validar que la fecha de vencimiento sea futura
     if (this.nuevaVacante.fechaVencimiento) {
@@ -1413,6 +1438,7 @@ export class VacantesComponent implements OnInit, OnDestroy {
       }
     }
     
+    console.log('Formulario válido');
     return true;
   }
   
