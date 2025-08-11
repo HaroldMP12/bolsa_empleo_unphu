@@ -31,9 +31,13 @@ export class FileService {
     if (!fileName) return '';
     if (fileName.startsWith('http') || fileName.startsWith('blob:')) return fileName;
     
-    const baseUrl = environment.apiUrl.replace('/api', '');
+    // Si fileName ya incluye la ruta completa, devolverla tal como está
+    if (fileName.startsWith('/uploads/')) {
+      return `https://localhost:7236${fileName}`;
+    }
+    
     const folder = tipo === 'cv' ? 'cvs' : tipo === 'perfil' ? 'perfiles' : 'empresas';
-    return `${baseUrl}/uploads/${folder}/${fileName}`;
+    return `https://localhost:7236/uploads/${folder}/${fileName}`;
   }
 
   deleteFile(fileName: string, tipo: 'cv' | 'perfil' | 'empresa'): Observable<any> {

@@ -146,14 +146,17 @@ import { FileService } from '../../core/services/file.service';
                     <span class="document-icon">📄</span>
                     <div>
                       <p class="document-name">Curriculum Vitae</p>
-                      <p class="document-status">{{ cvSeleccionado || 'No subido' }}</p>
+                      <p class="document-status">{{ cvSeleccionado ? 'Subido' : 'No subido' }}</p>
                     </div>
                   </div>
                   <div class="document-actions">
                     <button class="btn-preview" (click)="mostrarPreviewCV()" *ngIf="cvSeleccionado && !editMode" title="Ver CV">
                       👁️
                     </button>
-                    <button class="btn-upload" (click)="triggerFileInput('cv')" *ngIf="editMode">Subir</button>
+                    <button class="btn-delete" (click)="eliminarCV()" *ngIf="cvSeleccionado && editMode" title="Eliminar CV">
+                      🗑️
+                    </button>
+                    <button class="btn-upload" (click)="triggerFileInput('cv')" *ngIf="editMode">{{ cvSeleccionado ? 'Cambiar' : 'Subir' }}</button>
                   </div>
                 </div>
                 <div class="document-item" *ngIf="isCompany()">
@@ -161,14 +164,17 @@ import { FileService } from '../../core/services/file.service';
                     <span class="document-icon">🏢</span>
                     <div>
                       <p class="document-name">Logo de la Empresa</p>
-                      <p class="document-status">{{ logoSeleccionado || 'No subido' }}</p>
+                      <p class="document-status">{{ logoSeleccionado ? 'Subido' : 'No subido' }}</p>
                     </div>
                   </div>
                   <div class="document-actions">
                     <button class="btn-preview" (click)="mostrarPreviewLogo()" *ngIf="logoSeleccionado && !editMode" title="Ver Logo">
                       👁️
                     </button>
-                    <button class="btn-upload" (click)="triggerFileInput('logo')" *ngIf="editMode">Subir</button>
+                    <button class="btn-delete" (click)="eliminarLogo()" *ngIf="logoSeleccionado && editMode" title="Eliminar Logo">
+                      🗑️
+                    </button>
+                    <button class="btn-upload" (click)="triggerFileInput('logo')" *ngIf="editMode">{{ logoSeleccionado ? 'Cambiar' : 'Subir' }}</button>
                   </div>
                 </div>
                 <input type="file" #cvInput accept=".pdf" (change)="onFileSelect($event, 'cv')" style="display: none;">
@@ -846,6 +852,17 @@ import { FileService } from '../../core/services/file.service';
       display: flex;
       gap: 0.5rem;
       align-items: center;
+      justify-content: center;
+    }
+    .document-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex: 1;
+    }
+    .document-info > div {
+      text-align: center;
+      flex: 1;
     }
     .btn-preview {
       background: var(--unphu-blue-dark);
@@ -883,6 +900,24 @@ import { FileService } from '../../core/services/file.service';
     }
     .avatar-delete-btn:hover {
       transform: scale(1.1);
+      background: #c82333;
+    }
+    .btn-delete {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 0.5rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.875rem;
+      transition: background 0.3s;
+      min-width: 40px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-delete:hover {
       background: #c82333;
     }
     .document-item:last-child {
@@ -1911,6 +1946,16 @@ export class PerfilComponent implements OnInit {
   eliminarFoto(): void {
     this.fotoSeleccionada = '';
     this.toastService.showSuccess('Foto eliminada');
+  }
+
+  eliminarCV(): void {
+    this.cvSeleccionado = '';
+    this.toastService.showSuccess('CV eliminado');
+  }
+
+  eliminarLogo(): void {
+    this.logoSeleccionado = '';
+    this.toastService.showSuccess('Logo eliminado');
   }
 
   getImageUrl(fileName: string): string {
