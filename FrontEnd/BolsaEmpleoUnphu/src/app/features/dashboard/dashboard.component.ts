@@ -782,18 +782,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
               };
             });
           
-            // Cargar postulaciones recientes
-            this.postulacionesRecientes = postulacionesEmpresa
-              .sort((a: any, b: any) => new Date(b.fechaPostulacion || b.FechaPostulacion).getTime() - new Date(a.fechaPostulacion || a.FechaPostulacion).getTime())
-              .slice(0, 5)
-              .map((p: any) => {
-                const vacante = vacantes.find((v: any) => (v.vacanteID || v.VacanteID) === (p.vacanteID || p.VacanteID));
-                return {
-                  candidato: 'Usuario UNPHU',
-                  vacante: vacante?.TituloVacante || vacante?.tituloVacante || 'Vacante',
-                  fecha: this.getTimeAgo(new Date(p.fechaPostulacion || p.FechaPostulacion))
-                };
-              });
+            // Cargar postulaciones recientes con nombres reales
+            this.cargarPostulacionesConNombres(postulacionesEmpresa, vacantes);
           })
           .catch(error => {
             console.error('Error al obtener postulaciones:', error);
@@ -1035,6 +1025,39 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   navegarReportes(): void {
     this.router.navigate(['/admin/reportes']);
+  }
+
+  private async cargarPostulacionesConNombres(postulacionesEmpresa: any[], vacantes: any[]): Promise<void> {
+    const postulacionesRecientes = postulacionesEmpresa
+      .sort((a: any, b: any) => new Date(b.fechaPostulacion || b.FechaPostulacion).getTime() - new Date(a.fechaPostulacion || a.FechaPostulacion).getTime())
+      .slice(0, 5);
+
+    const postulacionesConNombres = await Promise.all(
+      postulacionesRecientes.map(async (p: any) => {
+        const vacante = vacantes.find((v: any) => (v.vacanteID || v.VacanteID) === (p.vacanteID || p.VacanteID));
+        
+        let nombreCandidato = 'Usuario UNPHU';
+        try {
+          const userResponse = await fetch(`https://localhost:7236/api/usuarios/${p.usuarioID || p.UsuarioID}`, {
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+          });
+          if (userResponse.ok) {
+            const userData = await userResponse.json();
+            nombreCandidato = userData.nombreCompleto || 'Usuario UNPHU';
+          }
+        } catch (error) {
+          console.log('Error obteniendo nombre de usuario:', error);
+        }
+        
+        return {
+          candidato: nombreCandidato,
+          vacante: vacante?.TituloVacante || vacante?.tituloVacante || 'Vacante',
+          fecha: this.getTimeAgo(new Date(p.fechaPostulacion || p.FechaPostulacion))
+        };
+      })
+    );
+    
+    this.postulacionesRecientes = postulacionesConNombres;
   }
 
 }

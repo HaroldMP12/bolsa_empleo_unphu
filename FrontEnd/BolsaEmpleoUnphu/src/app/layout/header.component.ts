@@ -13,43 +13,78 @@ import { NotificationBellComponent } from '../shared/components/notification-bel
   template: `
     <header class="header">
       <div class="header-content">
-        <div class="logo">
-          <h1 routerLink="/">Bolsa de Empleo UNPHU</h1>
+        <div class="logo-section">
+          <div class="logo" routerLink="/">
+            <div class="logo-icon">🎓</div>
+            <div class="logo-text">
+              <h1>Bolsa de Empleo</h1>
+              <span class="university">UNPHU</span>
+            </div>
+          </div>
         </div>
         
         <nav class="nav" *ngIf="currentUser">
-          <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+          <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
+            <span class="nav-icon">📊</span>
+            <span>Dashboard</span>
+          </a>
           
           <!-- Opciones para Estudiantes/Egresados -->
-          <a *ngIf="currentUser.rol === 'Estudiante' || currentUser.rol === 'Egresado'" routerLink="/vacantes" routerLinkActive="active">Vacantes</a>
-          <a *ngIf="currentUser.rol === 'Estudiante' || currentUser.rol === 'Egresado'" routerLink="/postulaciones" routerLinkActive="active">Mis Postulaciones</a>
-          <a *ngIf="currentUser.rol === 'Estudiante' || currentUser.rol === 'Egresado'" routerLink="/mensajes" routerLinkActive="active">Mensajes</a>
+          <a *ngIf="currentUser.rol === 'Estudiante' || currentUser.rol === 'Egresado'" 
+             routerLink="/vacantes" routerLinkActive="active" class="nav-item">
+            <span class="nav-icon">💼</span>
+            <span>Vacantes</span>
+          </a>
+          <a *ngIf="currentUser.rol === 'Estudiante' || currentUser.rol === 'Egresado'" 
+             routerLink="/postulaciones" routerLinkActive="active" class="nav-item">
+            <span class="nav-icon">📋</span>
+            <span>Postulaciones</span>
+          </a>
+          <a *ngIf="currentUser.rol === 'Estudiante' || currentUser.rol === 'Egresado'" 
+             routerLink="/mensajes" routerLinkActive="active" class="nav-item">
+            <span class="nav-icon">💬</span>
+            <span>Mensajes</span>
+          </a>
           
           <!-- Opciones para Empresas -->
-          <a *ngIf="currentUser.rol === 'Empresa'" routerLink="/mis-vacantes" routerLinkActive="active">Mis Vacantes</a>
-          <a *ngIf="currentUser.rol === 'Empresa'" routerLink="/mensajes" routerLinkActive="active">Mensajes</a>
+          <a *ngIf="currentUser.rol === 'Empresa'" 
+             routerLink="/mis-vacantes" routerLinkActive="active" class="nav-item">
+            <span class="nav-icon">📝</span>
+            <span>Mis Vacantes</span>
+          </a>
+          <a *ngIf="currentUser.rol === 'Empresa'" 
+             routerLink="/mensajes" routerLinkActive="active" class="nav-item">
+            <span class="nav-icon">💬</span>
+            <span>Mensajes</span>
+          </a>
           
           <!-- Opciones para Admin -->
-          <a *ngIf="currentUser.rol === 'Admin'" routerLink="/admin" routerLinkActive="active" class="admin-link">
-            🛠️ Administración
+          <a *ngIf="currentUser.rol === 'Admin'" 
+             routerLink="/admin" routerLinkActive="active" class="nav-item admin-link">
+            <span class="nav-icon">⚙️</span>
+            <span>Administración</span>
           </a>
         </nav>
         
-        <div class="user-menu" *ngIf="currentUser">
+        <div class="user-section" *ngIf="currentUser">
           <app-notification-bell></app-notification-bell>
           <div class="user-dropdown" [class.open]="dropdownOpen">
             <button class="user-button" (click)="toggleDropdown()">
-              <span class="user-display">({{ currentUser.rol }}) {{ currentUser.nombreCompleto }}</span>
+              <div class="user-avatar">{{ getUserInitials() }}</div>
+              <div class="user-info">
+                <span class="user-name">{{ currentUser.nombreCompleto }}</span>
+                <span class="user-role">{{ currentUser.rol }}</span>
+              </div>
               <span class="dropdown-arrow" [class.rotated]="dropdownOpen">▼</span>
             </button>
             <div class="dropdown-menu" *ngIf="dropdownOpen">
               <a class="dropdown-item" (click)="goToProfile(); closeDropdown()">
                 <span class="dropdown-icon">👤</span>
-                Mi Perfil
+                <span>Mi Perfil</span>
               </a>
               <a class="dropdown-item logout" (click)="logout(); closeDropdown()">
                 <span class="dropdown-icon">🚪</span>
-                Cerrar Sesión
+                <span>Cerrar Sesión</span>
               </a>
             </div>
           </div>
@@ -75,127 +110,238 @@ import { NotificationBellComponent } from '../shared/components/notification-bel
   `,
   styles: [`
     .header {
-      background: #fff;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      background: linear-gradient(135deg, #2E8B57, #228B22);
+      box-shadow: 0 4px 12px rgba(46, 139, 87, 0.3);
       position: sticky;
       top: 0;
       z-index: 1000;
     }
     .header-content {
-      max-width: 1200px;
+      max-width: 1400px;
       margin: 0 auto;
-      padding: 0 1rem;
+      padding: 0 2rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      height: 64px;
+      height: 70px;
     }
-    .logo h1 {
-      color: var(--unphu-blue-dark);
-      margin: 0;
-      font-size: 1.5rem;
+    
+    /* Logo Section */
+    .logo-section {
+      flex-shrink: 0;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
       cursor: pointer;
-      font-weight: 600;
+      transition: transform 0.2s ease;
     }
+    .logo:hover {
+      transform: scale(1.02);
+    }
+    .logo-icon {
+      font-size: 2rem;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+    }
+    .logo-text h1 {
+      color: white;
+      margin: 0;
+      font-size: 1.4rem;
+      font-weight: 700;
+      line-height: 1.2;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    }
+    .university {
+      color: rgba(255,255,255,0.9);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+    
+    /* Navigation */
     .nav {
       display: flex;
-      gap: 2rem;
+      gap: 0.5rem;
+      flex: 1;
+      justify-content: center;
+      max-width: 600px;
     }
-    .nav a {
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
       text-decoration: none;
-      color: #666;
+      color: rgba(255,255,255,0.9);
       font-weight: 500;
-      padding: 0.5rem 1rem;
-      border-radius: 4px;
-      transition: all 0.2s;
+      padding: 0.6rem 1rem;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+      position: relative;
     }
-    .nav a:hover, .nav a.active {
-      background: rgba(15, 56, 90, 0.1);
-      color: var(--unphu-blue-dark);
+    .nav-item:hover {
+      background: rgba(255,255,255,0.15);
+      color: white;
+      transform: translateY(-1px);
+    }
+    .nav-item.active {
+      background: rgba(255,255,255,0.2);
+      color: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .nav-icon {
+      font-size: 1rem;
     }
     .admin-link {
-      background: linear-gradient(135deg, #e74c3c, #c0392b) !important;
+      background: rgba(220, 53, 69, 0.9) !important;
       color: white !important;
-      font-weight: 600;
     }
     .admin-link:hover {
-      background: linear-gradient(135deg, #c0392b, #a93226) !important;
-      color: white !important;
+      background: rgba(220, 53, 69, 1) !important;
+      transform: translateY(-1px);
     }
-    .user-menu {
+    
+    /* User Section */
+    .user-section {
       display: flex;
       align-items: center;
       gap: 1rem;
+      flex-shrink: 0;
     }
     .user-dropdown {
       position: relative;
     }
     .user-button {
-      background: none;
-      border: none;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.75rem;
       padding: 0.5rem 1rem;
-      border-radius: 8px;
+      border-radius: 12px;
       cursor: pointer;
-      transition: all 0.2s;
-      color: #333;
-      font-weight: 500;
+      transition: all 0.3s ease;
+      color: white;
     }
     .user-button:hover {
-      background: rgba(15, 56, 90, 0.1);
+      background: rgba(255,255,255,0.2);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
-    .user-display {
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #fff, #f0f0f0);
+      color: #2E8B57;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
       font-size: 0.9rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+    .user-info {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .user-name {
+      font-size: 0.9rem;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+    .user-role {
+      font-size: 0.75rem;
+      opacity: 0.8;
+      font-weight: 400;
     }
     .dropdown-arrow {
-      font-size: 0.8rem;
-      transition: transform 0.2s;
-      color: #666;
+      font-size: 0.7rem;
+      transition: transform 0.3s ease;
+      opacity: 0.8;
     }
     .dropdown-arrow.rotated {
       transform: rotate(180deg);
     }
     .dropdown-menu {
       position: absolute;
-      top: 100%;
+      top: calc(100% + 0.5rem);
       right: 0;
       background: white;
-      border: 1px solid #e0e0e0;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      min-width: 180px;
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+      min-width: 200px;
       z-index: 1001;
-      margin-top: 0.5rem;
+      overflow: hidden;
     }
     .dropdown-item {
       display: flex;
       align-items: center;
       gap: 0.75rem;
-      padding: 0.75rem 1rem;
+      padding: 1rem 1.25rem;
       text-decoration: none;
       color: #333;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: all 0.2s ease;
       border: none;
       background: none;
       width: 100%;
       text-align: left;
       font-size: 0.9rem;
+      font-weight: 500;
     }
     .dropdown-item:hover {
       background: #f8f9fa;
+      color: #2E8B57;
     }
     .dropdown-item.logout {
       color: #dc3545;
-      border-top: 1px solid #e0e0e0;
+      border-top: 1px solid #f0f0f0;
     }
     .dropdown-item.logout:hover {
       background: #fff5f5;
+      color: #c82333;
     }
     .dropdown-icon {
-      font-size: 1rem;
+      font-size: 1.1rem;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .header-content {
+        padding: 0 1rem;
+        height: 60px;
+      }
+      .logo-text h1 {
+        font-size: 1.2rem;
+      }
+      .university {
+        font-size: 0.7rem;
+      }
+      .nav {
+        display: none;
+      }
+      .user-info {
+        display: none;
+      }
+      .user-button {
+        padding: 0.4rem 0.8rem;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .header-content {
+        padding: 0 0.5rem;
+      }
+      .logo-text h1 {
+        font-size: 1rem;
+      }
+      .logo-icon {
+        font-size: 1.5rem;
+      }
     }
     
     /* Modal de Confirmación */
@@ -355,5 +501,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.confirmacionTitulo = '';
     this.confirmacionMensaje = '';
     this.confirmacionCallback = null;
+  }
+
+  getUserInitials(): string {
+    if (!this.currentUser?.nombreCompleto) return 'U';
+    const names = this.currentUser.nombreCompleto.split(' ');
+    return names.length >= 2 
+      ? (names[0][0] + names[1][0]).toUpperCase()
+      : names[0][0].toUpperCase();
   }
 }
