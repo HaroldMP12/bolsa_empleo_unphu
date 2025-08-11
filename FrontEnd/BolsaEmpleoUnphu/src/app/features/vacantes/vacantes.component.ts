@@ -883,6 +883,7 @@ export class VacantesComponent implements OnInit, OnDestroy {
   vacantes: Vacante[] = [];
   vacantesFiltradas: Vacante[] = [];
   vacantesRecomendadas: Vacante[] = [];
+  vacantesRecomendadasOriginales: Vacante[] = [];
   carreraUsuario = '';
   filtros: VacanteFiltros = {};
   
@@ -992,13 +993,14 @@ export class VacantesComponent implements OnInit, OnDestroy {
   cargarVacantesRecomendadas(): void {
     this.apiService.get<any>('vacantes/recomendadas').subscribe({
       next: (vacantesData) => {
-        this.vacantesRecomendadas = vacantesData.map((v: any) => ({
+        this.vacantesRecomendadasOriginales = vacantesData.map((v: any) => ({
           ...v,
           titulo: v.tituloVacante,
           empresa: v.nombreEmpresa,
           categoria: v.nombreCategoria,
           fechaVencimiento: v.fechaCierre
         }));
+        this.vacantesRecomendadas = [...this.vacantesRecomendadasOriginales];
         
         // Obtener carrera del usuario para mostrar en la UI
         this.obtenerCarreraUsuario();
@@ -1006,6 +1008,7 @@ export class VacantesComponent implements OnInit, OnDestroy {
       error: (error) => {
         console.error('Error al cargar recomendaciones:', error);
         this.vacantesRecomendadas = [];
+        this.vacantesRecomendadasOriginales = [];
       }
     });
   }
@@ -1048,30 +1051,37 @@ export class VacantesComponent implements OnInit, OnDestroy {
   }
 
   aplicarFiltros(): void {
-    this.vacantesFiltradas = this.vacantes.filter(vacante => {
-      const titulo = vacante.titulo || vacante.tituloVacante || '';
-      const empresaNombre = this.getEmpresaNombre(vacante.empresa);
-      
-      const matchSearch = !this.filtros.search || 
-        titulo.toLowerCase().includes(this.filtros.search.toLowerCase()) ||
-        empresaNombre.toLowerCase().includes(this.filtros.search.toLowerCase());
-      
-      const matchCategoria = !this.filtros.categoria || 
-        vacante.categoriaID.toString() === this.filtros.categoria.toString();
-      
-      const matchModalidad = !this.filtros.modalidad || 
-        vacante.modalidad === this.filtros.modalidad;
-      
-      const matchUbicacion = !this.filtros.ubicacion || 
-        vacante.ubicacion === this.filtros.ubicacion;
+    // Filtrar vacantes normales
+    this.vacantesFiltradas = this.vacantes.filter(vacante => this.aplicarFiltroAVacante(vacante));
+    
+    // Filtrar vacantes recomendadas también
+    this.vacantesRecomendadas = this.vacantesRecomendadas.filter(vacante => this.aplicarFiltroAVacante(vacante));
+  }
+  
+  private aplicarFiltroAVacante(vacante: Vacante): boolean {
+    const titulo = vacante.titulo || vacante.tituloVacante || '';
+    const empresaNombre = this.getEmpresaNombre(vacante.empresa);
+    
+    const matchSearch = !this.filtros.search || 
+      titulo.toLowerCase().includes(this.filtros.search.toLowerCase()) ||
+      empresaNombre.toLowerCase().includes(this.filtros.search.toLowerCase());
+    
+    const matchCategoria = !this.filtros.categoria || 
+      vacante.categoriaID.toString() === this.filtros.categoria.toString();
+    
+    const matchModalidad = !this.filtros.modalidad || 
+      vacante.modalidad === this.filtros.modalidad;
+    
+    const matchUbicacion = !this.filtros.ubicacion || 
+      vacante.ubicacion === this.filtros.ubicacion;
 
-      return matchSearch && matchCategoria && matchModalidad && matchUbicacion;
-    });
+    return matchSearch && matchCategoria && matchModalidad && matchUbicacion;
   }
 
   limpiarFiltros(): void {
     this.filtros = {};
     this.vacantesFiltradas = [...this.vacantes];
+    this.vacantesRecomendadas = [...this.vacantesRecomendadasOriginales];
   }
 
   crearVacante(): void {
