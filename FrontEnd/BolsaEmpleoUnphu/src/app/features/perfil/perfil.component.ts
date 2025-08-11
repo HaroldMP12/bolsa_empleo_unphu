@@ -1275,7 +1275,10 @@ export class PerfilComponent implements OnInit {
   }
 
   private populateStudentForm(perfil: any): void {
-    console.log('Cargando datos del perfil:', perfil);
+    console.log('=== CARGANDO PERFIL DESDE BD ===');
+    console.log('Perfil completo:', perfil);
+    console.log('URL Imagen en BD:', perfil.urlImagen);
+    console.log('URL CV en BD:', perfil.urlCV);
     
     this.personalForm.patchValue({
       nombreCompleto: this.currentUser?.nombreCompleto || '',
@@ -1308,7 +1311,10 @@ export class PerfilComponent implements OnInit {
     
     if (perfil.urlImagen) {
       this.fotoSeleccionada = perfil.urlImagen.startsWith('/uploads/') ? `https://localhost:7236${perfil.urlImagen}` : perfil.urlImagen;
-      console.log('Foto cargada desde BD:', perfil.urlImagen, '-> URL final:', this.fotoSeleccionada);
+      console.log('✅ Foto cargada desde BD:', perfil.urlImagen, '-> URL final:', this.fotoSeleccionada);
+    } else {
+      console.log('❌ No hay URL de imagen en el perfil');
+      this.fotoSeleccionada = '';
     }
     
     // Cargar descripción personal
