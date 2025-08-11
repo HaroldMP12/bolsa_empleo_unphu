@@ -38,4 +38,14 @@ public class UpdateVacanteDto
     
     [Required(ErrorMessage = "El ID de la categoría es requerido")]
     public int CategoriaID { get; set; }
+    
+    public List<PreguntaVacanteDto>? Preguntas { get; set; } = new List<PreguntaVacanteDto>();
+}
+
+public class PreguntaVacanteDto
+{
+    public string Pregunta { get; set; } = string.Empty;
+    public string Tipo { get; set; } = string.Empty;
+    public bool Requerida { get; set; }
+    public List<string>? Opciones { get; set; }
 }

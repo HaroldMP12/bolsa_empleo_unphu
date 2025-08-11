@@ -129,6 +129,24 @@ public class VacantesController : ControllerBase
 
         _context.Vacantes.Add(vacante);
         await _context.SaveChangesAsync();
+        
+        // Agregar preguntas si existen
+        if (vacanteDto.Preguntas != null && vacanteDto.Preguntas.Any())
+        {
+            foreach (var preguntaDto in vacanteDto.Preguntas)
+            {
+                var pregunta = new PreguntasVacantesModel
+                {
+                    VacanteID = vacante.VacanteID,
+                    Pregunta = preguntaDto.Pregunta,
+                    Tipo = preguntaDto.Tipo,
+                    Requerida = preguntaDto.Requerida,
+                    Opciones = preguntaDto.Opciones
+                };
+                _context.PreguntasVacantes.Add(pregunta);
+            }
+            await _context.SaveChangesAsync();
+        }
 
         return CreatedAtAction(nameof(GetVacante), new { id = vacante.VacanteID }, vacante);
     }
@@ -176,6 +194,30 @@ public class VacantesController : ControllerBase
         vacante.CantidadVacantes = vacanteDto.CantidadVacantes;
         vacante.CategoriaID = vacanteDto.CategoriaID;
         vacante.FechaModificacion = DateTime.Now;
+        
+        // Actualizar preguntas
+        // Primero eliminar preguntas existentes
+        var preguntasExistentes = await _context.PreguntasVacantes
+            .Where(p => p.VacanteID == id)
+            .ToListAsync();
+        _context.PreguntasVacantes.RemoveRange(preguntasExistentes);
+        
+        // Agregar nuevas preguntas
+        if (vacanteDto.Preguntas != null && vacanteDto.Preguntas.Any())
+        {
+            foreach (var preguntaDto in vacanteDto.Preguntas)
+            {
+                var pregunta = new PreguntasVacantesModel
+                {
+                    VacanteID = id,
+                    Pregunta = preguntaDto.Pregunta,
+                    Tipo = preguntaDto.Tipo,
+                    Requerida = preguntaDto.Requerida,
+                    Opciones = preguntaDto.Opciones
+                };
+                _context.PreguntasVacantes.Add(pregunta);
+            }
+        }
 
         try
         {
