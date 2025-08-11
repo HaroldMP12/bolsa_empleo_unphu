@@ -123,7 +123,7 @@ import { Subscription } from 'rxjs';
             <!-- Mis Vacantes -->
             <div class="widget large">
               <div class="widget-header">
-                <h3>Mis Vacantes</h3>
+                <h3>Vacantes Recientes</h3>
                 <button class="btn-primary" routerLink="/mis-vacantes">+ Nueva Vacante</button>
               </div>
               <div class="vacantes-empresa">
