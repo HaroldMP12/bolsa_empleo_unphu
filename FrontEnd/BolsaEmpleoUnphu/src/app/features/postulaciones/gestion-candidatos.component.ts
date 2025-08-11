@@ -552,12 +552,20 @@ export class GestionCandidatosComponent implements OnInit, OnDestroy {
   }
 
   cargarCandidatos(): void {
-    // Get vacante title from data sync service
-    const todasVacantes = this.dataSyncService.getVacantesValue();
-    const vacante = todasVacantes.find((v: any) => v.vacanteID === this.vacanteId);
-    this.vacanteTitulo = vacante?.tituloVacante || vacante?.titulo || 'Vacante';
-    console.log('Vacante encontrada:', vacante);
-    console.log('Título asignado:', this.vacanteTitulo);
+    // Get vacante title from API directly
+    fetch(`https://localhost:7236/api/vacantes/${this.vacanteId}`, {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    })
+    .then(res => res.json())
+    .then(vacante => {
+      this.vacanteTitulo = vacante?.TituloVacante || vacante?.tituloVacante || 'Vacante';
+      console.log('Vacante desde API:', vacante);
+      console.log('Título asignado:', this.vacanteTitulo);
+    })
+    .catch(error => {
+      console.error('Error obteniendo vacante:', error);
+      this.vacanteTitulo = 'Vacante';
+    });
     
     // Get applications for this vacante
     const aplicaciones = this.dataSyncService.getVacanteApplications(this.vacanteId);
@@ -645,7 +653,8 @@ export class GestionCandidatosComponent implements OnInit, OnDestroy {
 
   contactarCandidato(postulacion: Postulacion): void {
     console.log('Contactar candidato:', postulacion.usuario?.nombreCompleto);
-    window.open(`mailto:${postulacion.usuario?.correo}?subject=Oportunidad laboral - ${this.vacanteTitulo}`);
+    const subject = `Oportunidad laboral - ${this.vacanteTitulo}`;
+    window.open(`mailto:${postulacion.usuario?.correo}?subject=${encodeURIComponent(subject)}`);
   }
 
   enviarMensaje(postulacion: Postulacion): void {
