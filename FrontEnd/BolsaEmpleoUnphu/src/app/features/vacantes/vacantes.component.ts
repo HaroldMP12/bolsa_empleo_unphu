@@ -1309,7 +1309,13 @@ export class VacantesComponent implements OnInit, OnDestroy {
           Modalidad: this.nuevaVacante.modalidad,
           Salario: this.nuevaVacante.salario || null,
           CantidadVacantes: 1,
-          CategoriaID: parseInt(this.nuevaVacante.categoriaID.toString())
+          CategoriaID: parseInt(this.nuevaVacante.categoriaID.toString()),
+          Preguntas: this.nuevaVacante.preguntas.map(p => ({
+            Pregunta: p.pregunta,
+            Tipo: p.tipo,
+            Requerida: p.requerida,
+            Opciones: p.tipo === 'opcion_multiple' ? p.opcionesTexto?.split(',').map(o => o.trim()) : null
+          }))
         };
         
         console.log('Datos a enviar:', vacanteData);
@@ -1325,7 +1331,16 @@ export class VacantesComponent implements OnInit, OnDestroy {
   private crearOActualizarVacante(vacanteData: any): void {
     if (this.vacanteEditando) {
       // Actualizar vacante existente
-      const updateData = { ...vacanteData, VacanteID: this.vacanteEditando.vacanteID };
+      const updateData = { 
+        ...vacanteData, 
+        VacanteID: this.vacanteEditando.vacanteID,
+        Preguntas: this.nuevaVacante.preguntas.map(p => ({
+          Pregunta: p.pregunta,
+          Tipo: p.tipo,
+          Requerida: p.requerida,
+          Opciones: p.tipo === 'opcion_multiple' ? p.opcionesTexto?.split(',').map(o => o.trim()) : null
+        }))
+      };
       this.apiService.put(`vacantes/${this.vacanteEditando.vacanteID}`, updateData).subscribe({
         next: () => {
           this.mostrarConfirmacion('Vacante Actualizada', 'La vacante ha sido actualizada exitosamente.');
