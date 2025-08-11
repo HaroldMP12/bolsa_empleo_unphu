@@ -1400,7 +1400,8 @@ export class VacantesComponent implements OnInit, OnDestroy {
       console.log('Ejecutando PUT a /api/vacantes/' + this.vacanteEditando.vacanteID);
       console.log('Datos de actualización:', JSON.stringify(updateData, null, 2));
       this.apiService.put(`vacantes/${this.vacanteEditando.vacanteID}`, updateData).subscribe({
-        next: () => {
+        next: (response) => {
+          console.log('Respuesta del backend al actualizar:', response);
           this.mostrarConfirmacion('Vacante Actualizada', 'La vacante ha sido actualizada exitosamente.');
           this.cerrarModal();
           this.cargarVacantes();
