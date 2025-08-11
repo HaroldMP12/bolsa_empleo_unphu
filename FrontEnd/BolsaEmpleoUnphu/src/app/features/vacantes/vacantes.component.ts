@@ -1067,13 +1067,13 @@ export class VacantesComponent implements OnInit, OnDestroy {
       empresaNombre.toLowerCase().includes(this.filtros.search.toLowerCase());
     
     const matchCategoria = !this.filtros.categoria || 
-      vacante.categoriaID.toString() === this.filtros.categoria.toString();
+      (vacante.categoriaID || vacante.CategoriaID)?.toString() === this.filtros.categoria.toString();
     
     const matchModalidad = !this.filtros.modalidad || 
-      vacante.modalidad === this.filtros.modalidad;
+      (vacante.modalidad || vacante.Modalidad) === this.filtros.modalidad;
     
     const matchUbicacion = !this.filtros.ubicacion || 
-      vacante.ubicacion === this.filtros.ubicacion;
+      (vacante.ubicacion || vacante.Ubicacion)?.includes(this.filtros.ubicacion);
 
     return matchSearch && matchCategoria && matchModalidad && matchUbicacion;
   }
