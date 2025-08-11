@@ -1348,7 +1348,9 @@ export class PerfilComponent implements OnInit {
     });
     
     if (empresa.imagenLogo) {
-      this.logoSeleccionado = empresa.imagenLogo;
+      this.fotoSeleccionada = empresa.imagenLogo.startsWith('/uploads/') ? `https://localhost:7236${empresa.imagenLogo}` : empresa.imagenLogo;
+      this.logoSeleccionado = empresa.imagenLogo.startsWith('/uploads/') ? `https://localhost:7236${empresa.imagenLogo}` : empresa.imagenLogo;
+      console.log('Logo/Foto cargada desde BD:', empresa.imagenLogo, '-> URL final:', this.fotoSeleccionada);
     }
     
     if (empresa.imagenPortada) {
@@ -1605,6 +1607,10 @@ export class PerfilComponent implements OnInit {
   }
 
   private guardarPerfilEmpresa(): void {
+    console.log('=== GUARDANDO PERFIL EMPRESA ===');
+    console.log('Foto seleccionada:', this.fotoSeleccionada);
+    console.log('Logo seleccionado:', this.logoSeleccionado);
+    
     if (!this.empresaForm.valid || !this.contactoForm.valid) {
       this.showModalMessage('warning', 'Formulario Incompleto', 'Por favor completa todos los campos requeridos');
       return;
@@ -1621,13 +1627,15 @@ export class PerfilComponent implements OnInit {
       sitioWeb: this.empresaForm.get('sitioWeb')?.value || null,
       descripcion: this.descripcionPersonal || this.empresaForm.get('descripcion')?.value || null,
       cantidadEmpleados: this.empresaForm.get('tamano')?.value || null,
-      imagenLogo: this.logoSeleccionado || null,
+      imagenLogo: this.fotoSeleccionada ? this.fotoSeleccionada.replace('https://localhost:7236', '') : null,
       imagenPortada: this.portadaSeleccionada || null,
       personaContacto: this.contactoForm.get('personaContacto')?.value || null,
       cargoContacto: this.contactoForm.get('cargoContacto')?.value || null,
       telefonoSecundario: this.contactoForm.get('telefonoSecundario')?.value || null,
       observaciones: null
     };
+    
+    console.log('Datos empresa a guardar:', empresaData);
 
     // Verificar si ya existe un perfil de empresa
     this.perfilService.obtenerPerfilEmpresa(this.currentUser!.usuarioID).subscribe({
@@ -1636,8 +1644,10 @@ export class PerfilComponent implements OnInit {
           // Actualizar empresa existente
           empresaData.empresaID = empresaExistente.empresaID;
           this.perfilService.actualizarPerfilEmpresa(empresaExistente.empresaID, empresaData).subscribe({
-            next: () => {
+            next: (response) => {
+              console.log('Empresa actualizada:', response);
               this.guardando = false;
+              this.editMode = false;
               this.showModalMessage('success', '¡Perfil Actualizado!', 'El perfil de tu empresa ha sido actualizado correctamente');
             },
             error: (error) => {
@@ -1648,8 +1658,10 @@ export class PerfilComponent implements OnInit {
         } else {
           // Crear nueva empresa
           this.perfilService.crearPerfilEmpresa(empresaData).subscribe({
-            next: () => {
+            next: (response) => {
+              console.log('Empresa creada:', response);
               this.guardando = false;
+              this.editMode = false;
               this.showModalMessage('success', '¡Perfil Creado!', 'El perfil de tu empresa ha sido creado correctamente');
             },
             error: (error) => {
