@@ -60,7 +60,6 @@ import { Subscription } from 'rxjs';
               <option value="Santo Domingo">Santo Domingo</option>
               <option value="Santiago">Santiago</option>
               <option value="La Romana">La Romana</option>
-              <option value="Remoto">Remoto</option>
             </select>
           </div>
           <button class="btn-secondary" (click)="limpiarFiltros()">Limpiar</button>
