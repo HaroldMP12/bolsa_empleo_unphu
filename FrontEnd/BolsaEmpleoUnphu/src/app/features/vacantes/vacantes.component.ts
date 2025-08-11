@@ -987,14 +987,17 @@ export class VacantesComponent implements OnInit, OnDestroy {
       next: (vacantesData) => {
         console.log('Total vacantes recomendadas:', vacantesData.length);
         console.log('Empresas en recomendadas:', [...new Set(vacantesData.map((v: any) => v.nombreEmpresa))]);
-        this.vacantesRecomendadasOriginales = vacantesData.map((v: any) => ({
-          ...v,
-          titulo: v.tituloVacante,
-          empresa: v.nombreEmpresa,
-          categoria: v.nombreCategoria,
-          fechaVencimiento: v.fechaCierre,
-          preguntas: v.preguntasVacantes || v.preguntas || []
-        }));
+        this.vacantesRecomendadasOriginales = vacantesData.map((v: any) => {
+          console.log('Vacante recomendada con preguntas:', v.tituloVacante, 'Preguntas:', v.preguntasVacantes);
+          return {
+            ...v,
+            titulo: v.tituloVacante,
+            empresa: v.nombreEmpresa,
+            categoria: v.nombreCategoria,
+            fechaVencimiento: v.fechaCierre,
+            preguntas: v.preguntasVacantes || v.preguntas || []
+          };
+        });
         this.vacantesRecomendadas = [...this.vacantesRecomendadasOriginales];
         
         // Obtener carrera del usuario para mostrar en la UI
@@ -1016,14 +1019,17 @@ export class VacantesComponent implements OnInit, OnDestroy {
         console.log('Total vacantes cargadas para estudiantes:', vacantesData.length);
         console.log('Empresas con vacantes:', [...new Set(vacantesData.map((v: any) => v.nombreEmpresa))]);
         // Mapear los datos del backend al formato esperado por el frontend
-        this.vacantes = vacantesData.map((v: any) => ({
-          ...v,
-          titulo: v.tituloVacante,
-          empresa: v.nombreEmpresa,
-          categoria: v.nombreCategoria,
-          fechaVencimiento: v.fechaCierre,
-          preguntas: v.preguntasVacantes || v.preguntas || []
-        }));
+        this.vacantes = vacantesData.map((v: any) => {
+          console.log('Vacante con preguntas:', v.tituloVacante, 'Preguntas:', v.preguntasVacantes);
+          return {
+            ...v,
+            titulo: v.tituloVacante,
+            empresa: v.nombreEmpresa,
+            categoria: v.nombreCategoria,
+            fechaVencimiento: v.fechaCierre,
+            preguntas: v.preguntasVacantes || v.preguntas || []
+          };
+        });
         this.vacantesFiltradas = [...this.vacantes];
         
         // Extraer ubicaciones únicas para el filtro
@@ -1226,6 +1232,7 @@ export class VacantesComponent implements OnInit, OnDestroy {
   }
 
   postularse(vacante: Vacante): void {
+    console.log('Postulándose a vacante:', vacante.titulo, 'Preguntas:', vacante.preguntas);
     this.vacanteSeleccionada = vacante;
     this.mostrarModalPostulacion = true;
   }
