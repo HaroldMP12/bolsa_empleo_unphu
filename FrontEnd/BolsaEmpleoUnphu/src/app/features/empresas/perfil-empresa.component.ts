@@ -5,11 +5,13 @@ import { AuthService } from '../../core/services/auth.service';
 import { DataSyncService } from '../../core/services/data-sync.service';
 import { AuthResponse } from '../../core/models/auth.models';
 import { Subscription } from 'rxjs';
+import { FilePreviewModalComponent } from '../../shared/components/file-preview-modal.component';
+import { FileService } from '../../core/services/file.service';
 
 @Component({
   selector: 'app-perfil-empresa',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FilePreviewModalComponent],
   template: `
     <div class="perfil-empresa-page">
       <div class="page-header">
@@ -187,6 +189,15 @@ import { Subscription } from 'rxjs';
         </div>
       </div>
     </div>
+
+    <!-- Modal de Preview de Archivos -->
+    <app-file-preview-modal
+      [isOpen]="showPreviewModal"
+      [fileUrl]="previewFileUrl"
+      [fileType]="previewFileType"
+      [title]="previewTitle"
+      (closeModal)="cerrarPreviewModal()">
+    </app-file-preview-modal>
   `,
   styles: [`
     .perfil-empresa-page {
@@ -695,12 +706,19 @@ export class PerfilEmpresaComponent implements OnInit, OnDestroy {
   vacanteSeleccionada: any = null;
   candidatos: any[] = [];
   
+  // Preview modal properties
+  showPreviewModal = false;
+  previewFileUrl = '';
+  previewFileType: 'image' | 'pdf' = 'image';
+  previewTitle = '';
+  
   private subscriptions: Subscription[] = [];
 
   constructor(
     private authService: AuthService,
     private dataSyncService: DataSyncService,
-    private router: Router
+    private router: Router,
+    private fileService: FileService
   ) {}
 
   ngOnInit(): void {
@@ -971,4 +989,16 @@ export class PerfilEmpresaComponent implements OnInit, OnDestroy {
     if (!estado) return 'pendiente';
     return estado.toLowerCase().replace(' ', '-');
   }
+
+  // Métodos para preview de archivos
+  cerrarPreviewModal(): void {
+    this.showPreviewModal = false;
+    this.previewFileUrl = '';
+  }
+
+  getImageUrl(fileName: string): string {
+    return this.fileService.getFileUrl(fileName, 'empresa');
+  }
+
+
 }

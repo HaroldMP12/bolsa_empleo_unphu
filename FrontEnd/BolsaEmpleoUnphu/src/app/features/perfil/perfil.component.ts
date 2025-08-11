@@ -6,11 +6,13 @@ import { PerfilService, PerfilEstudiante, PerfilEmpresa } from '../../core/servi
 import { ToastService } from '../../core/services/toast.service';
 import { AuthResponse } from '../../core/models/auth.models';
 import { Router } from '@angular/router';
+import { FilePreviewModalComponent } from '../../shared/components/file-preview-modal.component';
+import { FileService } from '../../core/services/file.service';
 
 @Component({
   selector: 'app-perfil',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, FilePreviewModalComponent],
   template: `
     <div class="perfil-page">
       <!-- HERO SECTION -->
@@ -18,8 +20,9 @@ import { Router } from '@angular/router';
         <div class="hero-background"></div>
         <div class="hero-content">
           <div class="profile-avatar">
-            <div class="avatar-circle">
-              <span class="avatar-initials">{{ getInitials() }}</span>
+            <div class="avatar-circle" (click)="mostrarFotoPerfil()" [class.clickable]="fotoSeleccionada">
+              <img *ngIf="fotoSeleccionada" [src]="getImageUrl(fotoSeleccionada)" alt="Foto de perfil" class="avatar-image">
+              <span *ngIf="!fotoSeleccionada" class="avatar-initials">{{ getInitials() }}</span>
             </div>
             <button class="avatar-edit-btn" (click)="editarFoto()">
               <span>📷</span>
@@ -143,7 +146,12 @@ import { Router } from '@angular/router';
                       <p class="document-status">{{ cvSeleccionado || 'No subido' }}</p>
                     </div>
                   </div>
-                  <button class="btn-upload" (click)="triggerFileInput('cv')" *ngIf="editMode">Subir</button>
+                  <div class="document-actions">
+                    <button class="btn-preview" (click)="mostrarPreviewCV()" *ngIf="cvSeleccionado && !editMode" title="Ver CV">
+                      👁️
+                    </button>
+                    <button class="btn-upload" (click)="triggerFileInput('cv')" *ngIf="editMode">Subir</button>
+                  </div>
                 </div>
                 <div class="document-item" *ngIf="isCompany()">
                   <div class="document-info">
@@ -153,7 +161,12 @@ import { Router } from '@angular/router';
                       <p class="document-status">{{ logoSeleccionado || 'No subido' }}</p>
                     </div>
                   </div>
-                  <button class="btn-upload" (click)="triggerFileInput('logo')" *ngIf="editMode">Subir</button>
+                  <div class="document-actions">
+                    <button class="btn-preview" (click)="mostrarPreviewLogo()" *ngIf="logoSeleccionado && !editMode" title="Ver Logo">
+                      👁️
+                    </button>
+                    <button class="btn-upload" (click)="triggerFileInput('logo')" *ngIf="editMode">Subir</button>
+                  </div>
                 </div>
                 <input type="file" #cvInput accept=".pdf" (change)="onFileSelect($event, 'cv')" style="display: none;">
               </div>
@@ -420,6 +433,15 @@ import { Router } from '@angular/router';
       </div>
     </div>
 
+    <!-- Modal de Preview de Archivos -->
+    <app-file-preview-modal
+      [isOpen]="showPreviewModal"
+      [fileUrl]="previewFileUrl"
+      [fileType]="previewFileType"
+      [title]="previewTitle"
+      (closeModal)="cerrarPreviewModal()">
+    </app-file-preview-modal>
+
     <!-- Modal de Confirmación -->
     <div *ngIf="showModal" class="modal-overlay" (click)="showModal = false">
       <div class="confirmation-modal" (click)="$event.stopPropagation()">
@@ -474,6 +496,20 @@ import { Router } from '@angular/router';
       justify-content: center;
       border: 6px solid white;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      overflow: hidden;
+      position: relative;
+    }
+    .avatar-circle.clickable {
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+    .avatar-circle.clickable:hover {
+      transform: scale(1.05);
+    }
+    .avatar-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
     .avatar-initials {
       font-size: 3rem;
@@ -803,6 +839,29 @@ import { Router } from '@angular/router';
       border-radius: 8px;
       margin-bottom: 1rem;
     }
+    .document-actions {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    .btn-preview {
+      background: var(--unphu-blue-dark);
+      color: white;
+      border: none;
+      padding: 0.5rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.875rem;
+      transition: background 0.3s;
+      min-width: 40px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-preview:hover {
+      background: #0a2a3f;
+    }
     .document-item:last-child {
       margin-bottom: 0;
     }
@@ -1080,13 +1139,20 @@ export class PerfilComponent implements OnInit {
   modalTitle = '';
   modalMessage = '';
   modalConfirmText = 'Aceptar';
+  
+  // Preview modal properties
+  showPreviewModal = false;
+  previewFileUrl = '';
+  previewFileType: 'image' | 'pdf' = 'image';
+  previewTitle = '';
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
     private perfilService: PerfilService,
     private toastService: ToastService,
-    private router: Router
+    private router: Router,
+    private fileService: FileService
   ) {}
 
   ngOnInit(): void {
@@ -1293,20 +1359,66 @@ export class PerfilComponent implements OnInit {
   onFileSelect(event: any, tipo: string): void {
     const file = event.target.files[0];
     if (file) {
-      switch (tipo) {
-        case 'foto':
-          this.fotoSeleccionada = file.name;
-          break;
-        case 'cv':
-          this.cvSeleccionado = file.name;
-          break;
-        case 'logo':
-          this.logoSeleccionado = file.name;
-          break;
-        case 'portada':
-          this.portadaSeleccionada = file.name;
-          break;
+      // Validar tipo de archivo
+      if (tipo === 'cv' && file.type !== 'application/pdf') {
+        this.toastService.showError('Solo se permiten archivos PDF para el CV');
+        return;
       }
+      
+      if ((tipo === 'foto' || tipo === 'logo') && !file.type.startsWith('image/')) {
+        this.toastService.showError('Solo se permiten archivos de imagen');
+        return;
+      }
+      
+      // Crear URL temporal para preview inmediato
+      const fileUrl = URL.createObjectURL(file);
+      
+      // Subir archivo al servidor
+      const tipoUpload = tipo === 'foto' ? 'perfil' : tipo === 'logo' ? 'empresa' : 'cv';
+      
+      this.fileService.uploadFile(file, tipoUpload as 'cv' | 'perfil' | 'empresa').subscribe({
+        next: (response) => {
+          // Usar la URL del servidor para el archivo subido
+          const serverUrl = response.url;
+          
+          switch (tipo) {
+            case 'foto':
+              this.fotoSeleccionada = serverUrl;
+              break;
+            case 'cv':
+              this.cvSeleccionado = serverUrl;
+              break;
+            case 'logo':
+              this.logoSeleccionado = serverUrl;
+              break;
+            case 'portada':
+              this.portadaSeleccionada = serverUrl;
+              break;
+          }
+          
+          this.toastService.showSuccess('Archivo subido exitosamente');
+        },
+        error: (error) => {
+          console.error('Error al subir archivo:', error);
+          this.toastService.showError('Error al subir el archivo');
+          
+          // Mantener preview temporal en caso de error
+          switch (tipo) {
+            case 'foto':
+              this.fotoSeleccionada = fileUrl;
+              break;
+            case 'cv':
+              this.cvSeleccionado = fileUrl;
+              break;
+            case 'logo':
+              this.logoSeleccionado = fileUrl;
+              break;
+            case 'portada':
+              this.portadaSeleccionada = fileUrl;
+              break;
+          }
+        }
+      });
     }
   }
 
@@ -1735,5 +1847,46 @@ export class PerfilComponent implements OnInit {
     if (this.modalType === 'success') {
       this.editMode = false;
     }
+  }
+
+  // Métodos para preview de archivos
+  mostrarFotoPerfil(): void {
+    if (this.fotoSeleccionada) {
+      this.previewFileUrl = this.getImageUrl(this.fotoSeleccionada);
+      this.previewFileType = 'image';
+      this.previewTitle = 'Foto de Perfil';
+      this.showPreviewModal = true;
+    }
+  }
+
+  mostrarPreviewCV(): void {
+    if (this.cvSeleccionado) {
+      this.previewFileUrl = this.getFileUrl(this.cvSeleccionado);
+      this.previewFileType = 'pdf';
+      this.previewTitle = 'Curriculum Vitae';
+      this.showPreviewModal = true;
+    }
+  }
+
+  mostrarPreviewLogo(): void {
+    if (this.logoSeleccionado) {
+      this.previewFileUrl = this.getImageUrl(this.logoSeleccionado);
+      this.previewFileType = 'image';
+      this.previewTitle = 'Logo de la Empresa';
+      this.showPreviewModal = true;
+    }
+  }
+
+  cerrarPreviewModal(): void {
+    this.showPreviewModal = false;
+    this.previewFileUrl = '';
+  }
+
+  getImageUrl(fileName: string): string {
+    return this.fileService.getFileUrl(fileName, 'perfil');
+  }
+
+  getFileUrl(fileName: string): string {
+    return this.fileService.getFileUrl(fileName, 'cv');
   }
 }
