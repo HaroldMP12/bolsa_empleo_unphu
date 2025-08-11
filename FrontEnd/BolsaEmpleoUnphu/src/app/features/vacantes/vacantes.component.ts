@@ -993,17 +993,13 @@ export class VacantesComponent implements OnInit, OnDestroy {
   cargarVacantesRecomendadas(): void {
     this.apiService.get<any>('vacantes/recomendadas').subscribe({
       next: (vacantesData) => {
-        this.vacantesRecomendadasOriginales = vacantesData.map((v: any) => {
-          console.log('Vacante recomendada raw:', v);
-          return {
-            ...v,
-            titulo: v.tituloVacante,
-            empresa: v.nombreEmpresa,
-            categoria: v.nombreCategoria,
-            fechaVencimiento: v.fechaCierre,
-            categoriaID: v.categoriaID || v.CategoriaID
-          };
-        });
+        this.vacantesRecomendadasOriginales = vacantesData.map((v: any) => ({
+          ...v,
+          titulo: v.tituloVacante,
+          empresa: v.nombreEmpresa,
+          categoria: v.nombreCategoria,
+          fechaVencimiento: v.fechaCierre
+        }));
         this.vacantesRecomendadas = [...this.vacantesRecomendadasOriginales];
         
         // Obtener carrera del usuario para mostrar en la UI
@@ -1022,17 +1018,13 @@ export class VacantesComponent implements OnInit, OnDestroy {
       next: (response) => {
         const vacantesData = response.data || response || [];
         // Mapear los datos del backend al formato esperado por el frontend
-        this.vacantes = vacantesData.map((v: any) => {
-          console.log('Vacante normal raw:', v);
-          return {
-            ...v,
-            titulo: v.tituloVacante,
-            empresa: v.nombreEmpresa,
-            categoria: v.nombreCategoria,
-            fechaVencimiento: v.fechaCierre,
-            categoriaID: v.categoriaID || v.CategoriaID
-          };
-        });
+        this.vacantes = vacantesData.map((v: any) => ({
+          ...v,
+          titulo: v.tituloVacante,
+          empresa: v.nombreEmpresa,
+          categoria: v.nombreCategoria,
+          fechaVencimiento: v.fechaCierre
+        }));
         this.vacantesFiltradas = [...this.vacantes];
       },
       error: (error) => {
@@ -1081,7 +1073,8 @@ export class VacantesComponent implements OnInit, OnDestroy {
     
     const categoriaVacante = vacante.categoriaID || vacante.CategoriaID;
     const matchCategoria = !this.filtros.categoria || 
-      categoriaVacante?.toString() === this.filtros.categoria.toString();
+      categoriaVacante?.toString() === this.filtros.categoria.toString() ||
+      this.getCategoriaIdByName(vacante.categoria || vacante.nombreCategoria)?.toString() === this.filtros.categoria.toString();
     
     // Debug para categoría
     if (this.filtros.categoria) {
@@ -1417,6 +1410,17 @@ export class VacantesComponent implements OnInit, OnDestroy {
       5: 'Derecho'
     };
     return categorias[categoriaID] || 'Otra';
+  }
+  
+  getCategoriaIdByName(nombreCategoria: string): number | null {
+    const categorias: {[key: string]: number} = {
+      'Tecnología': 1,
+      'Administración': 2,
+      'Contabilidad': 3,
+      'Mercadeo': 4,
+      'Derecho': 5
+    };
+    return categorias[nombreCategoria] || null;
   }
 
   cerrarModal(): void {
