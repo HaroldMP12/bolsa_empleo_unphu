@@ -347,6 +347,33 @@ import { Router } from '@angular/router';
               </div>
             </div>
             
+            <!-- Estadísticas de Empresa -->
+            <div class="profile-card" *ngIf="isCompany()">
+              <div class="card-header">
+                <h3>📊 Estadísticas</h3>
+              </div>
+              <div class="card-content">
+                <div class="stats-grid">
+                  <div class="stat-item">
+                    <div class="stat-number">{{ estadisticasEmpresa.totalVacantes || 0 }}</div>
+                    <div class="stat-label">Vacantes Publicadas</div>
+                  </div>
+                  <div class="stat-item">
+                    <div class="stat-number">{{ estadisticasEmpresa.vacantesActivas || 0 }}</div>
+                    <div class="stat-label">Vacantes Activas</div>
+                  </div>
+                  <div class="stat-item">
+                    <div class="stat-number">{{ estadisticasEmpresa.totalPostulaciones || 0 }}</div>
+                    <div class="stat-label">Total Postulaciones</div>
+                  </div>
+                  <div class="stat-item">
+                    <div class="stat-number">{{ estadisticasEmpresa.candidatosPendientes || 0 }}</div>
+                    <div class="stat-label">Candidatos Pendientes</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
             <!-- Descripción Personal/Empresa -->
             <div class="profile-card">
               <div class="card-header">
@@ -715,6 +742,31 @@ import { Router } from '@angular/router';
       gap: 0.5rem;
     }
     
+    /* STATISTICS */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .stat-item {
+      text-align: center;
+      padding: 1rem;
+      background: var(--unphu-background);
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+    }
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--unphu-green-primary);
+      margin-bottom: 0.5rem;
+    }
+    .stat-label {
+      font-size: 0.875rem;
+      color: #666;
+      font-weight: 500;
+    }
+    
     /* DOCUMENTS */
     .document-item {
       display: flex;
@@ -904,6 +956,13 @@ import { Router } from '@angular/router';
       .avatar-initials {
         font-size: 2.5rem;
       }
+      .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+      }
+      .stat-number {
+        font-size: 1.5rem;
+      }
     }
     
     /* MODAL */
@@ -981,6 +1040,12 @@ export class PerfilComponent implements OnInit {
   logoSeleccionado = '';
   portadaSeleccionada = '';
   descripcionPersonal = '';
+  estadisticasEmpresa: any = {
+    totalVacantes: 0,
+    vacantesActivas: 0,
+    totalPostulaciones: 0,
+    candidatosPendientes: 0
+  };
   
   editMode = false;
   guardando = false;
@@ -1124,6 +1189,9 @@ export class PerfilComponent implements OnInit {
     
     // Cargar descripción de la empresa
     this.descripcionPersonal = empresa.descripcion || '';
+    
+    // Cargar estadísticas
+    this.cargarEstadisticasEmpresa(empresa.empresaID);
     
     console.log('Formularios actualizados:', {
       empresa: this.empresaForm.value,
@@ -1516,6 +1584,36 @@ export class PerfilComponent implements OnInit {
       'grande': 'Grande (200+ empleados)'
     };
     return tamanos[tamano] || '';
+  }
+
+  cargarEstadisticasEmpresa(empresaID: number): void {
+    // Cargar desde localStorage (datos locales)
+    const vacantes = JSON.parse(localStorage.getItem('vacantes') || '[]');
+    const postulaciones = JSON.parse(localStorage.getItem('postulaciones') || '[]');
+    
+    const vacantesEmpresa = vacantes.filter((v: any) => v.empresaID === empresaID);
+    const hoy = new Date();
+    const vacantesActivas = vacantesEmpresa.filter((v: any) => {
+      const fechaVencimiento = new Date(v.fechaVencimiento || v.fechaCierre);
+      return fechaVencimiento > hoy;
+    });
+    
+    const postulacionesEmpresa = postulaciones.filter((p: any) => 
+      vacantesEmpresa.some((v: any) => v.vacanteID === p.vacanteID)
+    );
+    
+    const candidatosPendientes = postulacionesEmpresa.filter((p: any) => 
+      p.estado === 'Pendiente'
+    );
+    
+    this.estadisticasEmpresa = {
+      totalVacantes: vacantesEmpresa.length,
+      vacantesActivas: vacantesActivas.length,
+      totalPostulaciones: postulacionesEmpresa.length,
+      candidatosPendientes: candidatosPendientes.length
+    };
+    
+    console.log('Estadísticas cargadas:', this.estadisticasEmpresa);
   }
 
   cancelar(): void {
