@@ -796,7 +796,7 @@ export class GestionCandidatosComponent implements OnInit, OnDestroy {
           carrera: perfil.carrera?.nombreCarrera || 'No especificada',
           matricula: perfil.matricula || 'No disponible',
           semestre: perfil.semestre || 'No disponible',
-          promedio: perfil.promedio !== null && perfil.promedio !== undefined ? perfil.promedio : 'No disponible',
+          promedio: perfil.promedioAcademico !== null && perfil.promedioAcademico !== undefined ? perfil.promedioAcademico : 'No disponible',
           fotoPerfil: perfil.fotoPerfil,
           cv: perfil.cv
         };
