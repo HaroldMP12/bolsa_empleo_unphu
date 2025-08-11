@@ -191,11 +191,7 @@ import { Subscription } from 'rxjs';
                 <label>Categoría *</label>
                 <select [(ngModel)]="nuevaVacante.categoriaID" name="categoria" class="form-control" required>
                   <option value="">Seleccionar categoría</option>
-                  <option value="1">Tecnología</option>
-                  <option value="2">Administración</option>
-                  <option value="3">Contabilidad</option>
-                  <option value="4">Mercadeo</option>
-                  <option value="5">Derecho</option>
+                  <option *ngFor="let categoria of categorias" [value]="categoria.categoriaID">{{ categoria.nombreCategoria }}</option>
                 </select>
               </div>
             </div>
