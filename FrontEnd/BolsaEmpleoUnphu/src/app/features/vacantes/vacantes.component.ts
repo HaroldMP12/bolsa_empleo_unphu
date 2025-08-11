@@ -1027,7 +1027,8 @@ export class VacantesComponent implements OnInit, OnDestroy {
         this.vacantesFiltradas = [...this.vacantes];
         
         // Extraer ubicaciones únicas para el filtro
-        this.ubicacionesDisponibles = [...new Set(vacantesData.map((v: any) => v.ubicacion as string).filter((u: string) => u))].sort();
+        const ubicaciones = vacantesData.map((v: any) => v.ubicacion).filter((u: any) => u) as string[];
+        this.ubicacionesDisponibles = [...new Set(ubicaciones)].sort();
       },
       error: (error) => {
         console.error('Error al cargar vacantes:', error);
