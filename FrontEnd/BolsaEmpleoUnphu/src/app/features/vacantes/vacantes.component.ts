@@ -1321,6 +1321,7 @@ export class VacantesComponent implements OnInit, OnDestroy {
         };
         
         console.log('Datos a enviar al backend:', JSON.stringify(vacanteData, null, 2));
+        console.log('Preguntas específicamente:', vacanteData.Preguntas);
         
         this.crearOActualizarVacante(vacanteData);
       },
@@ -1363,18 +1364,23 @@ export class VacantesComponent implements OnInit, OnDestroy {
     } else {
       // Crear nueva vacante
       this.apiService.post('vacantes', vacanteData).subscribe({
-        next: () => {
+        next: (response) => {
+          console.log('Respuesta del backend al crear vacante:', response);
           this.mostrarConfirmacion('Vacante Creada', 'La vacante ha sido creada exitosamente y ya está visible para los estudiantes.');
           this.cerrarModal();
           this.cargarVacantes();
           this.dataSyncService.notifyVacantesChanged();
         },
         error: (error) => {
-          console.error('Error al crear vacante:', error);
+          console.error('Error completo al crear vacante:', error);
+          console.error('Error status:', error.status);
+          console.error('Error body:', error.error);
           let errorMessage = 'No se pudo crear la vacante.';
           if (error.error && error.error.errors) {
             const validationErrors = Object.values(error.error.errors).flat();
             errorMessage = validationErrors.join(', ');
+          } else if (error.error && error.error.message) {
+            errorMessage = error.error.message;
           }
           this.mostrarConfirmacion('Error de Validación', errorMessage);
         }
