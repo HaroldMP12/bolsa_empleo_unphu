@@ -788,7 +788,7 @@ export class GestionCandidatosComponent implements OnInit, OnDestroy {
       console.log('Perfil cargado:', perfil);
       if (this.candidatoSeleccionado && perfil) {
         // Actualizar datos del usuario con información real del perfil
-        this.candidatoSeleccionado.usuario = {
+        (this.candidatoSeleccionado.usuario as any) = {
           ...this.candidatoSeleccionado.usuario,
           carrera: perfil.carrera?.nombreCarrera || 'No especificada',
           matricula: perfil.matricula || 'No disponible',
