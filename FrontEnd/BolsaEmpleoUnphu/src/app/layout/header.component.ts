@@ -174,10 +174,10 @@ import { NotificationBellComponent } from '../shared/components/notification-bel
       text-decoration: none;
       color: rgba(255,255,255,0.9);
       font-weight: 500;
-      padding: 0.6rem 1rem;
+      padding: 0.75rem 1.25rem;
       border-radius: 8px;
       transition: all 0.3s ease;
-      font-size: 0.9rem;
+      font-size: 1rem;
       position: relative;
     }
     .nav-item:hover {
@@ -191,7 +191,7 @@ import { NotificationBellComponent } from '../shared/components/notification-bel
       box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
     .nav-icon {
-      font-size: 1rem;
+      font-size: 1.1rem;
     }
     .admin-link {
       background: rgba(220, 53, 69, 0.9) !important;

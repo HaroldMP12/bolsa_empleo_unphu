@@ -1068,8 +1068,14 @@ export class VacantesComponent implements OnInit, OnDestroy {
       titulo.toLowerCase().includes(this.filtros.search.toLowerCase()) ||
       empresaNombre.toLowerCase().includes(this.filtros.search.toLowerCase());
     
+    const categoriaVacante = vacante.categoriaID || vacante.CategoriaID;
     const matchCategoria = !this.filtros.categoria || 
-      (vacante.categoriaID || vacante.CategoriaID)?.toString() === this.filtros.categoria.toString();
+      categoriaVacante?.toString() === this.filtros.categoria.toString();
+    
+    // Debug para categoría
+    if (this.filtros.categoria) {
+      console.log('Filtro categoría:', this.filtros.categoria, 'Vacante categoría:', categoriaVacante, 'Match:', matchCategoria);
+    }
     
     const matchModalidad = !this.filtros.modalidad || 
       (vacante.modalidad || vacante.Modalidad) === this.filtros.modalidad;
