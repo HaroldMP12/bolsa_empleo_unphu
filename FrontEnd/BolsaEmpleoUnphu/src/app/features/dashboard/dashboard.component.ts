@@ -761,42 +761,49 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.stats.vacantes = vacantes.length;
           this.stats.vacantesActivas = vacantes.filter((v: any) => new Date(v.FechaCierre || v.fechaCierre) > new Date()).length;
           
-          // Cargar postulaciones desde localStorage
-          const todasPostulaciones = JSON.parse(localStorage.getItem('postulaciones') || '[]');
-          const postulacionesEmpresa = [];
+          // Obtener postulaciones reales de la API
+          fetch(`https://localhost:7236/api/postulaciones`, {
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+          })
+          .then(res => res.json())
+          .then(postulacionesResponse => {
+            const todasPostulaciones = postulacionesResponse.data || postulacionesResponse || [];
+            const postulacionesEmpresa = todasPostulaciones.filter((p: any) => 
+              vacantes.some((v: any) => (v.vacanteID || v.VacanteID) === (p.vacanteID || p.VacanteID))
+            );
+            
+            this.stats.totalPostulaciones = postulacionesEmpresa.length;
           
-          for (const vacante of vacantes) {
-            const postulacionesVacante = todasPostulaciones.filter((p: any) => (p.vacanteID || p.VacanteID) === (vacante.vacanteID || vacante.VacanteID));
-            postulacionesEmpresa.push(...postulacionesVacante.map((p: any) => ({ 
-              ...p, 
-              vacanteTitulo: vacante.TituloVacante || vacante.tituloVacante 
-            })));
-          }
-          
-          this.stats.totalPostulaciones = postulacionesEmpresa.length;
-          
-          this.misVacantes = vacantes.slice(0, 3).map((v: any) => {
-            const postulacionesVacante = todasPostulaciones.filter((p: any) => (p.vacanteID || p.VacanteID) === (v.vacanteID || v.VacanteID));
-            return {
-              titulo: v.TituloVacante || v.tituloVacante,
-              postulaciones: postulacionesVacante.length
-            };
-          });
-          
-          // Cargar postulaciones recientes
-          this.postulacionesRecientes = postulacionesEmpresa
-            .sort((a: any, b: any) => new Date(b.fechaPostulacion).getTime() - new Date(a.fechaPostulacion).getTime())
-            .slice(0, 5)
-            .map((p: any) => {
-              const usuario = JSON.parse(localStorage.getItem('usuarios') || '[]')
-                .find((u: any) => u.usuarioID === p.usuarioID);
-              
+            this.misVacantes = vacantes.slice(0, 3).map((v: any) => {
+              const postulacionesVacante = postulacionesEmpresa.filter((p: any) => (p.vacanteID || p.VacanteID) === (v.vacanteID || v.VacanteID));
               return {
-                candidato: usuario?.nombreCompleto || 'Usuario UNPHU',
-                vacante: p.vacanteTitulo || 'Vacante',
-                fecha: this.getTimeAgo(new Date(p.fechaPostulacion))
+                titulo: v.TituloVacante || v.tituloVacante,
+                postulaciones: postulacionesVacante.length
               };
             });
+          
+            // Cargar postulaciones recientes
+            this.postulacionesRecientes = postulacionesEmpresa
+              .sort((a: any, b: any) => new Date(b.fechaPostulacion || b.FechaPostulacion).getTime() - new Date(a.fechaPostulacion || a.FechaPostulacion).getTime())
+              .slice(0, 5)
+              .map((p: any) => {
+                const vacante = vacantes.find((v: any) => (v.vacanteID || v.VacanteID) === (p.vacanteID || p.VacanteID));
+                return {
+                  candidato: 'Usuario UNPHU',
+                  vacante: vacante?.TituloVacante || vacante?.tituloVacante || 'Vacante',
+                  fecha: this.getTimeAgo(new Date(p.fechaPostulacion || p.FechaPostulacion))
+                };
+              });
+          })
+          .catch(error => {
+            console.error('Error al obtener postulaciones:', error);
+            this.stats.totalPostulaciones = 0;
+            this.misVacantes = vacantes.slice(0, 3).map((v: any) => ({
+              titulo: v.TituloVacante || v.tituloVacante,
+              postulaciones: 0
+            }));
+            this.postulacionesRecientes = [];
+          });
         });
       }
     });
