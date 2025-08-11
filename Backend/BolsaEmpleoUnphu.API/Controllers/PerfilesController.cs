@@ -108,6 +108,10 @@ public class PerfilesController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> PutPerfil(int id, UpdatePerfilDto perfilDto)
     {
+        Console.WriteLine($"=== ACTUALIZANDO PERFIL {id} ===");
+        Console.WriteLine($"UrlImagen recibida: {perfilDto.UrlImagen}");
+        Console.WriteLine($"UrlCV recibida: {perfilDto.UrlCV}");
+        
         if (id != perfilDto.PerfilID)
         {
             return BadRequest();
