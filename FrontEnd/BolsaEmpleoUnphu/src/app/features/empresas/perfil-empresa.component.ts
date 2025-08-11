@@ -748,52 +748,119 @@ export class PerfilEmpresaComponent implements OnInit, OnDestroy {
   }
   
   private calcularEstadisticasEmpresa(empresaID: number): void {
-    // Cargar desde localStorage (mismo método que perfil unificado)
-    const vacantes = JSON.parse(localStorage.getItem('vacantes') || '[]');
-    const postulaciones = JSON.parse(localStorage.getItem('postulaciones') || '[]');
+    console.log('Calculando estadísticas para empresa ID:', empresaID);
     
-    const vacantesEmpresa = vacantes.filter((v: any) => v.empresaID === empresaID);
-    const hoy = new Date();
-    const vacantesActivas = vacantesEmpresa.filter((v: any) => {
-      const fechaVencimiento = new Date(v.fechaVencimiento || v.fechaCierre);
-      return fechaVencimiento > hoy;
-    });
-    
-    const postulacionesEmpresa = postulaciones.filter((p: any) => 
-      vacantesEmpresa.some((v: any) => v.vacanteID === p.vacanteID)
-    );
-    
-    this.companyStats = {
-      totalVacantes: vacantesEmpresa.length,
-      vacantesActivas: vacantesActivas.length,
-      totalPostulaciones: postulacionesEmpresa.length
-    };
-    
-    this.promedioPostulaciones = this.companyStats.totalVacantes > 0 
-      ? Math.round(this.companyStats.totalPostulaciones / this.companyStats.totalVacantes)
-      : 0;
+    // Obtener vacantes reales de la API
+    fetch(`https://localhost:7236/api/vacantes/empresa/${empresaID}`, {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    })
+    .then(res => res.json())
+    .then(response => {
+      const vacantes = response.data || response || [];
+      console.log('Vacantes de la API:', vacantes);
       
-    console.log('Estadísticas sincronizadas:', this.companyStats);
+      const hoy = new Date();
+      const vacantesActivas = vacantes.filter((v: any) => {
+        const fechaVencimiento = new Date(v.fechaCierre);
+        return fechaVencimiento > hoy;
+      });
+      
+      // Obtener postulaciones reales de la API
+      fetch(`https://localhost:7236/api/postulaciones`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      })
+      .then(res => res.json())
+      .then(postulacionesResponse => {
+        const todasPostulaciones = postulacionesResponse.data || postulacionesResponse || [];
+        console.log('Todas las postulaciones de la API:', todasPostulaciones);
+        
+        // Filtrar postulaciones de esta empresa
+        const postulacionesEmpresa = todasPostulaciones.filter((p: any) => 
+          vacantes.some((v: any) => v.vacanteID === p.vacanteID)
+        );
+        
+        this.companyStats = {
+          totalVacantes: vacantes.length,
+          vacantesActivas: vacantesActivas.length,
+          totalPostulaciones: postulacionesEmpresa.length
+        };
+        
+        this.promedioPostulaciones = this.companyStats.totalVacantes > 0 
+          ? Math.round(this.companyStats.totalPostulaciones / this.companyStats.totalVacantes)
+          : 0;
+          
+        console.log('Estadísticas calculadas con datos reales:', this.companyStats);
+      })
+      .catch(error => {
+        console.error('Error al obtener postulaciones:', error);
+        // Fallback: solo mostrar estadísticas de vacantes
+        this.companyStats = {
+          totalVacantes: vacantes.length,
+          vacantesActivas: vacantesActivas.length,
+          totalPostulaciones: 0
+        };
+        this.promedioPostulaciones = 0;
+      });
+    })
+    .catch(error => {
+      console.error('Error al obtener vacantes:', error);
+      this.companyStats = {
+        totalVacantes: 0,
+        vacantesActivas: 0,
+        totalPostulaciones: 0
+      };
+      this.promedioPostulaciones = 0;
+    });
   }
   
   private cargarVacantesEmpresa(empresaID: number): void {
-    // Cargar vacantes desde localStorage para mostrar en la lista
-    const vacantes = JSON.parse(localStorage.getItem('vacantes') || '[]');
-    const postulaciones = JSON.parse(localStorage.getItem('postulaciones') || '[]');
-    
-    this.misVacantes = vacantes
-      .filter((v: any) => v.empresaID === empresaID)
-      .map((v: any) => {
-        const postulacionesVacante = postulaciones.filter((p: any) => p.vacanteID == v.vacanteID);
-        return {
-          ...v,
-          titulo: v.titulo || v.tituloVacante,
-          postulaciones: postulacionesVacante.length
-        };
-      });
+    // Obtener vacantes reales de la API para la lista
+    fetch(`https://localhost:7236/api/vacantes/empresa/${empresaID}`, {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    })
+    .then(res => res.json())
+    .then(response => {
+      const vacantes = response.data || response || [];
       
-    // Cargar postulaciones recientes
-    this.loadRecentApplications();
+      // Obtener postulaciones para contar por vacante
+      fetch(`https://localhost:7236/api/postulaciones`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      })
+      .then(res => res.json())
+      .then(postulacionesResponse => {
+        const todasPostulaciones = postulacionesResponse.data || postulacionesResponse || [];
+        
+        this.misVacantes = vacantes.map((v: any) => {
+          const postulacionesVacante = todasPostulaciones.filter((p: any) => p.vacanteID === v.vacanteID);
+          return {
+            ...v,
+            titulo: v.tituloVacante,
+            empresa: v.nombreEmpresa,
+            fechaVencimiento: v.fechaCierre,
+            postulaciones: postulacionesVacante.length
+          };
+        });
+        
+        // Cargar postulaciones recientes
+        this.loadRecentApplications();
+      })
+      .catch(error => {
+        console.error('Error al obtener postulaciones para vacantes:', error);
+        // Fallback: mostrar vacantes sin contar postulaciones
+        this.misVacantes = vacantes.map((v: any) => ({
+          ...v,
+          titulo: v.tituloVacante,
+          empresa: v.nombreEmpresa,
+          fechaVencimiento: v.fechaCierre,
+          postulaciones: 0
+        }));
+        this.loadRecentApplications();
+      });
+    })
+    .catch(error => {
+      console.error('Error al obtener vacantes de empresa:', error);
+      this.misVacantes = [];
+    });
   }
 
   private loadRecentApplications(): void {
