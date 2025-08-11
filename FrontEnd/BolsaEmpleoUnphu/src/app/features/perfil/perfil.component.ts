@@ -1546,9 +1546,12 @@ export class PerfilComponent implements OnInit {
     console.log('Datos completos:', perfilData);
 
     // Verificar si ya existe un perfil
+    console.log('Verificando perfil existente para usuario:', this.currentUser!.usuarioID);
     this.perfilService.obtenerPerfilEstudiante(this.currentUser!.usuarioID).subscribe({
       next: (perfilExistente) => {
-        console.log('Respuesta del servidor:', perfilExistente);
+        console.log('=== RESPUESTA OBTENER PERFIL ===');
+        console.log('Perfil existente:', perfilExistente);
+        console.log('Tiene perfilID?', perfilExistente?.perfilID);
         if (perfilExistente && perfilExistente.perfilID) {
           console.log('Actualizando perfil existente ID:', perfilExistente.perfilID);
           perfilData.perfilID = perfilExistente.perfilID;
@@ -1567,7 +1570,8 @@ export class PerfilComponent implements OnInit {
             }
           });
         } else {
-          console.log('Creando nuevo perfil');
+          console.log('=== CREANDO NUEVO PERFIL ===');
+          console.log('Datos para crear:', perfilData);
           this.perfilService.crearPerfilEstudiante(perfilData).subscribe({
             next: (response) => {
               console.log('=== PERFIL CREADO ===');
