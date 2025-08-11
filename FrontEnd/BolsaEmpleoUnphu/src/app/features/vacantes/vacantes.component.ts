@@ -1059,6 +1059,11 @@ export class VacantesComponent implements OnInit, OnDestroy {
   }
 
   aplicarFiltros(): void {
+    console.log('Aplicando filtros. Vacantes disponibles:', this.vacantes.length);
+    if (this.vacantes.length > 0) {
+      console.log('Primera vacante estructura:', this.vacantes[0]);
+    }
+    
     // Filtrar vacantes normales
     this.vacantesFiltradas = this.vacantes.filter(vacante => this.aplicarFiltroAVacante(vacante));
     
