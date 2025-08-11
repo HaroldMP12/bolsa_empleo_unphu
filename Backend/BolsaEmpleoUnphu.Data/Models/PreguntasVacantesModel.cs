@@ -18,6 +18,24 @@ public class PreguntasVacantesModel
     [Column("Pregunta", TypeName = "NVARCHAR(255)")]
     public string Pregunta { get; set; } = string.Empty;
     
+    [Required]
+    [StringLength(50)]
+    [Column("Tipo")]
+    public string Tipo { get; set; } = string.Empty;
+    
+    [Column("Requerida")]
+    public bool Requerida { get; set; } = false;
+    
+    [Column("Opciones", TypeName = "NVARCHAR(MAX)")]
+    public string? OpcionesJson { get; set; }
+    
+    [NotMapped]
+    public List<string>? Opciones 
+    {
+        get => string.IsNullOrEmpty(OpcionesJson) ? null : System.Text.Json.JsonSerializer.Deserialize<List<string>>(OpcionesJson);
+        set => OpcionesJson = value == null ? null : System.Text.Json.JsonSerializer.Serialize(value);
+    }
+    
     // Navegación
     [ForeignKey("VacanteID")]
     public virtual VacantesModel Vacante { get; set; } = null!;
