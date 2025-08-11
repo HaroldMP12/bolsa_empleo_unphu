@@ -993,14 +993,17 @@ export class VacantesComponent implements OnInit, OnDestroy {
   cargarVacantesRecomendadas(): void {
     this.apiService.get<any>('vacantes/recomendadas').subscribe({
       next: (vacantesData) => {
-        this.vacantesRecomendadasOriginales = vacantesData.map((v: any) => ({
-          ...v,
-          titulo: v.tituloVacante,
-          empresa: v.nombreEmpresa,
-          categoria: v.nombreCategoria,
-          fechaVencimiento: v.fechaCierre,
-          categoriaID: v.categoriaID || v.CategoriaID
-        }));
+        this.vacantesRecomendadasOriginales = vacantesData.map((v: any) => {
+          console.log('Vacante recomendada raw:', v);
+          return {
+            ...v,
+            titulo: v.tituloVacante,
+            empresa: v.nombreEmpresa,
+            categoria: v.nombreCategoria,
+            fechaVencimiento: v.fechaCierre,
+            categoriaID: v.categoriaID || v.CategoriaID
+          };
+        });
         this.vacantesRecomendadas = [...this.vacantesRecomendadasOriginales];
         
         // Obtener carrera del usuario para mostrar en la UI
@@ -1019,14 +1022,17 @@ export class VacantesComponent implements OnInit, OnDestroy {
       next: (response) => {
         const vacantesData = response.data || response || [];
         // Mapear los datos del backend al formato esperado por el frontend
-        this.vacantes = vacantesData.map((v: any) => ({
-          ...v,
-          titulo: v.tituloVacante,
-          empresa: v.nombreEmpresa,
-          categoria: v.nombreCategoria,
-          fechaVencimiento: v.fechaCierre,
-          categoriaID: v.categoriaID || v.CategoriaID
-        }));
+        this.vacantes = vacantesData.map((v: any) => {
+          console.log('Vacante normal raw:', v);
+          return {
+            ...v,
+            titulo: v.tituloVacante,
+            empresa: v.nombreEmpresa,
+            categoria: v.nombreCategoria,
+            fechaVencimiento: v.fechaCierre,
+            categoriaID: v.categoriaID || v.CategoriaID
+          };
+        });
         this.vacantesFiltradas = [...this.vacantes];
       },
       error: (error) => {
