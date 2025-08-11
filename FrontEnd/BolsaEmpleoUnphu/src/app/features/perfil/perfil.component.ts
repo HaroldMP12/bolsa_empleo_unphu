@@ -1240,12 +1240,16 @@ export class PerfilComponent implements OnInit {
       console.log('Cargando perfil de estudiante...');
       this.perfilService.obtenerPerfilEstudiante(this.currentUser.usuarioID).subscribe({
         next: (perfil) => {
+          console.log('Respuesta del servicio de perfil:', perfil);
           if (perfil && perfil.perfilID) {
+            console.log('Perfil encontrado, cargando datos...');
             this.populateStudentForm(perfil);
+          } else {
+            console.log('No se encontró perfil existente');
           }
         },
-        error: () => {
-          // No hay perfil existente, mantener formulario vacío
+        error: (error) => {
+          console.error('Error al cargar perfil:', error);
         }
       });
     } else if (this.isCompany()) {
@@ -1915,6 +1919,10 @@ export class PerfilComponent implements OnInit {
     this.showModal = false;
     if (this.modalType === 'success') {
       this.editMode = false;
+      // Recargar perfil después de guardar exitosamente
+      setTimeout(() => {
+        this.loadExistingProfile();
+      }, 500);
     }
   }
 
