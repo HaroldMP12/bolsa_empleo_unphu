@@ -17,7 +17,7 @@ import { Subscription } from 'rxjs';
       <div class="page-header">
         <div class="header-content">
           <div class="header-text">
-            <h1>Candidatos para: {{ vacanteTitulo }}</h1>
+            <h1>Candidatos para: {{ vacanteTitulo || 'Vacante' }}</h1>
             <p>Gestiona las postulaciones recibidas para esta vacante</p>
           </div>
           <div class="header-stats">
@@ -555,7 +555,9 @@ export class GestionCandidatosComponent implements OnInit, OnDestroy {
     // Get vacante title from data sync service
     const todasVacantes = this.dataSyncService.getVacantesValue();
     const vacante = todasVacantes.find((v: any) => v.vacanteID === this.vacanteId);
-    this.vacanteTitulo = vacante?.titulo || 'Vacante';
+    this.vacanteTitulo = vacante?.tituloVacante || vacante?.titulo || 'Vacante';
+    console.log('Vacante encontrada:', vacante);
+    console.log('Título asignado:', this.vacanteTitulo);
     
     // Get applications for this vacante
     const aplicaciones = this.dataSyncService.getVacanteApplications(this.vacanteId);
