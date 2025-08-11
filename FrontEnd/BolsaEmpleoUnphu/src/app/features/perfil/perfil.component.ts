@@ -1131,12 +1131,18 @@ export class PerfilComponent implements OnInit {
           console.log('Respuesta del servicio de empresa:', empresa);
           if (empresa && empresa.empresaID) {
             this.populateCompanyForm(empresa);
+            // Cargar estadísticas inmediatamente
+            this.cargarEstadisticasEmpresa(empresa.empresaID);
           } else {
             console.log('No se encontró perfil de empresa existente');
+            // Si no hay empresa en BD, intentar obtener desde API por usuarioID
+            this.obtenerEmpresaPorUsuario();
           }
         },
         error: (error) => {
           console.error('Error al cargar perfil de empresa:', error);
+          // Si hay error, intentar obtener desde API
+          this.obtenerEmpresaPorUsuario();
         }
       });
     } else {
@@ -1644,6 +1650,36 @@ export class PerfilComponent implements OnInit {
 
   verEstadisticasCompletas(): void {
     this.router.navigate(['/perfil-empresa']);
+  }
+
+  obtenerEmpresaPorUsuario(): void {
+    if (!this.currentUser) return;
+    
+    // Intentar obtener empresa por usuarioID desde la API
+    fetch(`https://localhost:7236/api/empresas/usuario/${this.currentUser.usuarioID}`, {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    })
+    .then(res => res.json())
+    .then(empresa => {
+      console.log('Empresa obtenida por usuarioID:', empresa);
+      if (empresa?.empresaID) {
+        this.cargarEstadisticasEmpresa(empresa.empresaID);
+        // Llenar formularios con datos de la empresa
+        this.empresaForm.patchValue({
+          nombreEmpresa: empresa.nombreEmpresa || '',
+          rnc: empresa.rnc || '',
+          sector: empresa.sector || '',
+          sitioWeb: empresa.sitioWeb || ''
+        });
+        this.contactoForm.patchValue({
+          telefono: empresa.telefonoEmpresa || '',
+          direccion: empresa.direccion || ''
+        });
+      }
+    })
+    .catch(error => {
+      console.error('Error al obtener empresa:', error);
+    });
   }
 
   cancelar(): void {
