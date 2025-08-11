@@ -1323,6 +1323,7 @@ export class VacantesComponent implements OnInit, OnDestroy {
         
         console.log('Datos a enviar al backend:', JSON.stringify(vacanteData, null, 2));
         console.log('Preguntas específicamente:', vacanteData.Preguntas);
+        console.log('Enviando petición al backend...');
         
         this.crearOActualizarVacante(vacanteData);
       },
@@ -1364,6 +1365,7 @@ export class VacantesComponent implements OnInit, OnDestroy {
       });
     } else {
       // Crear nueva vacante
+      console.log('Ejecutando POST a /api/vacantes');
       this.apiService.post('vacantes', vacanteData).subscribe({
         next: (response) => {
           console.log('Respuesta del backend al crear vacante:', response);
