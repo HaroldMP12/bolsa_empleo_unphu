@@ -1302,11 +1302,13 @@ export class PerfilComponent implements OnInit {
     }
     
     if (perfil.urlCV) {
-      this.cvSeleccionado = this.getFileUrl(perfil.urlCV);
+      this.cvSeleccionado = perfil.urlCV.startsWith('/uploads/') ? `https://localhost:7236${perfil.urlCV}` : perfil.urlCV;
+      console.log('CV cargado desde BD:', perfil.urlCV, '-> URL final:', this.cvSeleccionado);
     }
     
     if (perfil.urlImagen) {
-      this.fotoSeleccionada = this.getImageUrl(perfil.urlImagen);
+      this.fotoSeleccionada = perfil.urlImagen.startsWith('/uploads/') ? `https://localhost:7236${perfil.urlImagen}` : perfil.urlImagen;
+      console.log('Foto cargada desde BD:', perfil.urlImagen, '-> URL final:', this.fotoSeleccionada);
     }
     
     // Cargar descripción personal
