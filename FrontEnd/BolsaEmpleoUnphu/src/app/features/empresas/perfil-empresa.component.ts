@@ -779,7 +779,7 @@ export class PerfilEmpresaComponent implements OnInit, OnDestroy {
       
       const hoy = new Date();
       const vacantesActivas = vacantes.filter((v: any) => {
-        const fechaVencimiento = new Date(v.fechaCierre);
+        const fechaVencimiento = new Date(v.FechaCierre || v.fechaCierre);
         return fechaVencimiento > hoy;
       });
       
@@ -794,7 +794,7 @@ export class PerfilEmpresaComponent implements OnInit, OnDestroy {
         
         // Filtrar postulaciones de esta empresa
         const postulacionesEmpresa = todasPostulaciones.filter((p: any) => 
-          vacantes.some((v: any) => v.vacanteID === p.vacanteID)
+          vacantes.some((v: any) => (v.vacanteID || v.VacanteID) === (p.vacanteID || p.VacanteID))
         );
         
         this.companyStats = {
@@ -849,14 +849,15 @@ export class PerfilEmpresaComponent implements OnInit, OnDestroy {
         const todasPostulaciones = postulacionesResponse.data || postulacionesResponse || [];
         
         this.misVacantes = vacantes.map((v: any) => {
-          const postulacionesVacante = todasPostulaciones.filter((p: any) => p.vacanteID === v.vacanteID);
+          const postulacionesVacante = todasPostulaciones.filter((p: any) => (p.vacanteID || p.VacanteID) === (v.vacanteID || v.VacanteID));
           return {
             ...v,
-            titulo: v.tituloVacante,
-            tituloVacante: v.tituloVacante,
-            empresa: v.nombreEmpresa,
-            fechaVencimiento: v.fechaCierre,
-            postulaciones: postulacionesVacante.length
+            titulo: v.TituloVacante || v.tituloVacante,
+            tituloVacante: v.TituloVacante || v.tituloVacante,
+            empresa: v.NombreEmpresa || v.nombreEmpresa,
+            fechaVencimiento: v.FechaCierre || v.fechaCierre,
+            postulaciones: postulacionesVacante.length,
+            vacanteID: v.VacanteID || v.vacanteID
           };
         });
         

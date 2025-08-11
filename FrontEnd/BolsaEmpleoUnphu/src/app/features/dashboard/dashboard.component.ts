@@ -759,26 +759,26 @@ export class DashboardComponent implements OnInit, OnDestroy {
           const vacantes = response.data || response || [];
           
           this.stats.vacantes = vacantes.length;
-          this.stats.vacantesActivas = vacantes.filter((v: any) => new Date(v.fechaCierre) > new Date()).length;
+          this.stats.vacantesActivas = vacantes.filter((v: any) => new Date(v.FechaCierre || v.fechaCierre) > new Date()).length;
           
           // Cargar postulaciones desde localStorage
           const todasPostulaciones = JSON.parse(localStorage.getItem('postulaciones') || '[]');
           const postulacionesEmpresa = [];
           
           for (const vacante of vacantes) {
-            const postulacionesVacante = todasPostulaciones.filter((p: any) => p.vacanteID == vacante.vacanteID);
+            const postulacionesVacante = todasPostulaciones.filter((p: any) => (p.vacanteID || p.VacanteID) === (vacante.vacanteID || vacante.VacanteID));
             postulacionesEmpresa.push(...postulacionesVacante.map((p: any) => ({ 
               ...p, 
-              vacanteTitulo: vacante.tituloVacante 
+              vacanteTitulo: vacante.TituloVacante || vacante.tituloVacante 
             })));
           }
           
           this.stats.totalPostulaciones = postulacionesEmpresa.length;
           
           this.misVacantes = vacantes.slice(0, 3).map((v: any) => {
-            const postulacionesVacante = todasPostulaciones.filter((p: any) => p.vacanteID == v.vacanteID);
+            const postulacionesVacante = todasPostulaciones.filter((p: any) => (p.vacanteID || p.VacanteID) === (v.vacanteID || v.VacanteID));
             return {
-              titulo: v.tituloVacante,
+              titulo: v.TituloVacante || v.tituloVacante,
               postulaciones: postulacionesVacante.length
             };
           });
