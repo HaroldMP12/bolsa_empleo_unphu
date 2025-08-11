@@ -14,13 +14,8 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
           <button class="close-btn" (click)="close()">✕</button>
         </div>
         <div class="modal-body">
-          <!-- Debug info -->
-          <div style="position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.7); color: white; padding: 5px; font-size: 12px; z-index: 1000;">
-            Type: {{ fileType }} | URL: {{ fileUrl.substring(0, 50) }}...
-          </div>
-          
           <!-- Preview de imagen -->
-          <img *ngIf="fileType === 'image'" [src]="fileUrl" [alt]="title" class="preview-image" (error)="onImageError($event)">
+          <img *ngIf="fileType === 'image'" [src]="fileUrl" [alt]="title" class="preview-image">
           
           <!-- Preview de PDF -->
           <iframe *ngIf="fileType === 'pdf'" [src]="getSafeUrl()" class="preview-pdf" frameborder="0"></iframe>

@@ -24,8 +24,11 @@ import { FileService } from '../../core/services/file.service';
               <img *ngIf="fotoSeleccionada" [src]="getImageUrl(fotoSeleccionada)" alt="Foto de perfil" class="avatar-image">
               <span *ngIf="!fotoSeleccionada" class="avatar-initials">{{ getInitials() }}</span>
             </div>
-            <button class="avatar-edit-btn" (click)="editarFoto()">
+            <button class="avatar-edit-btn" (click)="editarFoto()" *ngIf="editMode">
               <span>📷</span>
+            </button>
+            <button class="avatar-delete-btn" (click)="eliminarFoto()" *ngIf="editMode && fotoSeleccionada" title="Eliminar foto">
+              <span>🗑️</span>
             </button>
           </div>
           <div class="profile-info">
@@ -861,6 +864,26 @@ import { FileService } from '../../core/services/file.service';
     }
     .btn-preview:hover {
       background: #0a2a3f;
+    }
+    .avatar-delete-btn {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #dc3545;
+      border: 3px solid white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      transition: all 0.3s;
+    }
+    .avatar-delete-btn:hover {
+      transform: scale(1.1);
+      background: #c82333;
     }
     .document-item:last-child {
       margin-bottom: 0;
@@ -1832,11 +1855,13 @@ export class PerfilComponent implements OnInit {
 
   mostrarPreviewCV(): void {
     if (this.cvSeleccionado) {
-      console.log('Mostrando preview CV:', this.cvSeleccionado);
+      console.log('CV seleccionado para preview:', this.cvSeleccionado);
+      console.log('Foto seleccionada actual:', this.fotoSeleccionada);
       this.previewFileUrl = this.cvSeleccionado;
       this.previewFileType = 'pdf';
       this.previewTitle = 'Curriculum Vitae';
       this.showPreviewModal = true;
+      console.log('Modal configurado - URL:', this.previewFileUrl, 'Tipo:', this.previewFileType);
     }
   }
 
@@ -1853,6 +1878,11 @@ export class PerfilComponent implements OnInit {
   cerrarPreviewModal(): void {
     this.showPreviewModal = false;
     this.previewFileUrl = '';
+  }
+
+  eliminarFoto(): void {
+    this.fotoSeleccionada = '';
+    this.toastService.showSuccess('Foto eliminada');
   }
 
   getImageUrl(fileName: string): string {
