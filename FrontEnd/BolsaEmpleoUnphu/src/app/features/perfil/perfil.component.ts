@@ -1528,10 +1528,12 @@ export class PerfilComponent implements OnInit {
       telefono: this.personalForm.get('telefono')?.value || null
     };
     
-    console.log('Datos a enviar:', perfilData);
-    console.log('Personal form values:', this.personalForm.value);
-    console.log('Experiencias:', this.experiencias);
-    console.log('Archivos:', { foto: this.fotoSeleccionada, cv: this.cvSeleccionado });
+    console.log('=== DATOS A GUARDAR ===');
+    console.log('Foto seleccionada:', this.fotoSeleccionada);
+    console.log('CV seleccionado:', this.cvSeleccionado);
+    console.log('URL imagen a guardar:', perfilData.urlImagen);
+    console.log('URL CV a guardar:', perfilData.urlCV);
+    console.log('Datos completos:', perfilData);
 
     // Verificar si ya existe un perfil
     this.perfilService.obtenerPerfilEstudiante(this.currentUser!.usuarioID).subscribe({
@@ -1542,10 +1544,10 @@ export class PerfilComponent implements OnInit {
           perfilData.perfilID = perfilExistente.perfilID;
           this.perfilService.actualizarPerfilEstudiante(perfilExistente.perfilID, perfilData).subscribe({
             next: (response) => {
-              console.log('Perfil actualizado exitosamente:', response);
+              console.log('=== PERFIL ACTUALIZADO ===');
+              console.log('Respuesta del servidor:', response);
               this.guardando = false;
-              // Recargar el perfil actualizado
-              this.loadExistingProfile();
+              this.editMode = false;
               this.showModalMessage('success', '¡Perfil Actualizado!', 'Tu perfil ha sido actualizado correctamente');
             },
             error: (error) => {
@@ -1558,10 +1560,10 @@ export class PerfilComponent implements OnInit {
           console.log('Creando nuevo perfil');
           this.perfilService.crearPerfilEstudiante(perfilData).subscribe({
             next: (response) => {
-              console.log('Perfil creado exitosamente:', response);
+              console.log('=== PERFIL CREADO ===');
+              console.log('Respuesta del servidor:', response);
               this.guardando = false;
-              // Recargar el perfil creado
-              this.loadExistingProfile();
+              this.editMode = false;
               this.showModalMessage('success', '¡Perfil Creado!', 'Tu perfil ha sido creado correctamente');
             },
             error: (error) => {
