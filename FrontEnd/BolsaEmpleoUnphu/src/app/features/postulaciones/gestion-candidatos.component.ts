@@ -125,10 +125,10 @@ import { Subscription } from 'rxjs';
                 <div class="documento-item">
                   <span class="label">Foto de Perfil:</span>
                   <div class="foto-perfil">
-                    <img *ngIf="(candidatoSeleccionado.usuario as any)?.fotoPerfil" 
-                         [src]="(candidatoSeleccionado.usuario as any).fotoPerfil" 
+                    <img *ngIf="getUserProperty(candidatoSeleccionado.usuario, 'fotoPerfil')" 
+                         [src]="getUserProperty(candidatoSeleccionado.usuario, 'fotoPerfil')" 
                          alt="Foto de perfil" class="foto-img">
-                    <div *ngIf="!(candidatoSeleccionado.usuario as any)?.fotoPerfil" class="no-disponible">
+                    <div *ngIf="!getUserProperty(candidatoSeleccionado.usuario, 'fotoPerfil')" class="no-disponible">
                       📷 No disponible
                     </div>
                   </div>
@@ -136,13 +136,13 @@ import { Subscription } from 'rxjs';
                 <div class="documento-item">
                   <span class="label">Currículum Vitae:</span>
                   <div class="cv-section">
-                    <a *ngIf="(candidatoSeleccionado.usuario as any)?.cv" 
-                       [href]="(candidatoSeleccionado.usuario as any).cv" 
+                    <a *ngIf="getUserProperty(candidatoSeleccionado.usuario, 'cv')" 
+                       [href]="getUserProperty(candidatoSeleccionado.usuario, 'cv')" 
                        target="_blank" 
                        class="btn-cv">
                       📄 Ver CV
                     </a>
-                    <div *ngIf="!(candidatoSeleccionado.usuario as any)?.cv" class="no-disponible">
+                    <div *ngIf="!getUserProperty(candidatoSeleccionado.usuario, 'cv')" class="no-disponible">
                       📄 No disponible
                     </div>
                   </div>
@@ -203,15 +203,15 @@ import { Subscription } from 'rxjs';
               <div class="info-grid">
                 <div class="info-item">
                   <span class="label">Matrícula:</span>
-                  <span>{{ (candidatoSeleccionado.usuario as any)?.matricula || 'No disponible' }}</span>
+                  <span>{{ getUserProperty(candidatoSeleccionado.usuario, 'matricula') || 'No disponible' }}</span>
                 </div>
                 <div class="info-item">
                   <span class="label">Semestre:</span>
-                  <span>{{ (candidatoSeleccionado.usuario as any)?.semestre || 'No disponible' }}</span>
+                  <span>{{ getUserProperty(candidatoSeleccionado.usuario, 'semestre') || 'No disponible' }}</span>
                 </div>
                 <div class="info-item">
                   <span class="label">Promedio:</span>
-                  <span>{{ (candidatoSeleccionado.usuario as any)?.promedio || 'No disponible' }}</span>
+                  <span>{{ getUserProperty(candidatoSeleccionado.usuario, 'promedio') || 'No disponible' }}</span>
                 </div>
               </div>
             </div>
@@ -771,5 +771,9 @@ export class GestionCandidatosComponent implements OnInit, OnDestroy {
         console.error('Error al enviar mensaje:', error);
       }
     });
+  }
+
+  getUserProperty(usuario: any, property: string): any {
+    return usuario && usuario[property] ? usuario[property] : null;
   }
 }
