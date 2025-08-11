@@ -729,47 +729,71 @@ export class PerfilEmpresaComponent implements OnInit, OnDestroy {
   private loadCompanyData(): void {
     if (!this.currentUser) return;
     
-    // Cargar vacantes desde la API
+    // Obtener empresa del usuario
     this.authService.currentUser$.subscribe(user => {
       if (user) {
-        // Obtener empresa del usuario
         fetch(`https://localhost:7236/api/empresas/usuario/${user.usuarioID}`, {
           headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
         })
         .then(res => res.json())
         .then(empresa => {
           if (empresa?.empresaID) {
-            // Obtener vacantes de la empresa
-            fetch(`https://localhost:7236/api/vacantes/empresa/${empresa.empresaID}`, {
-              headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-            })
-            .then(res => res.json())
-            .then(response => {
-              const vacantes = response.data || response || [];
-              this.misVacantes = vacantes.map((v: any) => ({
-                ...v,
-                titulo: v.tituloVacante,
-                empresa: v.nombreEmpresa,
-                fechaVencimiento: v.fechaCierre
-              }));
-              
-              this.companyStats = {
-                totalVacantes: vacantes.length,
-                vacantesActivas: vacantes.filter((v: any) => new Date(v.fechaCierre) > new Date()).length,
-                totalPostulaciones: vacantes.reduce((sum: number, v: any) => sum + (v.totalPostulaciones || 0), 0)
-              };
-              
-              this.promedioPostulaciones = this.companyStats.totalVacantes > 0 
-                ? Math.round(this.companyStats.totalPostulaciones / this.companyStats.totalVacantes)
-                : 0;
-              
-              // Cargar postulaciones recientes después de tener las vacantes
-              this.loadRecentApplications();
-            });
+            // Usar el mismo método de cálculo que el perfil unificado
+            this.calcularEstadisticasEmpresa(empresa.empresaID);
+            this.cargarVacantesEmpresa(empresa.empresaID);
           }
         });
       }
     });
+  }
+  
+  private calcularEstadisticasEmpresa(empresaID: number): void {
+    // Cargar desde localStorage (mismo método que perfil unificado)
+    const vacantes = JSON.parse(localStorage.getItem('vacantes') || '[]');
+    const postulaciones = JSON.parse(localStorage.getItem('postulaciones') || '[]');
+    
+    const vacantesEmpresa = vacantes.filter((v: any) => v.empresaID === empresaID);
+    const hoy = new Date();
+    const vacantesActivas = vacantesEmpresa.filter((v: any) => {
+      const fechaVencimiento = new Date(v.fechaVencimiento || v.fechaCierre);
+      return fechaVencimiento > hoy;
+    });
+    
+    const postulacionesEmpresa = postulaciones.filter((p: any) => 
+      vacantesEmpresa.some((v: any) => v.vacanteID === p.vacanteID)
+    );
+    
+    this.companyStats = {
+      totalVacantes: vacantesEmpresa.length,
+      vacantesActivas: vacantesActivas.length,
+      totalPostulaciones: postulacionesEmpresa.length
+    };
+    
+    this.promedioPostulaciones = this.companyStats.totalVacantes > 0 
+      ? Math.round(this.companyStats.totalPostulaciones / this.companyStats.totalVacantes)
+      : 0;
+      
+    console.log('Estadísticas sincronizadas:', this.companyStats);
+  }
+  
+  private cargarVacantesEmpresa(empresaID: number): void {
+    // Cargar vacantes desde localStorage para mostrar en la lista
+    const vacantes = JSON.parse(localStorage.getItem('vacantes') || '[]');
+    const postulaciones = JSON.parse(localStorage.getItem('postulaciones') || '[]');
+    
+    this.misVacantes = vacantes
+      .filter((v: any) => v.empresaID === empresaID)
+      .map((v: any) => {
+        const postulacionesVacante = postulaciones.filter((p: any) => p.vacanteID == v.vacanteID);
+        return {
+          ...v,
+          titulo: v.titulo || v.tituloVacante,
+          postulaciones: postulacionesVacante.length
+        };
+      });
+      
+    // Cargar postulaciones recientes
+    this.loadRecentApplications();
   }
 
   private loadRecentApplications(): void {
