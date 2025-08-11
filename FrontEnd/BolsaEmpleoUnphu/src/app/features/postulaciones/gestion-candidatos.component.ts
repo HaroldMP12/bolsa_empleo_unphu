@@ -741,6 +741,7 @@ export class GestionCandidatosComponent implements OnInit, OnDestroy {
 
   verPerfil(postulacion: Postulacion): void {
     this.candidatoSeleccionado = postulacion;
+    this.cargarPerfilCompleto(postulacion.usuarioID);
     this.mostrarModalPerfil = true;
   }
   
@@ -775,5 +776,31 @@ export class GestionCandidatosComponent implements OnInit, OnDestroy {
 
   getUserProperty(usuario: any, property: string): any {
     return usuario && usuario[property] ? usuario[property] : null;
+  }
+
+  cargarPerfilCompleto(usuarioID: number): void {
+    // Cargar perfil del estudiante desde la API
+    fetch(`https://localhost:7236/api/perfiles/usuario/${usuarioID}`, {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    })
+    .then(res => res.json())
+    .then(perfil => {
+      console.log('Perfil cargado:', perfil);
+      if (this.candidatoSeleccionado && perfil) {
+        // Actualizar datos del usuario con información real del perfil
+        this.candidatoSeleccionado.usuario = {
+          ...this.candidatoSeleccionado.usuario,
+          carrera: perfil.carrera?.nombreCarrera || 'No especificada',
+          matricula: perfil.matricula || 'No disponible',
+          semestre: perfil.semestre || 'No disponible',
+          promedio: perfil.promedio || 'No disponible',
+          fotoPerfil: perfil.fotoPerfil,
+          cv: perfil.cv
+        };
+      }
+    })
+    .catch(error => {
+      console.error('Error cargando perfil:', error);
+    });
   }
 }
