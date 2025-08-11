@@ -34,7 +34,7 @@ public class ArchivosController : ControllerBase
             return BadRequest("Formato de archivo no permitido. Solo se permiten: PDF, DOC, DOCX");
 
         var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        var uploadsPath = Path.Combine(_environment.WebRootPath ?? _environment.ContentRootPath, "uploads", "cvs");
+        var uploadsPath = Path.Combine(_environment.ContentRootPath, "uploads", "cvs");
         
         if (!Directory.Exists(uploadsPath))
             Directory.CreateDirectory(uploadsPath);
@@ -71,7 +71,7 @@ public class ArchivosController : ControllerBase
             return BadRequest("Formato de imagen no permitido. Solo se permiten: JPG, JPEG, PNG, GIF");
 
         var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        var uploadsPath = Path.Combine(_environment.WebRootPath ?? _environment.ContentRootPath, "uploads", "perfiles");
+        var uploadsPath = Path.Combine(_environment.ContentRootPath, "uploads", "perfiles");
         
         if (!Directory.Exists(uploadsPath))
             Directory.CreateDirectory(uploadsPath);
@@ -109,7 +109,7 @@ public class ArchivosController : ControllerBase
             return BadRequest("Formato de imagen no permitido. Solo se permiten: JPG, JPEG, PNG, GIF");
 
         var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        var uploadsPath = Path.Combine(_environment.WebRootPath ?? _environment.ContentRootPath, "uploads", "empresas");
+        var uploadsPath = Path.Combine(_environment.ContentRootPath, "uploads", "empresas");
         
         if (!Directory.Exists(uploadsPath))
             Directory.CreateDirectory(uploadsPath);
@@ -139,7 +139,7 @@ public class ArchivosController : ControllerBase
         if (!tiposPermitidos.Contains(tipo))
             return BadRequest("Tipo de archivo no válido");
 
-        var uploadsPath = Path.Combine(_environment.WebRootPath ?? _environment.ContentRootPath, "uploads", tipo);
+        var uploadsPath = Path.Combine(_environment.ContentRootPath, "uploads", tipo);
         var filePath = Path.Combine(uploadsPath, nombreArchivo);
 
         if (!System.IO.File.Exists(filePath))

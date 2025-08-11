@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json.Serialization;
+using Microsoft.Extensions.FileProviders;
 
 namespace BolsaEmpleoUnphu.API
 {
@@ -147,6 +148,14 @@ namespace BolsaEmpleoUnphu.API
             
             // Configurar archivos estáticos
             app.UseStaticFiles();
+            
+            // Configurar archivos estáticos para uploads
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(
+                    Path.Combine(builder.Environment.ContentRootPath, "uploads")),
+                RequestPath = "/uploads"
+            });
             
             app.UseAuthentication();
             app.UseAuthorization();
