@@ -371,6 +371,11 @@ import { Router } from '@angular/router';
                     <div class="stat-label">Candidatos Pendientes</div>
                   </div>
                 </div>
+                <div class="stats-footer">
+                  <button class="btn-stats-detail" (click)="verEstadisticasCompletas()">
+                    📊 Ver Estadísticas Completas
+                  </button>
+                </div>
               </div>
             </div>
             
@@ -765,6 +770,27 @@ import { Router } from '@angular/router';
       font-size: 0.875rem;
       color: #666;
       font-weight: 500;
+    }
+    .stats-footer {
+      margin-top: 1rem;
+      text-align: center;
+      border-top: 1px solid #e0e0e0;
+      padding-top: 1rem;
+    }
+    .btn-stats-detail {
+      background: var(--unphu-blue-dark);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s;
+      font-size: 0.9rem;
+    }
+    .btn-stats-detail:hover {
+      background: #0a2a3f;
+      transform: translateY(-1px);
     }
     
     /* DOCUMENTS */
@@ -1614,6 +1640,10 @@ export class PerfilComponent implements OnInit {
     };
     
     console.log('Estadísticas cargadas:', this.estadisticasEmpresa);
+  }
+
+  verEstadisticasCompletas(): void {
+    this.router.navigate(['/perfil-empresa']);
   }
 
   cancelar(): void {
