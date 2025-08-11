@@ -1058,7 +1058,7 @@ export class VacantesComponent implements OnInit, OnDestroy {
     this.vacantesRecomendadas = this.vacantesRecomendadas.filter(vacante => this.aplicarFiltroAVacante(vacante));
   }
   
-  private aplicarFiltroAVacante(vacante: Vacante): boolean {
+  private aplicarFiltroAVacante(vacante: any): boolean {
     const titulo = vacante.titulo || vacante.tituloVacante || '';
     const empresaNombre = this.getEmpresaNombre(vacante.empresa);
     
