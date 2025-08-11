@@ -990,6 +990,8 @@ export class VacantesComponent implements OnInit, OnDestroy {
   cargarVacantesRecomendadas(): void {
     this.apiService.get<any>('vacantes/recomendadas').subscribe({
       next: (vacantesData) => {
+        console.log('Total vacantes recomendadas:', vacantesData.length);
+        console.log('Empresas en recomendadas:', [...new Set(vacantesData.map((v: any) => v.nombreEmpresa))]);
         this.vacantesRecomendadasOriginales = vacantesData.map((v: any) => ({
           ...v,
           titulo: v.tituloVacante,
@@ -1005,6 +1007,7 @@ export class VacantesComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         console.error('Error al cargar recomendaciones:', error);
+        // Si falla las recomendaciones, usar vacantes normales como fallback
         this.vacantesRecomendadas = [];
         this.vacantesRecomendadasOriginales = [];
       }
@@ -1012,9 +1015,11 @@ export class VacantesComponent implements OnInit, OnDestroy {
   }
 
   cargarTodasLasVacantes(): void {
-    this.apiService.get<any>('vacantes').subscribe({
+    this.apiService.get<any>('vacantes?pageSize=1000').subscribe({
       next: (response) => {
         const vacantesData = response.data || response || [];
+        console.log('Total vacantes cargadas para estudiantes:', vacantesData.length);
+        console.log('Empresas con vacantes:', [...new Set(vacantesData.map((v: any) => v.nombreEmpresa))]);
         // Mapear los datos del backend al formato esperado por el frontend
         this.vacantes = vacantesData.map((v: any) => ({
           ...v,
