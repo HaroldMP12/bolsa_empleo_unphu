@@ -41,11 +41,7 @@ import { Subscription } from 'rxjs';
             <label>Categoría</label>
             <select [(ngModel)]="filtros.categoria" (change)="aplicarFiltros()" class="form-control">
               <option value="">Todas las categorías</option>
-              <option value="1">Tecnología</option>
-              <option value="2">Administración</option>
-              <option value="3">Contabilidad</option>
-              <option value="4">Mercadeo</option>
-              <option value="5">Derecho</option>
+              <option *ngFor="let categoria of categorias" [value]="categoria.categoriaID">{{ categoria.nombreCategoria }}</option>
             </select>
           </div>
           <div class="filtro-item">
@@ -886,6 +882,7 @@ export class VacantesComponent implements OnInit, OnDestroy {
   vacantesRecomendadasOriginales: Vacante[] = [];
   carreraUsuario = '';
   filtros: VacanteFiltros = {};
+  categorias: any[] = [];
   
   mostrarModal = false;
   mostrarModalPostulacion = false;
@@ -923,6 +920,7 @@ export class VacantesComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const userSub = this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
+      this.cargarCategorias();
       this.cargarVacantes();
     });
     this.subscriptions.push(userSub);
@@ -1413,14 +1411,20 @@ export class VacantesComponent implements OnInit, OnDestroy {
   }
   
   getCategoriaIdByName(nombreCategoria: string): number | null {
-    const categorias: {[key: string]: number} = {
-      'Tecnología': 1,
-      'Administración': 2,
-      'Contabilidad': 3,
-      'Mercadeo': 4,
-      'Derecho': 5
-    };
-    return categorias[nombreCategoria] || null;
+    const categoria = this.categorias.find(c => c.nombreCategoria === nombreCategoria);
+    return categoria ? categoria.categoriaID : null;
+  }
+  
+  cargarCategorias(): void {
+    this.apiService.get<any>('categorias').subscribe({
+      next: (response) => {
+        this.categorias = response.data || response || [];
+      },
+      error: (error) => {
+        console.error('Error al cargar categorías:', error);
+        this.categorias = [];
+      }
+    });
   }
 
   cerrarModal(): void {
