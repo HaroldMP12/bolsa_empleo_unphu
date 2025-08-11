@@ -1267,11 +1267,11 @@ export class PerfilComponent implements OnInit {
     }
     
     if (perfil.urlCV) {
-      this.cvSeleccionado = perfil.urlCV;
+      this.cvSeleccionado = this.getFileUrl(perfil.urlCV);
     }
     
     if (perfil.urlImagen) {
-      this.fotoSeleccionada = perfil.urlImagen;
+      this.fotoSeleccionada = this.getImageUrl(perfil.urlImagen);
     }
     
     // Cargar descripción personal
@@ -1395,23 +1395,51 @@ export class PerfilComponent implements OnInit {
       
       // Crear URL temporal para preview inmediato
       const fileUrl = URL.createObjectURL(file);
-      console.log('Archivo seleccionado:', file.name, 'URL temporal:', fileUrl);
       
-      // Asignar URL temporal inmediatamente para preview
-      switch (tipo) {
-        case 'foto':
-          this.fotoSeleccionada = fileUrl;
-          break;
-        case 'cv':
-          this.cvSeleccionado = fileUrl;
-          break;
-        case 'logo':
-          this.logoSeleccionado = fileUrl;
-          break;
-        case 'portada':
-          this.portadaSeleccionada = fileUrl;
-          break;
-      }
+      // Subir archivo al servidor
+      const tipoUpload = tipo === 'foto' ? 'perfil' : tipo === 'logo' ? 'empresa' : 'cv';
+      
+      this.fileService.uploadFile(file, tipoUpload as 'cv' | 'perfil' | 'empresa').subscribe({
+        next: (response) => {
+          const serverUrl = response.url;
+          
+          switch (tipo) {
+            case 'foto':
+              this.fotoSeleccionada = serverUrl;
+              break;
+            case 'cv':
+              this.cvSeleccionado = serverUrl;
+              break;
+            case 'logo':
+              this.logoSeleccionado = serverUrl;
+              break;
+            case 'portada':
+              this.portadaSeleccionada = serverUrl;
+              break;
+          }
+          
+          this.toastService.showSuccess('Archivo subido exitosamente');
+        },
+        error: (error) => {
+          // Usar URL temporal como fallback
+          switch (tipo) {
+            case 'foto':
+              this.fotoSeleccionada = fileUrl;
+              break;
+            case 'cv':
+              this.cvSeleccionado = fileUrl;
+              break;
+            case 'logo':
+              this.logoSeleccionado = fileUrl;
+              break;
+            case 'portada':
+              this.portadaSeleccionada = fileUrl;
+              break;
+          }
+          
+          this.toastService.showError('Error al subir archivo, usando preview temporal');
+        }
+      });
     }
   }
 
