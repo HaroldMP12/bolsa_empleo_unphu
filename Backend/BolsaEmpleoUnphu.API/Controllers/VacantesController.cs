@@ -38,6 +38,7 @@ public class VacantesController : ControllerBase
         var query = _context.Vacantes
             .Include(v => v.Empresa)
             .Include(v => v.Categoria)
+            .Include(v => v.PreguntasVacantes)
             .Where(v => v.FechaCierre > DateTime.Now) // Solo vacantes activas
             .AsQueryable();
 
@@ -278,6 +279,7 @@ public class VacantesController : ControllerBase
         var query = _context.Vacantes
             .Include(v => v.Empresa)
             .Include(v => v.Categoria)
+            .Include(v => v.PreguntasVacantes)
             .Where(v => v.FechaCierre > DateTime.Now)
             .AsQueryable();
 
@@ -314,6 +316,7 @@ public class VacantesController : ControllerBase
         var query = _context.Vacantes
             .Include(v => v.Empresa)
             .Include(v => v.Categoria)
+            .Include(v => v.PreguntasVacantes)
             .Where(v => v.EmpresaID == empresaId)
             .AsQueryable();
 

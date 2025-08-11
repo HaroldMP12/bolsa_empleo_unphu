@@ -54,6 +54,7 @@ public class RecomendacionService : IRecomendacionService
         var vacantesRecomendadas = await _context.Vacantes
             .Include(v => v.Empresa)
             .Include(v => v.Categoria)
+            .Include(v => v.PreguntasVacantes)
             .Where(v => categoriasRecomendadas.Contains(v.CategoriaID) && 
                        v.FechaCierre > DateTime.Now)
             .OrderByDescending(v => v.FechaPublicacion)
