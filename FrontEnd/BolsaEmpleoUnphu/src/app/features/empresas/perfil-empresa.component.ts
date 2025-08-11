@@ -152,7 +152,7 @@ import { FileService } from '../../core/services/file.service';
     <div *ngIf="mostrarModalCandidatos" class="modal-overlay" (click)="cerrarModalCandidatos()">
       <div class="modal-content" (click)="$event.stopPropagation()">
         <div class="modal-header">
-          <h2>Candidatos - {{ vacanteSeleccionada?.tituloVacante || vacanteSeleccionada?.titulo }}</h2>
+          <h2>Candidatos - {{ vacanteSeleccionada?.tituloVacante || vacanteSeleccionada?.titulo || 'Vacante' }}</h2>
           <button class="btn-close" (click)="cerrarModalCandidatos()">×</button>
         </div>
         
@@ -853,6 +853,7 @@ export class PerfilEmpresaComponent implements OnInit, OnDestroy {
           return {
             ...v,
             titulo: v.tituloVacante,
+            tituloVacante: v.tituloVacante,
             empresa: v.nombreEmpresa,
             fechaVencimiento: v.fechaCierre,
             postulaciones: postulacionesVacante.length
