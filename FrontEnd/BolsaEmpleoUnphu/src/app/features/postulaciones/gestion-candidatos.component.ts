@@ -118,6 +118,38 @@ import { Subscription } from 'rxjs';
         
         <div class="modal-body" *ngIf="candidatoSeleccionado">
           <div class="perfil-info">
+            <!-- Foto de Perfil y CV -->
+            <div class="info-section">
+              <h3>Documentos y Foto</h3>
+              <div class="documentos-grid">
+                <div class="documento-item">
+                  <span class="label">Foto de Perfil:</span>
+                  <div class="foto-perfil">
+                    <img *ngIf="candidatoSeleccionado.usuario?.fotoPerfil" 
+                         [src]="candidatoSeleccionado.usuario.fotoPerfil" 
+                         alt="Foto de perfil" class="foto-img">
+                    <div *ngIf="!candidatoSeleccionado.usuario?.fotoPerfil" class="no-disponible">
+                      📷 No disponible
+                    </div>
+                  </div>
+                </div>
+                <div class="documento-item">
+                  <span class="label">Currículum Vitae:</span>
+                  <div class="cv-section">
+                    <a *ngIf="candidatoSeleccionado.usuario?.cv" 
+                       [href]="candidatoSeleccionado.usuario.cv" 
+                       target="_blank" 
+                       class="btn-cv">
+                      📄 Ver CV
+                    </a>
+                    <div *ngIf="!candidatoSeleccionado.usuario?.cv" class="no-disponible">
+                      📄 No disponible
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
             <div class="info-section">
               <h3>Información Personal</h3>
               <div class="info-grid">
@@ -167,19 +199,19 @@ import { Subscription } from 'rxjs';
             </div>
             
             <div class="info-section">
-              <h3>Información Académica (Mock)</h3>
+              <h3>Información Académica</h3>
               <div class="info-grid">
                 <div class="info-item">
                   <span class="label">Matrícula:</span>
-                  <span>2021-1234</span>
+                  <span>{{ candidatoSeleccionado.usuario?.matricula || 'No disponible' }}</span>
                 </div>
                 <div class="info-item">
                   <span class="label">Semestre:</span>
-                  <span>8vo Semestre</span>
+                  <span>{{ candidatoSeleccionado.usuario?.semestre || 'No disponible' }}</span>
                 </div>
                 <div class="info-item">
                   <span class="label">Promedio:</span>
-                  <span>3.75</span>
+                  <span>{{ candidatoSeleccionado.usuario?.promedio || 'No disponible' }}</span>
                 </div>
               </div>
             </div>
@@ -457,6 +489,11 @@ import { Subscription } from 'rxjs';
       grid-template-columns: 1fr 1fr;
       gap: 1rem;
     }
+    @media (max-width: 768px) {
+      .documentos-grid, .info-grid {
+        grid-template-columns: 1fr;
+      }
+    }
     .info-item {
       display: flex;
       justify-content: space-between;
@@ -487,6 +524,67 @@ import { Subscription } from 'rxjs';
     .respuesta-texto {
       color: #666;
       line-height: 1.5;
+    }
+    
+    /* Documentos y Foto */
+    .documentos-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+    .documento-item {
+      text-align: center;
+    }
+    .documento-item .label {
+      display: block;
+      margin-bottom: 1rem;
+      font-weight: 600;
+      color: var(--unphu-blue-dark);
+    }
+    .foto-perfil {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 120px;
+    }
+    .foto-img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--unphu-green-primary);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .cv-section {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 120px;
+    }
+    .btn-cv {
+      background: var(--unphu-blue-dark);
+      color: white;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .btn-cv:hover {
+      background: #0a2a3f;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .no-disponible {
+      background: #f8f9fa;
+      color: #666;
+      padding: 1rem;
+      border-radius: 8px;
+      border: 2px dashed #dee2e6;
+      font-style: italic;
     }
     .modal-footer {
       padding: 1.5rem;
