@@ -52,8 +52,10 @@ namespace BolsaEmpleoUnphu.API
                         policy.WithOrigins(
                                 "http://localhost:3000",
                                 "http://localhost:3001", 
+                                "http://localhost:4200",
                                 "https://localhost:3000",
-                                "https://localhost:3001")
+                                "https://localhost:3001",
+                                "https://localhost:4200")
                               .AllowAnyHeader()
                               .AllowAnyMethod()
                               .AllowCredentials();

@@ -159,24 +159,7 @@ import { FileService } from '../../core/services/file.service';
                     <button class="btn-upload" (click)="triggerFileInput('cv')" *ngIf="editMode">{{ cvSeleccionado ? 'Cambiar' : 'Subir' }}</button>
                   </div>
                 </div>
-                <div class="document-item" *ngIf="isCompany()">
-                  <div class="document-info">
-                    <span class="document-icon">🏢</span>
-                    <div>
-                      <p class="document-name">Logo de la Empresa</p>
-                      <p class="document-status">{{ logoSeleccionado ? 'Subido' : 'No subido' }}</p>
-                    </div>
-                  </div>
-                  <div class="document-actions">
-                    <button class="btn-preview" (click)="mostrarPreviewLogo()" *ngIf="logoSeleccionado && !editMode" title="Ver Logo">
-                      👁️
-                    </button>
-                    <button class="btn-delete" (click)="eliminarLogo()" *ngIf="logoSeleccionado && editMode" title="Eliminar Logo">
-                      🗑️
-                    </button>
-                    <button class="btn-upload" (click)="triggerFileInput('logo')" *ngIf="editMode">{{ logoSeleccionado ? 'Cambiar' : 'Subir' }}</button>
-                  </div>
-                </div>
+
                 <input type="file" #cvInput accept=".pdf" (change)="onFileSelect($event, 'cv')" style="display: none;">
               </div>
             </div>
@@ -1418,8 +1401,9 @@ export class PerfilComponent implements OnInit {
     const file = event.target.files[0];
     if (file) {
       // Validar tipo de archivo
-      if (tipo === 'cv' && file.type !== 'application/pdf') {
-        this.toastService.showError('Solo se permiten archivos PDF para el CV');
+      const allowedCvTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+      if (tipo === 'cv' && !allowedCvTypes.includes(file.type)) {
+        this.toastService.showError('Solo se permiten archivos PDF, DOC o DOCX para el CV');
         return;
       }
       
@@ -1731,7 +1715,7 @@ export class PerfilComponent implements OnInit {
   triggerFileInput(tipo: string): void {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = tipo === 'cv' ? '.pdf' : 'image/*';
+    input.accept = tipo === 'cv' ? '.pdf,.doc,.docx' : 'image/*';
     input.onchange = (event: any) => this.onFileSelect(event, tipo);
     input.click();
   }
