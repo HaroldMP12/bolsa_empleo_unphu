@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MensajeService } from '../../core/services/mensaje.service';
 import { AuthService } from '../../core/services/auth.service';
+import { PerfilService } from '../../core/services/perfil.service';
 import { Conversacion, Mensaje, CreateMensajeDto } from '../../core/models/mensaje.models';
 import { AuthResponse } from '../../core/models/auth.models';
 import { Subscription } from 'rxjs';
@@ -28,7 +29,10 @@ import { Subscription } from 'rxjs';
                (click)="seleccionarConversacion(conversacion)">
             
             <div class="conversacion-avatar">
-              {{ getIniciales(getNombreContacto(conversacion)) }}
+              <img *ngIf="getFotoContacto(conversacion)" 
+                   [src]="getFotoContacto(conversacion)" 
+                   alt="Foto de perfil" class="avatar-img">
+              <span *ngIf="!getFotoContacto(conversacion)">{{ getIniciales(getNombreContacto(conversacion)) }}</span>
             </div>
             
             <div class="conversacion-info">
@@ -61,7 +65,10 @@ import { Subscription } from 'rxjs';
         <div class="chat-header">
           <div class="contacto-info">
             <div class="contacto-avatar">
-              {{ getIniciales(getNombreContacto(conversacionSeleccionada)) }}
+              <img *ngIf="getFotoContacto(conversacionSeleccionada)" 
+                   [src]="getFotoContacto(conversacionSeleccionada)" 
+                   alt="Foto de perfil" class="avatar-img">
+              <span *ngIf="!getFotoContacto(conversacionSeleccionada)">{{ getIniciales(getNombreContacto(conversacionSeleccionada)) }}</span>
             </div>
             <div>
               <h4>{{ getNombreContacto(conversacionSeleccionada) }}</h4>
@@ -183,6 +190,13 @@ import { Subscription } from 'rxjs';
       justify-content: center;
       font-weight: 600;
       margin-right: 1rem;
+      overflow: hidden;
+    }
+
+    .avatar-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
 
     .conversacion-info {
@@ -266,6 +280,7 @@ import { Subscription } from 'rxjs';
       justify-content: center;
       font-weight: 600;
       margin-right: 1rem;
+      overflow: hidden;
     }
 
     .contacto-info h4 {
@@ -396,12 +411,14 @@ export class MensajesComponent implements OnInit, OnDestroy {
   conversacionSeleccionada: Conversacion | null = null;
   currentUser: AuthResponse | null = null;
   nuevoMensaje = '';
+  fotosPerfiles: { [key: number]: string } = {};
   
   private subscriptions: Subscription[] = [];
 
   constructor(
     private mensajeService: MensajeService,
-    private authService: AuthService
+    private authService: AuthService,
+    private perfilService: PerfilService
   ) {}
 
   ngOnInit(): void {
@@ -422,6 +439,7 @@ export class MensajesComponent implements OnInit, OnDestroy {
     this.mensajeService.getConversaciones().subscribe({
       next: (conversaciones) => {
         this.conversaciones = conversaciones;
+        this.cargarFotosPerfiles();
       },
       error: (error) => {
         console.error('Error al cargar conversaciones:', error);
@@ -516,5 +534,54 @@ export class MensajesComponent implements OnInit, OnDestroy {
       const element = this.mensajesContainer.nativeElement;
       element.scrollTop = element.scrollHeight;
     }
+  }
+
+  private cargarFotosPerfiles(): void {
+    const usuariosIds = new Set<number>();
+    
+    this.conversaciones.forEach(conv => {
+      usuariosIds.add(conv.candidatoID);
+      usuariosIds.add(conv.empresaID);
+    });
+    
+    usuariosIds.forEach(usuarioId => {
+      if (!this.fotosPerfiles[usuarioId]) {
+        this.cargarFotoPerfil(usuarioId);
+      }
+    });
+  }
+
+  private cargarFotoPerfil(usuarioId: number): void {
+    // Intentar cargar como estudiante primero
+    this.perfilService.obtenerPerfilEstudiante(usuarioId).subscribe({
+      next: (perfil) => {
+        if (perfil?.urlImagen) {
+          this.fotosPerfiles[usuarioId] = `https://localhost:7236${perfil.urlImagen}`;
+        }
+      },
+      error: () => {
+        // Si falla, intentar como empresa
+        this.perfilService.obtenerPerfilEmpresa(usuarioId).subscribe({
+          next: (empresa) => {
+            if (empresa?.imagenLogo) {
+              this.fotosPerfiles[usuarioId] = `https://localhost:7236${empresa.imagenLogo}`;
+            }
+          },
+          error: () => {
+            // No hacer nada, se mostrarán las iniciales
+          }
+        });
+      }
+    });
+  }
+
+  getFotoContacto(conversacion: Conversacion): string | null {
+    if (!this.currentUser) return null;
+    
+    const contactoId = this.currentUser.usuarioID === conversacion.empresaID 
+      ? conversacion.candidatoID 
+      : conversacion.empresaID;
+    
+    return this.fotosPerfiles[contactoId] || null;
   }
 }
