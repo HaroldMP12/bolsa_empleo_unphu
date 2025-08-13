@@ -768,7 +768,13 @@ export class GestionCandidatosComponent implements OnInit, OnDestroy {
 
     this.mensajeService.enviarMensaje(mensaje).subscribe({
       next: () => {
-        this.router.navigate(['/mensajes']);
+        // Navegar a mensajes con parámetros para seleccionar la conversación
+        this.router.navigate(['/mensajes'], { 
+          queryParams: { 
+            candidatoId: postulacion.usuarioID,
+            vacanteId: this.vacanteId 
+          }
+        });
       },
       error: (error) => {
         console.error('Error al enviar mensaje:', error);

@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { MensajeService } from '../../core/services/mensaje.service';
 import { AuthService } from '../../core/services/auth.service';
 import { PerfilService } from '../../core/services/perfil.service';
@@ -451,7 +452,8 @@ export class MensajesComponent implements OnInit, OnDestroy {
     private mensajeService: MensajeService,
     private authService: AuthService,
     private perfilService: PerfilService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
@@ -460,6 +462,7 @@ export class MensajesComponent implements OnInit, OnDestroy {
       if (user) {
         this.cargarConversacionesOcultas();
         this.cargarConversaciones();
+        this.verificarParametrosConversacion();
       }
     });
     this.subscriptions.push(userSub);
@@ -655,5 +658,29 @@ export class MensajesComponent implements OnInit, OnDestroy {
     
     const key = `conversaciones_ocultas_${this.currentUser.usuarioID}`;
     localStorage.setItem(key, JSON.stringify(this.conversacionesOcultas));
+  }
+
+  private verificarParametrosConversacion(): void {
+    this.route.queryParams.subscribe(params => {
+      const candidatoId = params['candidatoId'];
+      const vacanteId = params['vacanteId'];
+      
+      if (candidatoId && vacanteId) {
+        // Esperar un momento para que las conversaciones se carguen
+        setTimeout(() => {
+          this.seleccionarConversacionPorParametros(+candidatoId, +vacanteId);
+        }, 1000);
+      }
+    });
+  }
+
+  private seleccionarConversacionPorParametros(candidatoId: number, vacanteId: number): void {
+    const conversacion = this.conversaciones.find(conv => 
+      conv.candidatoID === candidatoId && conv.vacanteID === vacanteId
+    );
+    
+    if (conversacion) {
+      this.seleccionarConversacion(conversacion);
+    }
   }
 }
