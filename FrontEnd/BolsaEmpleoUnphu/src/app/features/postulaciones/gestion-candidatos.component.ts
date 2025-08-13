@@ -125,12 +125,12 @@ import { Subscription } from 'rxjs';
                 <div class="documento-item">
                   <span class="label">Foto de Perfil:</span>
                   <div class="foto-perfil">
-                    <img *ngIf="(candidatoSeleccionado.usuario as any)?.fotoPerfil" 
-                         [src]="(candidatoSeleccionado.usuario as any).fotoPerfil" 
+                    <img *ngIf="getUserProperty(candidatoSeleccionado.usuario, 'fotoPerfil')" 
+                         [src]="getUserProperty(candidatoSeleccionado.usuario, 'fotoPerfil')" 
                          alt="Foto de perfil" class="foto-img"
-                         (click)="verFotoCompleta((candidatoSeleccionado.usuario as any).fotoPerfil)"
+                         (click)="verFotoCompleta(getUserProperty(candidatoSeleccionado.usuario, 'fotoPerfil'))"
                          style="cursor: pointer;">
-                    <div *ngIf="!(candidatoSeleccionado.usuario as any)?.fotoPerfil" class="no-disponible">
+                    <div *ngIf="!getUserProperty(candidatoSeleccionado.usuario, 'fotoPerfil')" class="no-disponible">
                       📷 No disponible
                     </div>
                   </div>
@@ -138,13 +138,13 @@ import { Subscription } from 'rxjs';
                 <div class="documento-item">
                   <span class="label">Currículum Vitae:</span>
                   <div class="cv-section">
-                    <a *ngIf="(candidatoSeleccionado.usuario as any)?.cv" 
-                       [href]="(candidatoSeleccionado.usuario as any).cv" 
+                    <a *ngIf="getUserProperty(candidatoSeleccionado.usuario, 'cv')" 
+                       [href]="getUserProperty(candidatoSeleccionado.usuario, 'cv')" 
                        target="_blank" 
                        class="btn-cv">
                       📄 Ver CV
                     </a>
-                    <div *ngIf="!(candidatoSeleccionado.usuario as any)?.cv" class="no-disponible">
+                    <div *ngIf="!getUserProperty(candidatoSeleccionado.usuario, 'cv')" class="no-disponible">
                       📄 No disponible
                     </div>
                   </div>
