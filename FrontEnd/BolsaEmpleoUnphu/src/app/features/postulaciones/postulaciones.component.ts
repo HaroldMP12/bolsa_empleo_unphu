@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { DataSyncService } from '../../core/services/data-sync.service';
+import { ApiService } from '../../core/services/api.service';
+import { ToastService } from '../../core/services/toast.service';
 import { AuthResponse } from '../../core/models/auth.models';
 import { Subscription } from 'rxjs';
 
@@ -24,8 +26,15 @@ interface Postulacion {
   template: `
     <div class="postulaciones-page">
       <div class="page-header">
-        <h1>Mis Postulaciones</h1>
-        <p>Revisa el estado de tus aplicaciones a vacantes</p>
+        <div class="header-content">
+          <div>
+            <h1>Mis Postulaciones</h1>
+            <p>Revisa el estado de tus aplicaciones a vacantes</p>
+          </div>
+          <button class="btn-actualizar" (click)="cargarPostulaciones()" title="Actualizar postulaciones">
+            🔄 Actualizar
+          </button>
+        </div>
       </div>
 
       <!-- FILTROS DE ESTADO -->
@@ -160,6 +169,24 @@ interface Postulacion {
       border-radius: 12px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       margin-bottom: 2rem;
+    }
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .btn-actualizar {
+      background: var(--unphu-blue-dark);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.3s;
+    }
+    .btn-actualizar:hover {
+      background: #0a2a3f;
     }
     .page-header h1 {
       color: var(--unphu-blue-dark);
@@ -490,7 +517,9 @@ export class PostulacionesComponent implements OnInit, OnDestroy {
 
   constructor(
     private authService: AuthService,
-    private dataSyncService: DataSyncService
+    private dataSyncService: DataSyncService,
+    private apiService: ApiService,
+    private toastService: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -513,48 +542,44 @@ export class PostulacionesComponent implements OnInit, OnDestroy {
   cargarPostulaciones(): void {
     if (!this.currentUser) return;
     
-    // Get user's applications from data sync service
-    const userApplications = this.dataSyncService.getUserApplications(this.currentUser.usuarioID);
-    
-    // Mock data inicial con fechas dinámicas
-    const hoy = new Date();
-    const postulacionesMock = [
-      {
-        postulacionID: 1,
-        vacanteID: 1,
-        vacanteTitulo: 'Desarrollador Frontend React',
-        empresa: 'TechCorp',
-        fechaPostulacion: new Date(hoy.getTime() - 2 * 24 * 60 * 60 * 1000),
-        estado: 'En Revisión',
-        modalidad: 'Híbrido',
-        ubicacion: 'Santo Domingo'
+    // Cargar postulaciones reales desde la API
+    this.apiService.get<any>(`postulaciones/usuario/${this.currentUser.usuarioID}`).subscribe({
+      next: (response) => {
+        console.log('Postulaciones desde API:', response);
+        const postulacionesData = response.data || response || [];
+        
+        // Mapear datos con información completa de vacante y empresa
+        this.postulaciones = postulacionesData.map((p: any) => ({
+          postulacionID: p.postulacionID,
+          vacanteID: p.vacanteID,
+          vacanteTitulo: p.vacante?.tituloVacante || 'Vacante sin título',
+          empresa: p.vacante?.empresa?.nombreEmpresa || 'Empresa no especificada',
+          fechaPostulacion: new Date(p.fechaPostulacion),
+          estado: p.estado as 'Pendiente' | 'En Revisión' | 'Aceptado' | 'Rechazado',
+          modalidad: p.vacante?.modalidad || 'No especificada',
+          ubicacion: p.vacante?.ubicacion || 'No especificada'
+        }));
+        
+        console.log('Postulaciones procesadas:', this.postulaciones);
+        this.filtrarPorEstado(this.estadoSeleccionado);
       },
-      {
-        postulacionID: 2,
-        vacanteID: 2,
-        vacanteTitulo: 'Analista de Marketing Digital',
-        empresa: 'MarketPro',
-        fechaPostulacion: new Date(hoy.getTime() - 4 * 24 * 60 * 60 * 1000),
-        estado: 'Pendiente',
-        modalidad: 'Presencial',
-        ubicacion: 'Santiago'
+      error: (error) => {
+        console.error('Error al cargar postulaciones:', error);
+        // Fallback: usar datos del DataSyncService
+        const userApplications = this.dataSyncService.getUserApplications(this.currentUser!.usuarioID);
+        this.postulaciones = userApplications.map((p: any) => ({
+          postulacionID: p.postulacionID,
+          vacanteID: p.vacanteID,
+          vacanteTitulo: p.vacante?.titulo || 'Vacante',
+          empresa: p.vacante?.empresa || 'Empresa',
+          fechaPostulacion: new Date(p.fechaPostulacion),
+          estado: p.estado,
+          modalidad: p.vacante?.modalidad || 'Presencial',
+          ubicacion: p.vacante?.ubicacion || 'No especificada'
+        }));
+        this.filtrarPorEstado(this.estadoSeleccionado);
       }
-    ];
-    
-    // Convert real applications to display format
-    const postulacionesConvertidas = userApplications.map((p: any) => ({
-      postulacionID: p.postulacionID,
-      vacanteID: p.vacanteID,
-      vacanteTitulo: p.vacante?.titulo || 'Vacante',
-      empresa: p.vacante?.empresa || 'Empresa',
-      fechaPostulacion: new Date(p.fechaPostulacion),
-      estado: p.estado,
-      modalidad: p.vacante?.modalidad || 'Presencial',
-      ubicacion: p.vacante?.ubicacion || 'No especificada'
-    }));
-    
-    this.postulaciones = [...postulacionesMock, ...postulacionesConvertidas];
-    this.postulacionesFiltradas = [...this.postulaciones];
+    });
   }
 
   filtrarPorEstado(estado: string): void {
@@ -611,18 +636,28 @@ export class PostulacionesComponent implements OnInit, OnDestroy {
       () => {
         console.log('Cancelando postulación:', postulacion.postulacionID);
         
-        // Eliminar de localStorage si existe
-        const postulacionesGuardadas = JSON.parse(localStorage.getItem('postulaciones') || '[]');
-        const postulacionesActualizadas = postulacionesGuardadas.filter((p: any) => p.postulacionID !== postulacion.postulacionID);
-        localStorage.setItem('postulaciones', JSON.stringify(postulacionesActualizadas));
-        
-        // Notify data sync service of changes
-        this.dataSyncService.notifyPostulacionesChanged();
-        this.dataSyncService.notifyVacantesChanged();
-        
-        // Eliminar de la lista actual
-        this.postulaciones = this.postulaciones.filter(p => p.postulacionID !== postulacion.postulacionID);
-        this.filtrarPorEstado(this.estadoSeleccionado);
+        // Eliminar desde la API
+        this.apiService.delete(`postulaciones/${postulacion.postulacionID}`).subscribe({
+          next: () => {
+            this.toastService.showSuccess('Postulación cancelada correctamente');
+            
+            // Actualizar localStorage
+            const postulacionesGuardadas = JSON.parse(localStorage.getItem('postulaciones') || '[]');
+            const postulacionesActualizadas = postulacionesGuardadas.filter((p: any) => p.postulacionID !== postulacion.postulacionID);
+            localStorage.setItem('postulaciones', JSON.stringify(postulacionesActualizadas));
+            
+            // Notificar cambios
+            this.dataSyncService.notifyPostulacionesChanged();
+            this.dataSyncService.notifyVacantesChanged();
+            
+            // Recargar postulaciones
+            this.cargarPostulaciones();
+          },
+          error: (error) => {
+            console.error('Error al cancelar postulación:', error);
+            this.toastService.showError('Error al cancelar la postulación');
+          }
+        });
       }
     );
   }
