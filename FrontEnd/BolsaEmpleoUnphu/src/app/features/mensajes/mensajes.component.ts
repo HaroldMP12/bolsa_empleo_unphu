@@ -35,6 +35,12 @@ import { Subscription } from 'rxjs';
               <span *ngIf="!getFotoContacto(conversacion)">{{ getIniciales(getNombreContacto(conversacion)) }}</span>
             </div>
             
+            <button class="btn-delete-conversation" 
+                    (click)="borrarConversacion(conversacion, $event)" 
+                    title="Borrar conversación">
+              🗑️
+            </button>
+            
             <div class="conversacion-info">
               <div class="conversacion-header">
                 <h4>{{ getNombreContacto(conversacion) }}</h4>
@@ -164,6 +170,34 @@ import { Subscription } from 'rxjs';
       border-bottom: 1px solid #f1f3f4;
       cursor: pointer;
       transition: background 0.2s;
+      position: relative;
+    }
+
+    .btn-delete-conversation {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      font-size: 0.7rem;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+    }
+
+    .conversacion-item:hover .btn-delete-conversation {
+      display: flex;
+    }
+
+    .btn-delete-conversation:hover {
+      background: #c82333;
+      transform: scale(1.1);
     }
 
     .conversacion-item:hover {
@@ -412,6 +446,7 @@ export class MensajesComponent implements OnInit, OnDestroy {
   currentUser: AuthResponse | null = null;
   nuevoMensaje = '';
   fotosPerfiles: { [key: number]: string } = {};
+  conversacionesOcultas: number[] = [];
   
   private subscriptions: Subscription[] = [];
 
@@ -426,6 +461,7 @@ export class MensajesComponent implements OnInit, OnDestroy {
     const userSub = this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
       if (user) {
+        this.cargarConversacionesOcultas();
         this.cargarConversaciones();
       }
     });
@@ -439,7 +475,10 @@ export class MensajesComponent implements OnInit, OnDestroy {
   cargarConversaciones(): void {
     this.mensajeService.getConversaciones().subscribe({
       next: (conversaciones) => {
-        this.conversaciones = conversaciones;
+        // Filtrar conversaciones ocultas para este usuario
+        this.conversaciones = conversaciones.filter(conv => 
+          !this.conversacionesOcultas.includes(conv.conversacionID)
+        );
         this.cargarFotosPerfiles();
       },
       error: (error) => {
@@ -593,5 +632,39 @@ export class MensajesComponent implements OnInit, OnDestroy {
       : conversacion.empresaID;
     
     return this.fotosPerfiles[contactoId] || null;
+  }
+
+  borrarConversacion(conversacion: Conversacion, event: Event): void {
+    event.stopPropagation(); // Evitar que se seleccione la conversación
+    
+    if (confirm(`¿Estás seguro de que deseas borrar la conversación con ${this.getNombreContacto(conversacion)}?`)) {
+      // Agregar a conversaciones ocultas
+      this.conversacionesOcultas.push(conversacion.conversacionID);
+      this.guardarConversacionesOcultas();
+      
+      // Remover de la lista actual
+      this.conversaciones = this.conversaciones.filter(c => c.conversacionID !== conversacion.conversacionID);
+      
+      // Si era la conversación seleccionada, deseleccionar
+      if (this.conversacionSeleccionada?.conversacionID === conversacion.conversacionID) {
+        this.conversacionSeleccionada = null;
+        this.mensajes = [];
+      }
+    }
+  }
+
+  private cargarConversacionesOcultas(): void {
+    if (!this.currentUser) return;
+    
+    const key = `conversaciones_ocultas_${this.currentUser.usuarioID}`;
+    const ocultas = localStorage.getItem(key);
+    this.conversacionesOcultas = ocultas ? JSON.parse(ocultas) : [];
+  }
+
+  private guardarConversacionesOcultas(): void {
+    if (!this.currentUser) return;
+    
+    const key = `conversaciones_ocultas_${this.currentUser.usuarioID}`;
+    localStorage.setItem(key, JSON.stringify(this.conversacionesOcultas));
   }
 }
