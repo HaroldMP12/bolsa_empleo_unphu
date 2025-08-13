@@ -544,8 +544,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
             console.log('Empresa data:', empresa);
             if (empresa?.imagenLogo) {
               this.userProfilePhoto = `https://localhost:7236${empresa.imagenLogo}`;
-            } else if (empresa?.urlImagen) {
-              this.userProfilePhoto = `https://localhost:7236${empresa.urlImagen}`;
+            } else if ((empresa as any)?.urlImagen) {
+              this.userProfilePhoto = `https://localhost:7236${(empresa as any).urlImagen}`;
             }
           },
           error: () => {
