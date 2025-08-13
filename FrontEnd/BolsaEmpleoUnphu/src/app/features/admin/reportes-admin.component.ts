@@ -490,19 +490,11 @@ export class ReportesAdminComponent implements OnInit, OnDestroy {
 
   private setupSyncSubscriptions() {
     // Suscribirse a cambios en tiempo real
-    const empresasSub = this.adminSyncService.empresas$.subscribe(() => {
+    const refreshSub = this.adminSyncService.refresh$.subscribe(() => {
       this.cargarEstadisticas();
     });
     
-    const usuariosSub = this.adminSyncService.usuarios$.subscribe(() => {
-      this.cargarEstadisticas();
-    });
-    
-    const vacantesSub = this.adminSyncService.vacantes$.subscribe(() => {
-      this.cargarEstadisticas();
-    });
-    
-    this.subscriptions.push(empresasSub, usuariosSub, vacantesSub);
+    this.subscriptions.push(refreshSub);
   }
 
   cargarEstadisticas() {
