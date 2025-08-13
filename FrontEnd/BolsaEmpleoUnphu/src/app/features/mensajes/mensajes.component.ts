@@ -591,20 +591,15 @@ export class MensajesComponent implements OnInit, OnDestroy {
   }
 
   private cargarFotoPerfil(usuarioId: number): void {
-    console.log('Cargando foto para usuario:', usuarioId);
-    
-    // Siempre intentar cargar desde perfil de estudiante primero (donde están las fotos reales)
     this.perfilService.obtenerPerfilEstudiante(usuarioId).subscribe({
       next: (perfil) => {
-        console.log('Perfil estudiante:', perfil);
         if (perfil?.urlImagen) {
           this.fotosPerfiles[usuarioId] = `https://localhost:7236${perfil.urlImagen}`;
-          console.log('Foto estudiante cargada:', this.fotosPerfiles[usuarioId]);
           this.cdr.detectChanges();
         }
       },
       error: () => {
-        console.log('No se encontró foto en perfil estudiante para usuario:', usuarioId);
+        // Silenciar error - es normal que empresas no tengan perfil de estudiante
       }
     });
   }
@@ -635,17 +630,14 @@ export class MensajesComponent implements OnInit, OnDestroy {
   }
 
   borrarConversacion(conversacion: Conversacion, event: Event): void {
-    event.stopPropagation(); // Evitar que se seleccione la conversación
+    event.stopPropagation();
     
     if (confirm(`¿Estás seguro de que deseas borrar la conversación con ${this.getNombreContacto(conversacion)}?`)) {
-      // Agregar a conversaciones ocultas
       this.conversacionesOcultas.push(conversacion.conversacionID);
       this.guardarConversacionesOcultas();
       
-      // Remover de la lista actual
       this.conversaciones = this.conversaciones.filter(c => c.conversacionID !== conversacion.conversacionID);
       
-      // Si era la conversación seleccionada, deseleccionar
       if (this.conversacionSeleccionada?.conversacionID === conversacion.conversacionID) {
         this.conversacionSeleccionada = null;
         this.mensajes = [];
