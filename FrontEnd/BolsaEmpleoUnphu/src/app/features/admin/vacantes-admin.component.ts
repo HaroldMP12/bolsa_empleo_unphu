@@ -114,7 +114,7 @@ interface VacanteAdmin {
   styles: [`
     .vacantes-admin {
       padding: 2rem;
-      max-width: 1400px;
+      max-width: 1600px;
       margin: 0 auto;
     }
 
@@ -157,27 +157,26 @@ interface VacanteAdmin {
     .vacantes-table {
       background: white;
       border-radius: 8px;
-      overflow: hidden;
+      overflow-x: auto;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
     table {
       width: 100%;
+      min-width: 1200px;
       border-collapse: collapse;
     }
 
     th, td {
-      padding: 1rem;
+      padding: 0.75rem;
       text-align: left;
       border-bottom: 1px solid #eee;
-      white-space: nowrap;
+      font-size: 0.9rem;
     }
 
-    th:nth-child(8), td:nth-child(8) {
-      text-align: center;
-    }
-
-    th:nth-child(7), td:nth-child(7) {
+    th:nth-child(7), td:nth-child(7),
+    th:nth-child(8), td:nth-child(8),
+    th:nth-child(9), td:nth-child(9) {
       text-align: center;
     }
 
