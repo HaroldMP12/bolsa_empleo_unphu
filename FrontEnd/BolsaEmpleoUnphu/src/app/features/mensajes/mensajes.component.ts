@@ -185,14 +185,11 @@ import { Subscription } from 'rxjs';
       height: 24px;
       cursor: pointer;
       font-size: 0.7rem;
-      display: none;
+      display: flex;
       align-items: center;
       justify-content: center;
       transition: all 0.3s;
-    }
-
-    .conversacion-item:hover .btn-delete-conversation {
-      display: flex;
+      z-index: 10;
     }
 
     .btn-delete-conversation:hover {
