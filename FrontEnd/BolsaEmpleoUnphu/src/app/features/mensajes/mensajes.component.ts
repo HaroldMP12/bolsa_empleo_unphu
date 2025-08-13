@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MensajeService } from '../../core/services/mensaje.service';
@@ -418,7 +418,8 @@ export class MensajesComponent implements OnInit, OnDestroy {
   constructor(
     private mensajeService: MensajeService,
     private authService: AuthService,
-    private perfilService: PerfilService
+    private perfilService: PerfilService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -578,6 +579,7 @@ export class MensajesComponent implements OnInit, OnDestroy {
         if (empresa?.imagenLogo) {
           this.fotosPerfiles[usuarioId] = `https://localhost:7236${empresa.imagenLogo}`;
           console.log('Mensajes - Foto empresa cargada para usuario', usuarioId, ':', this.fotosPerfiles[usuarioId]);
+          this.cdr.detectChanges();
         }
       },
       error: () => {

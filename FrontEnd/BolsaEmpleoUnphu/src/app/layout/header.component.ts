@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../core/services/auth.service';
@@ -439,7 +439,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private router: Router,
     private notificationService: NotificationService,
-    private perfilService: PerfilService
+    private perfilService: PerfilService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   @HostListener('document:click', ['$event'])
@@ -544,6 +545,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
             if (empresa?.imagenLogo) {
               this.userProfilePhoto = `https://localhost:7236${empresa.imagenLogo}`;
               console.log('Header - Foto empresa cargada:', this.userProfilePhoto);
+              this.cdr.detectChanges();
             }
           },
           error: () => {
