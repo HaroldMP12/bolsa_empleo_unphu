@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ApiService } from '../../core/services/api.service';
+import { AdminSyncService } from '../../core/services/admin-sync.service';
+import { Subscription } from 'rxjs';
 
 interface EstadisticasGenerales {
   totalUsuarios: number;
@@ -11,6 +13,10 @@ interface EstadisticasGenerales {
   empresasPendientes: number;
   empresasAprobadas: number;
   empresasRechazadas: number;
+  vacantesActivas: number;
+  postulacionesPendientes: number;
+  categorias: number;
+  carreras: number;
 }
 
 @Component({
@@ -58,6 +64,22 @@ interface EstadisticasGenerales {
               <div class="stat-info">
                 <h4>{{estadisticas.totalPostulaciones}}</h4>
                 <p>Total Postulaciones</p>
+              </div>
+            </div>
+            
+            <div class="stat-card vacantes-activas">
+              <div class="stat-icon">✅</div>
+              <div class="stat-info">
+                <h4>{{estadisticas.vacantesActivas}}</h4>
+                <p>Vacantes Activas</p>
+              </div>
+            </div>
+            
+            <div class="stat-card pendientes">
+              <div class="stat-icon">⏳</div>
+              <div class="stat-info">
+                <h4>{{estadisticas.postulacionesPendientes}}</h4>
+                <p>Postulaciones Pendientes</p>
               </div>
             </div>
           </div>
@@ -136,6 +158,31 @@ interface EstadisticasGenerales {
           </div>
         </div>
 
+        <!-- Gráfico de Estadísticas -->
+        <div class="stats-section">
+          <h3>Gráfico de Estadísticas</h3>
+          <div class="chart-container">
+            <div class="chart-bars">
+              <div class="chart-bar">
+                <div class="bar-fill usuarios-bar" [style.height.%]="getBarHeight('usuarios')"></div>
+                <div class="bar-label">Usuarios<br>{{estadisticas.totalUsuarios}}</div>
+              </div>
+              <div class="chart-bar">
+                <div class="bar-fill empresas-bar" [style.height.%]="getBarHeight('empresas')"></div>
+                <div class="bar-label">Empresas<br>{{estadisticas.totalEmpresas}}</div>
+              </div>
+              <div class="chart-bar">
+                <div class="bar-fill vacantes-bar" [style.height.%]="getBarHeight('vacantes')"></div>
+                <div class="bar-label">Vacantes<br>{{estadisticas.totalVacantes}}</div>
+              </div>
+              <div class="chart-bar">
+                <div class="bar-fill postulaciones-bar" [style.height.%]="getBarHeight('postulaciones')"></div>
+                <div class="bar-label">Postulaciones<br>{{estadisticas.totalPostulaciones}}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Resumen de Actividad -->
         <div class="stats-section">
           <h3>Resumen de Actividad</h3>
@@ -149,8 +196,16 @@ interface EstadisticasGenerales {
               <span class="activity-value">{{getPromedioPostulaciones()}}</span>
             </div>
             <div class="activity-item">
-              <span class="activity-label">Empresas más activas:</span>
-              <span class="activity-value">{{estadisticas.totalEmpresas > 0 ? 'Disponible' : 'Sin datos'}}</span>
+              <span class="activity-label">Vacantes activas vs total:</span>
+              <span class="activity-value">{{estadisticas.vacantesActivas}}/{{estadisticas.totalVacantes}}</span>
+            </div>
+            <div class="activity-item">
+              <span class="activity-label">Total de categorías:</span>
+              <span class="activity-value">{{estadisticas.categorias}}</span>
+            </div>
+            <div class="activity-item">
+              <span class="activity-label">Total de carreras:</span>
+              <span class="activity-value">{{estadisticas.carreras}}</span>
             </div>
           </div>
         </div>
@@ -204,7 +259,7 @@ interface EstadisticasGenerales {
 
     .stats-cards {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: 1rem;
     }
 
@@ -220,6 +275,8 @@ interface EstadisticasGenerales {
     .stat-card.empresas { background: #fef9e7; }
     .stat-card.vacantes { background: #eafaf1; }
     .stat-card.postulaciones { background: #fdedec; }
+    .stat-card.vacantes-activas { background: #e8f5e8; }
+    .stat-card.pendientes { background: #fff3cd; }
 
     .stat-icon {
       font-size: 2rem;
@@ -366,16 +423,86 @@ interface EstadisticasGenerales {
       padding: 3rem;
       color: #7f8c8d;
     }
+
+    /* Gráfico de barras */
+    .chart-container {
+      padding: 2rem;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+
+    .chart-bars {
+      display: flex;
+      justify-content: space-around;
+      align-items: flex-end;
+      height: 300px;
+      gap: 1rem;
+    }
+
+    .chart-bar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+      max-width: 80px;
+    }
+
+    .bar-fill {
+      width: 100%;
+      min-height: 20px;
+      border-radius: 4px 4px 0 0;
+      transition: height 0.8s ease;
+      margin-bottom: 0.5rem;
+    }
+
+    .usuarios-bar { background: linear-gradient(to top, #3498db, #5dade2); }
+    .empresas-bar { background: linear-gradient(to top, #f39c12, #f7dc6f); }
+    .vacantes-bar { background: linear-gradient(to top, #27ae60, #58d68d); }
+    .postulaciones-bar { background: linear-gradient(to top, #e74c3c, #ec7063); }
+
+    .bar-label {
+      text-align: center;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #2c3e50;
+      line-height: 1.2;
+    }
   `]
 })
-export class ReportesAdminComponent implements OnInit {
+export class ReportesAdminComponent implements OnInit, OnDestroy {
   estadisticas: EstadisticasGenerales | null = null;
   cargando = false;
+  private subscriptions: Subscription[] = [];
 
-  constructor(private apiService: ApiService) {}
+  constructor(
+    private apiService: ApiService,
+    private adminSyncService: AdminSyncService
+  ) {}
 
   ngOnInit() {
     this.cargarEstadisticas();
+    this.setupSyncSubscriptions();
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
+  private setupSyncSubscriptions() {
+    // Suscribirse a cambios en tiempo real
+    const empresasSub = this.adminSyncService.empresas$.subscribe(() => {
+      this.cargarEstadisticas();
+    });
+    
+    const usuariosSub = this.adminSyncService.usuarios$.subscribe(() => {
+      this.cargarEstadisticas();
+    });
+    
+    const vacantesSub = this.adminSyncService.vacantes$.subscribe(() => {
+      this.cargarEstadisticas();
+    });
+    
+    this.subscriptions.push(empresasSub, usuariosSub, vacantesSub);
   }
 
   cargarEstadisticas() {
@@ -385,16 +512,30 @@ export class ReportesAdminComponent implements OnInit {
       this.apiService.get<any>('usuarios?pageSize=1000').toPromise(),
       this.apiService.get<any>('empresas?pageSize=1000').toPromise(),
       this.apiService.get<any>('vacantes?pageSize=1000').toPromise(),
-      this.apiService.get<any>('postulaciones?pageSize=1000').toPromise()
-    ]).then(([usuarios, empresas, vacantes, postulaciones]) => {
+      this.apiService.get<any>('postulaciones?pageSize=1000').toPromise(),
+      this.apiService.get<any>('categorias?pageSize=1000').toPromise(),
+      this.apiService.get<any>('carreras?pageSize=1000').toPromise()
+    ]).then(([usuarios, empresas, vacantes, postulaciones, categorias, carreras]) => {
       // Extraer datos de PagedResult
       const empresasData = (empresas as any)?.data || [];
       const usuariosData = (usuarios as any)?.data || [];
       const vacantesData = (vacantes as any)?.data || [];
       const postulacionesData = (postulaciones as any)?.data || [];
+      const categoriasData = (categorias as any)?.data || [];
+      const carrerasData = (carreras as any)?.data || [];
       
       // Filtrar usuarios empresa
       const usuariosEmpresa = usuariosData.filter((u: any) => u.rol?.nombreRol === 'Empresa');
+      
+      // Calcular vacantes activas (no vencidas)
+      const hoy = new Date();
+      const vacantesActivas = vacantesData.filter((v: any) => {
+        const fechaCierre = new Date(v.fechaCierre);
+        return fechaCierre > hoy;
+      });
+      
+      // Calcular postulaciones pendientes
+      const postulacionesPendientes = postulacionesData.filter((p: any) => p.estado === 'Pendiente');
       
       this.estadisticas = {
         totalUsuarios: usuariosData.length,
@@ -403,9 +544,14 @@ export class ReportesAdminComponent implements OnInit {
         totalPostulaciones: postulacionesData.length,
         empresasPendientes: usuariosEmpresa.filter((u: any) => u.estadoAprobacion === 'Pendiente').length,
         empresasAprobadas: usuariosEmpresa.filter((u: any) => u.estadoAprobacion === 'Aprobado').length,
-        empresasRechazadas: usuariosEmpresa.filter((u: any) => u.estadoAprobacion === 'Rechazado').length
+        empresasRechazadas: usuariosEmpresa.filter((u: any) => u.estadoAprobacion === 'Rechazado').length,
+        vacantesActivas: vacantesActivas.length,
+        postulacionesPendientes: postulacionesPendientes.length,
+        categorias: categoriasData.length,
+        carreras: carrerasData.length
       };
       
+      console.log('Estadísticas actualizadas:', this.estadisticas);
       this.cargando = false;
     }).catch(error => {
       console.error('Error cargando estadísticas:', error);
@@ -448,5 +594,22 @@ export class ReportesAdminComponent implements OnInit {
     if (!this.estadisticas || this.estadisticas.totalVacantes === 0) return 0;
     
     return Math.round(this.estadisticas.totalPostulaciones / this.estadisticas.totalVacantes * 10) / 10;
+  }
+
+  getBarHeight(tipo: string): number {
+    if (!this.estadisticas) return 0;
+    
+    const valores = {
+      usuarios: this.estadisticas.totalUsuarios,
+      empresas: this.estadisticas.totalEmpresas,
+      vacantes: this.estadisticas.totalVacantes,
+      postulaciones: this.estadisticas.totalPostulaciones
+    };
+    
+    const maxValor = Math.max(...Object.values(valores));
+    if (maxValor === 0) return 0;
+    
+    const valor = (valores as any)[tipo] || 0;
+    return Math.max((valor / maxValor) * 100, 5); // Mínimo 5% para visibilidad
   }
 }
