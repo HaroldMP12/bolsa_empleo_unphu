@@ -575,13 +575,24 @@ export class MensajesComponent implements OnInit, OnDestroy {
   private intentarCargarEmpresa(usuarioId: number): void {
     this.perfilService.obtenerPerfilEmpresa(usuarioId).subscribe({
       next: (empresa) => {
-        console.log('Perfil empresa:', empresa);
-        if (empresa?.imagenLogo) {
-          this.fotosPerfiles[usuarioId] = `https://localhost:7236${empresa.imagenLogo}`;
-          console.log('Foto empresa cargada:', this.fotosPerfiles[usuarioId]);
-        } else if ((empresa as any)?.urlImagen) {
-          this.fotosPerfiles[usuarioId] = `https://localhost:7236${(empresa as any).urlImagen}`;
-          console.log('Foto empresa (urlImagen) cargada:', this.fotosPerfiles[usuarioId]);
+        console.log('Perfil empresa para usuario', usuarioId, ':', empresa);
+        console.log('Campos disponibles:', Object.keys(empresa || {}));
+        
+        // Probar todos los posibles campos de imagen
+        const posiblesCampos = ['imagenLogo', 'urlImagen', 'logo', 'imagen', 'fotoPerfil'];
+        let fotoEncontrada = false;
+        
+        for (const campo of posiblesCampos) {
+          if ((empresa as any)?.[campo]) {
+            this.fotosPerfiles[usuarioId] = `https://localhost:7236${(empresa as any)[campo]}`;
+            console.log(`Foto empresa encontrada en campo '${campo}':`, this.fotosPerfiles[usuarioId]);
+            fotoEncontrada = true;
+            break;
+          }
+        }
+        
+        if (!fotoEncontrada) {
+          console.log('No se encontró foto para empresa usuario:', usuarioId);
         }
       },
       error: () => {

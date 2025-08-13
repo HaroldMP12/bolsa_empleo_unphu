@@ -541,14 +541,28 @@ export class HeaderComponent implements OnInit, OnDestroy {
         // Intentar como empresa
         this.perfilService.obtenerPerfilEmpresa(this.currentUser!.usuarioID).subscribe({
           next: (empresa) => {
-            console.log('Empresa data:', empresa);
-            if (empresa?.imagenLogo) {
-              this.userProfilePhoto = `https://localhost:7236${empresa.imagenLogo}`;
-            } else if ((empresa as any)?.urlImagen) {
-              this.userProfilePhoto = `https://localhost:7236${(empresa as any).urlImagen}`;
+            console.log('Empresa data completa:', empresa);
+            console.log('Campos disponibles:', Object.keys(empresa || {}));
+            
+            // Probar todos los posibles campos de imagen
+            const posiblesCampos = ['imagenLogo', 'urlImagen', 'logo', 'imagen', 'fotoPerfil'];
+            let fotoEncontrada = false;
+            
+            for (const campo of posiblesCampos) {
+              if ((empresa as any)?.[campo]) {
+                this.userProfilePhoto = `https://localhost:7236${(empresa as any)[campo]}`;
+                console.log(`Foto encontrada en campo '${campo}':`, this.userProfilePhoto);
+                fotoEncontrada = true;
+                break;
+              }
+            }
+            
+            if (!fotoEncontrada) {
+              console.log('No se encontró foto en ningún campo');
             }
           },
-          error: () => {
+          error: (error) => {
+            console.log('Error cargando empresa:', error);
             this.userProfilePhoto = null;
           }
         });
