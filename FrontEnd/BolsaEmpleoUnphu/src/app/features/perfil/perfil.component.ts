@@ -184,6 +184,35 @@ import { FileService } from '../../core/services/file.service';
 
           <!-- MAIN CONTENT -->
           <div class="profile-main">
+            <!-- Descripción Personal/Empresa Card -->
+            <div class="profile-card">
+              <div class="card-header">
+                <h3>📝 {{ isCompany() ? 'Acerca de la Empresa' : 'Acerca de mí' }}</h3>
+              </div>
+              <div class="card-content" *ngIf="!editMode">
+                <div class="description-content">
+                  <p *ngIf="getDescripcion(); else noDescription">{{ getDescripcion() }}</p>
+                  <ng-template #noDescription>
+                    <div class="empty-description">
+                      <p>{{ isCompany() ? 'Agrega una descripción de tu empresa' : 'Cuéntanos sobre ti, tus objetivos y experiencias' }}</p>
+                      <button class="btn-add-first" (click)="toggleEditMode()">Agregar descripción</button>
+                    </div>
+                  </ng-template>
+                </div>
+              </div>
+              <div class="card-content" *ngIf="editMode">
+                <div class="form-group">
+                  <label>{{ isCompany() ? 'Descripción de la Empresa' : 'Descripción Personal' }}</label>
+                  <textarea 
+                    [(ngModel)]="descripcionPersonal" 
+                    class="form-control" 
+                    rows="4" 
+                    [placeholder]="isCompany() ? 'Describe tu empresa, misión, visión y valores...' : 'Cuéntanos sobre ti, tus objetivos profesionales, habilidades y lo que te apasiona...'">
+                  </textarea>
+                </div>
+              </div>
+            </div>
+            
             <!-- Información Académica/Empresa Card -->
             <div class="profile-card" *ngIf="!isCompany()">
               <div class="card-header">
@@ -400,35 +429,7 @@ import { FileService } from '../../core/services/file.service';
                 </div>
               </div>
             </div>
-            
-            <!-- Descripción Personal/Empresa -->
-            <div class="profile-card">
-              <div class="card-header">
-                <h3>📝 {{ isCompany() ? 'Acerca de la Empresa' : 'Acerca de mí' }}</h3>
-              </div>
-              <div class="card-content" *ngIf="!editMode">
-                <div class="description-content">
-                  <p *ngIf="getDescripcion(); else noDescription">{{ getDescripcion() }}</p>
-                  <ng-template #noDescription>
-                    <div class="empty-description">
-                      <p>{{ isCompany() ? 'Agrega una descripción de tu empresa' : 'Cuéntanos sobre ti, tus objetivos y experiencias' }}</p>
-                      <button class="btn-add-first" (click)="toggleEditMode()">Agregar descripción</button>
-                    </div>
-                  </ng-template>
-                </div>
-              </div>
-              <div class="card-content" *ngIf="editMode">
-                <div class="form-group">
-                  <label>{{ isCompany() ? 'Descripción de la Empresa' : 'Descripción Personal' }}</label>
-                  <textarea 
-                    [(ngModel)]="descripcionPersonal" 
-                    class="form-control" 
-                    rows="4" 
-                    [placeholder]="isCompany() ? 'Describe tu empresa, misión, visión y valores...' : 'Cuéntanos sobre ti, tus objetivos profesionales, habilidades y lo que te apasiona...'">
-                  </textarea>
-                </div>
-              </div>
-            </div>
+
           </div>
         </div>
       </div>
