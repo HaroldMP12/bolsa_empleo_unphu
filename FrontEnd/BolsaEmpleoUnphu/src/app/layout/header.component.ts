@@ -194,11 +194,11 @@ import { NotificationBellComponent } from '../shared/components/notification-bel
       font-size: 1.1rem;
     }
     .admin-link {
-      background: rgba(220, 53, 69, 0.9) !important;
+      background: var(--unphu-blue-dark) !important;
       color: white !important;
     }
     .admin-link:hover {
-      background: rgba(220, 53, 69, 1) !important;
+      background: rgba(15, 56, 90, 0.8) !important;
       transform: translateY(-1px);
     }
     
