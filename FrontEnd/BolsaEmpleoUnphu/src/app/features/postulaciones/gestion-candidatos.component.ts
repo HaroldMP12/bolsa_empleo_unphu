@@ -125,12 +125,12 @@ import { Subscription } from 'rxjs';
                 <div class="documento-item">
                   <span class="label">Foto de Perfil:</span>
                   <div class="foto-perfil">
-                    <img *ngIf="candidatoSeleccionado.usuario?.fotoPerfil" 
-                         [src]="candidatoSeleccionado.usuario.fotoPerfil" 
+                    <img *ngIf="(candidatoSeleccionado.usuario as any)?.fotoPerfil" 
+                         [src]="(candidatoSeleccionado.usuario as any).fotoPerfil" 
                          alt="Foto de perfil" class="foto-img"
-                         (click)="verFotoCompleta(candidatoSeleccionado.usuario.fotoPerfil)"
+                         (click)="verFotoCompleta((candidatoSeleccionado.usuario as any).fotoPerfil)"
                          style="cursor: pointer;">
-                    <div *ngIf="!candidatoSeleccionado.usuario?.fotoPerfil" class="no-disponible">
+                    <div *ngIf="!(candidatoSeleccionado.usuario as any)?.fotoPerfil" class="no-disponible">
                       📷 No disponible
                     </div>
                   </div>
@@ -138,13 +138,13 @@ import { Subscription } from 'rxjs';
                 <div class="documento-item">
                   <span class="label">Currículum Vitae:</span>
                   <div class="cv-section">
-                    <a *ngIf="candidatoSeleccionado.usuario?.cv" 
-                       [href]="candidatoSeleccionado.usuario.cv" 
+                    <a *ngIf="(candidatoSeleccionado.usuario as any)?.cv" 
+                       [href]="(candidatoSeleccionado.usuario as any).cv" 
                        target="_blank" 
                        class="btn-cv">
                       📄 Ver CV
                     </a>
-                    <div *ngIf="!candidatoSeleccionado.usuario?.cv" class="no-disponible">
+                    <div *ngIf="!(candidatoSeleccionado.usuario as any)?.cv" class="no-disponible">
                       📄 No disponible
                     </div>
                   </div>
