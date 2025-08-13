@@ -170,6 +170,15 @@ interface VacanteAdmin {
       padding: 1rem;
       text-align: left;
       border-bottom: 1px solid #eee;
+      white-space: nowrap;
+    }
+
+    th:nth-child(8), td:nth-child(8) {
+      text-align: center;
+    }
+
+    th:nth-child(7), td:nth-child(7) {
+      text-align: center;
     }
 
     th {
@@ -230,6 +239,9 @@ interface VacanteAdmin {
       font-size: 0.8rem;
       font-weight: 600;
       text-transform: uppercase;
+      display: inline-block;
+      text-align: center;
+      min-width: 80px;
     }
 
     .estado-badge.activa {
