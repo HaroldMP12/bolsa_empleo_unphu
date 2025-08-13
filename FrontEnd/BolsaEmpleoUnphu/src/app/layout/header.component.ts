@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../core/services/auth.service';
 import { NotificationService } from '../core/services/notification.service';
+import { PerfilService } from '../core/services/perfil.service';
 import { AuthResponse } from '../core/models/auth.models';
 import { NotificationBellComponent } from '../shared/components/notification-bell.component';
 
@@ -70,7 +71,10 @@ import { NotificationBellComponent } from '../shared/components/notification-bel
           <app-notification-bell></app-notification-bell>
           <div class="user-dropdown" [class.open]="dropdownOpen">
             <button class="user-button" (click)="toggleDropdown()">
-              <div class="user-avatar">{{ getUserInitials() }}</div>
+              <div class="user-avatar">
+                <img *ngIf="userProfilePhoto" [src]="userProfilePhoto" alt="Foto de perfil" class="user-photo">
+                <span *ngIf="!userProfilePhoto">{{ getUserInitials() }}</span>
+              </div>
               <div class="user-info">
                 <span class="user-name">{{ currentUser.nombreCompleto }}</span>
                 <span class="user-role">{{ currentUser.rol }}</span>
@@ -241,6 +245,12 @@ import { NotificationBellComponent } from '../shared/components/notification-bel
       font-weight: 700;
       font-size: 0.9rem;
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      overflow: hidden;
+    }
+    .user-photo {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
     .user-info {
       display: flex;
@@ -423,11 +433,13 @@ import { NotificationBellComponent } from '../shared/components/notification-bel
 export class HeaderComponent implements OnInit, OnDestroy {
   currentUser: AuthResponse | null = null;
   dropdownOpen = false;
+  userProfilePhoto: string | null = null;
 
   constructor(
     private authService: AuthService,
     private router: Router,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private perfilService: PerfilService
   ) {}
 
   @HostListener('document:click', ['$event'])
@@ -441,10 +453,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
-      if (user && !this.notificationService.isConnected()) {
-        this.notificationService.startConnection();
-      } else if (!user) {
+      if (user) {
+        this.loadUserPhoto();
+        if (!this.notificationService.isConnected()) {
+          this.notificationService.startConnection();
+        }
+      } else {
         this.notificationService.stopConnection();
+        this.userProfilePhoto = null;
       }
     });
   }
@@ -509,5 +525,31 @@ export class HeaderComponent implements OnInit, OnDestroy {
     return names.length >= 2 
       ? (names[0][0] + names[1][0]).toUpperCase()
       : names[0][0].toUpperCase();
+  }
+
+  private loadUserPhoto(): void {
+    if (!this.currentUser) return;
+    
+    // Intentar cargar como estudiante
+    this.perfilService.obtenerPerfilEstudiante(this.currentUser.usuarioID).subscribe({
+      next: (perfil) => {
+        if (perfil?.urlImagen) {
+          this.userProfilePhoto = `https://localhost:7236${perfil.urlImagen}`;
+        }
+      },
+      error: () => {
+        // Intentar como empresa
+        this.perfilService.obtenerPerfilEmpresa(this.currentUser!.usuarioID).subscribe({
+          next: (empresa) => {
+            if (empresa?.imagenLogo) {
+              this.userProfilePhoto = `https://localhost:7236${empresa.imagenLogo}`;
+            }
+          },
+          error: () => {
+            this.userProfilePhoto = null;
+          }
+        });
+      }
+    });
   }
 }

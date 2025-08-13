@@ -537,40 +537,52 @@ export class MensajesComponent implements OnInit, OnDestroy {
   }
 
   private cargarFotosPerfiles(): void {
-    const usuariosIds = new Set<number>();
-    
     this.conversaciones.forEach(conv => {
-      usuariosIds.add(conv.candidatoID);
-      usuariosIds.add(conv.empresaID);
-    });
-    
-    usuariosIds.forEach(usuarioId => {
-      if (!this.fotosPerfiles[usuarioId]) {
-        this.cargarFotoPerfil(usuarioId);
+      const candidatoId = conv.candidatoID;
+      const empresaId = conv.empresaID;
+      
+      if (candidatoId && !this.fotosPerfiles[candidatoId]) {
+        this.cargarFotoPerfil(candidatoId);
+      }
+      if (empresaId && !this.fotosPerfiles[empresaId]) {
+        this.cargarFotoPerfil(empresaId);
       }
     });
   }
 
   private cargarFotoPerfil(usuarioId: number): void {
+    console.log('Cargando foto para usuario:', usuarioId);
+    
     // Intentar cargar como estudiante primero
     this.perfilService.obtenerPerfilEstudiante(usuarioId).subscribe({
       next: (perfil) => {
+        console.log('Perfil estudiante:', perfil);
         if (perfil?.urlImagen) {
           this.fotosPerfiles[usuarioId] = `https://localhost:7236${perfil.urlImagen}`;
+          console.log('Foto estudiante cargada:', this.fotosPerfiles[usuarioId]);
+        } else {
+          // Intentar como empresa si no hay imagen de estudiante
+          this.intentarCargarEmpresa(usuarioId);
         }
       },
       error: () => {
-        // Si falla, intentar como empresa
-        this.perfilService.obtenerPerfilEmpresa(usuarioId).subscribe({
-          next: (empresa) => {
-            if (empresa?.imagenLogo) {
-              this.fotosPerfiles[usuarioId] = `https://localhost:7236${empresa.imagenLogo}`;
-            }
-          },
-          error: () => {
-            // No hacer nada, se mostrarán las iniciales
-          }
-        });
+        console.log('Error cargando estudiante, intentando empresa');
+        this.intentarCargarEmpresa(usuarioId);
+      }
+    });
+  }
+
+  private intentarCargarEmpresa(usuarioId: number): void {
+    this.perfilService.obtenerPerfilEmpresa(usuarioId).subscribe({
+      next: (empresa) => {
+        console.log('Perfil empresa:', empresa);
+        if (empresa?.imagenLogo) {
+          this.fotosPerfiles[usuarioId] = `https://localhost:7236${empresa.imagenLogo}`;
+          console.log('Foto empresa cargada:', this.fotosPerfiles[usuarioId]);
+        }
+      },
+      error: () => {
+        console.log('No se pudo cargar foto para usuario:', usuarioId);
       }
     });
   }
