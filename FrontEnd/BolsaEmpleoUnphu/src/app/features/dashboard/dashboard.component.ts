@@ -4,6 +4,7 @@ import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { PerfilService } from '../../core/services/perfil.service';
 import { DataSyncService } from '../../core/services/data-sync.service';
+import { AdminSyncService } from '../../core/services/admin-sync.service';
 import { AuthResponse } from '../../core/models/auth.models';
 import { CreatePostulacionDto } from '../../core/models/postulacion.models';
 import { ModalPostulacionComponent } from '../postulaciones/modal-postulacion.component';
@@ -630,6 +631,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private perfilService: PerfilService,
     private dataSyncService: DataSyncService,
+    private adminSyncService: AdminSyncService,
     private router: Router
   ) {}
   
@@ -652,6 +654,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.loadDashboardData();
     });
     this.subscriptions.push(postulacionesSub);
+    
+    // Suscribirse a cambios del admin sync para actualización automática
+    const adminSyncSub = this.adminSyncService.refresh$.subscribe(() => {
+      this.loadDashboardData();
+    });
+    this.subscriptions.push(adminSyncSub);
   }
   
   ngOnDestroy(): void {
@@ -675,10 +683,24 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private loadStudentData(): void {
     if (!this.currentUser) return;
     
-    const studentStats = this.dataSyncService.getStudentStats(this.currentUser.usuarioID);
-    this.stats.postulaciones = studentStats.totalPostulaciones;
-    this.stats.postulacionesPendientes = studentStats.pendientes;
-    this.stats.postulacionesRevisadas = studentStats.enRevision;
+    // Cargar postulaciones reales desde la API
+    fetch(`https://localhost:7236/api/postulaciones/usuario/${this.currentUser.usuarioID}`, {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    })
+    .then(res => res.json())
+    .then(response => {
+      const postulaciones = response.data || response || [];
+      this.stats.postulaciones = postulaciones.length;
+      this.stats.postulacionesPendientes = postulaciones.filter((p: any) => p.estado === 'Pendiente').length;
+      this.stats.postulacionesRevisadas = postulaciones.filter((p: any) => p.estado === 'En Revisión').length;
+    })
+    .catch(() => {
+      // Fallback al DataSyncService
+      const studentStats = this.dataSyncService.getStudentStats(this.currentUser!.usuarioID);
+      this.stats.postulaciones = studentStats.totalPostulaciones;
+      this.stats.postulacionesPendientes = studentStats.pendientes;
+      this.stats.postulacionesRevisadas = studentStats.enRevision;
+    });
     
     // Cargar vacantes recomendadas
     fetch('https://localhost:7236/api/vacantes/recomendadas', {
