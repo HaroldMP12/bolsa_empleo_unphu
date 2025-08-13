@@ -554,21 +554,18 @@ export class MensajesComponent implements OnInit, OnDestroy {
   private cargarFotoPerfil(usuarioId: number): void {
     console.log('Cargando foto para usuario:', usuarioId);
     
-    // Intentar cargar como estudiante primero
+    // Siempre intentar cargar desde perfil de estudiante primero (donde están las fotos reales)
     this.perfilService.obtenerPerfilEstudiante(usuarioId).subscribe({
       next: (perfil) => {
         console.log('Perfil estudiante:', perfil);
         if (perfil?.urlImagen) {
           this.fotosPerfiles[usuarioId] = `https://localhost:7236${perfil.urlImagen}`;
           console.log('Foto estudiante cargada:', this.fotosPerfiles[usuarioId]);
-        } else {
-          // Intentar como empresa si no hay imagen de estudiante
-          this.intentarCargarEmpresa(usuarioId);
+          this.cdr.detectChanges();
         }
       },
       error: () => {
-        console.log('Error cargando estudiante, intentando empresa');
-        this.intentarCargarEmpresa(usuarioId);
+        console.log('No se encontró foto en perfil estudiante para usuario:', usuarioId);
       }
     });
   }

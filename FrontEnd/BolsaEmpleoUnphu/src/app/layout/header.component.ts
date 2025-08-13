@@ -531,27 +531,39 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private loadUserPhoto(): void {
     if (!this.currentUser) return;
     
-    // Intentar cargar como estudiante
+    // Primero intentar como estudiante (donde están las fotos de perfil)
     this.perfilService.obtenerPerfilEstudiante(this.currentUser.usuarioID).subscribe({
       next: (perfil) => {
         if (perfil?.urlImagen) {
           this.userProfilePhoto = `https://localhost:7236${perfil.urlImagen}`;
+          console.log('Header - Foto desde perfil:', this.userProfilePhoto);
+          this.cdr.detectChanges();
+        } else if (this.currentUser?.rol === 'Empresa') {
+          // Si es empresa y no tiene foto en perfil, intentar en empresa
+          this.loadEmpresaPhoto();
         }
       },
       error: () => {
-        // Intentar como empresa
-        this.perfilService.obtenerPerfilEmpresa(this.currentUser!.usuarioID).subscribe({
-          next: (empresa) => {
-            if (empresa?.imagenLogo) {
-              this.userProfilePhoto = `https://localhost:7236${empresa.imagenLogo}`;
-              console.log('Header - Foto empresa cargada:', this.userProfilePhoto);
-              this.cdr.detectChanges();
-            }
-          },
-          error: () => {
-            this.userProfilePhoto = null;
-          }
-        });
+        if (this.currentUser?.rol === 'Empresa') {
+          this.loadEmpresaPhoto();
+        } else {
+          this.userProfilePhoto = null;
+        }
+      }
+    });
+  }
+
+  private loadEmpresaPhoto(): void {
+    this.perfilService.obtenerPerfilEmpresa(this.currentUser!.usuarioID).subscribe({
+      next: (empresa) => {
+        if (empresa?.imagenLogo) {
+          this.userProfilePhoto = `https://localhost:7236${empresa.imagenLogo}`;
+          console.log('Header - Foto desde empresa:', this.userProfilePhoto);
+          this.cdr.detectChanges();
+        }
+      },
+      error: () => {
+        this.userProfilePhoto = null;
       }
     });
   }
