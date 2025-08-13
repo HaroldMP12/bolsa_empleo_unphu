@@ -37,6 +37,9 @@ interface VacanteAdmin {
             <option value="Remoto">Remoto</option>
             <option value="Híbrido">Híbrido</option>
           </select>
+          <button class="btn-actualizar" (click)="cargarVacantes()" title="Actualizar datos">
+            🔄 Actualizar
+          </button>
         </div>
       </div>
 
@@ -51,7 +54,9 @@ interface VacanteAdmin {
               <th>Ubicación</th>
               <th>Salario</th>
               <th>Fecha Cierre</th>
+              <th>Estado</th>
               <th>Plazas</th>
+              <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -76,7 +81,22 @@ interface VacanteAdmin {
               <td>{{vacante.ubicacion || 'No especificada'}}</td>
               <td>{{vacante.salario ? ('RD$ ' + (vacante.salario | number)) : 'No especificado'}}</td>
               <td>{{formatearFecha(vacante.fechaCierre)}}</td>
+              <td>
+                <span class="estado-badge" [class]="getEstadoVacante(vacante.fechaCierre)">
+                  {{getEstadoTexto(vacante.fechaCierre)}}
+                </span>
+              </td>
               <td>{{vacante.cantidadVacantes || 1}}</td>
+              <td>
+                <div class="acciones">
+                  <button class="btn-ver" (click)="verDetalles(vacante)" title="Ver detalles">
+                    👁️
+                  </button>
+                  <button class="btn-eliminar" (click)="eliminarVacante(vacante)" title="Eliminar vacante">
+                    🗑️
+                  </button>
+                </div>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -117,6 +137,21 @@ interface VacanteAdmin {
       padding: 0.5rem;
       border: 1px solid #ddd;
       border-radius: 4px;
+    }
+
+    .btn-actualizar {
+      background: var(--unphu-blue-dark);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.3s;
+    }
+
+    .btn-actualizar:hover {
+      background: #0a2a3f;
     }
 
     .vacantes-table {
@@ -184,6 +219,57 @@ interface VacanteAdmin {
       color: #f57c00;
     }
 
+    .modalidad-badge.sin-modalidad {
+      background: #f5f5f5;
+      color: #666;
+    }
+
+    .estado-badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .estado-badge.activa {
+      background: #e8f5e8;
+      color: #2e7d32;
+    }
+
+    .estado-badge.vencida {
+      background: #ffebee;
+      color: #c62828;
+    }
+
+    .estado-badge.proxima {
+      background: #fff3e0;
+      color: #ef6c00;
+    }
+
+    .acciones {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .btn-ver, .btn-eliminar {
+      background: none;
+      border: none;
+      padding: 0.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.3s;
+    }
+
+    .btn-ver:hover {
+      background: #e3f2fd;
+    }
+
+    .btn-eliminar:hover {
+      background: #ffebee;
+    }
+
     .empty-state, .loading {
       text-align: center;
       padding: 3rem;
@@ -217,15 +303,42 @@ export class VacantesAdminComponent implements OnInit, OnDestroy {
 
   cargarVacantes() {
     this.cargando = true;
-    const params: any = {};
     
-    if (this.busqueda) params.search = this.busqueda;
-    if (this.filtroModalidad) params.modalidad = this.filtroModalidad;
-
-    this.apiService.get<any>('vacantes', params).subscribe({
+    // Cargar vacantes con datos completos de empresa y categoría
+    this.apiService.get<any>('vacantes?pageSize=1000').subscribe({
       next: (response) => {
         console.log('Respuesta de vacantes:', response);
-        this.vacantes = response.data || response || [];
+        let vacantesData = response.data || response || [];
+        
+        // Aplicar filtros localmente para mejor rendimiento
+        if (this.busqueda) {
+          const busquedaLower = this.busqueda.toLowerCase();
+          vacantesData = vacantesData.filter((v: any) => 
+            v.tituloVacante?.toLowerCase().includes(busquedaLower) ||
+            v.empresa?.nombreEmpresa?.toLowerCase().includes(busquedaLower) ||
+            v.nombreEmpresa?.toLowerCase().includes(busquedaLower)
+          );
+        }
+        
+        if (this.filtroModalidad) {
+          vacantesData = vacantesData.filter((v: any) => v.modalidad === this.filtroModalidad);
+        }
+        
+        // Mapear datos con información completa
+        this.vacantes = vacantesData.map((v: any) => ({
+          vacanteID: v.vacanteID,
+          tituloVacante: v.tituloVacante || 'Sin título',
+          descripcion: v.descripcion || '',
+          nombreEmpresa: v.empresa?.nombreEmpresa || v.nombreEmpresa || 'Empresa no especificada',
+          rnc: v.empresa?.rnc || v.rnc,
+          nombreCategoria: v.categoria?.nombreCategoria || v.nombreCategoria || 'Sin categoría',
+          fechaCierre: v.fechaCierre,
+          ubicacion: v.ubicacion || 'No especificada',
+          modalidad: v.modalidad || 'No especificada',
+          salario: v.salario || 0,
+          cantidadVacantes: v.cantidadVacantes || 1
+        }));
+        
         console.log('Vacantes procesadas:', this.vacantes);
         this.cargando = false;
       },
@@ -239,5 +352,47 @@ export class VacantesAdminComponent implements OnInit, OnDestroy {
 
   formatearFecha(fecha: string): string {
     return new Date(fecha).toLocaleDateString('es-ES');
+  }
+
+  getEstadoVacante(fechaCierre: string): string {
+    const hoy = new Date();
+    const cierre = new Date(fechaCierre);
+    const diasRestantes = Math.ceil((cierre.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24));
+    
+    if (diasRestantes < 0) return 'vencida';
+    if (diasRestantes <= 7) return 'proxima';
+    return 'activa';
+  }
+
+  getEstadoTexto(fechaCierre: string): string {
+    const estado = this.getEstadoVacante(fechaCierre);
+    switch (estado) {
+      case 'vencida': return 'Vencida';
+      case 'proxima': return 'Próxima a vencer';
+      case 'activa': return 'Activa';
+      default: return 'Activa';
+    }
+  }
+
+  verDetalles(vacante: VacanteAdmin): void {
+    // Implementar modal de detalles o navegación
+    console.log('Ver detalles de vacante:', vacante);
+    this.toastService.showInfo(`Detalles de: ${vacante.tituloVacante}`);
+  }
+
+  eliminarVacante(vacante: VacanteAdmin): void {
+    if (confirm(`¿Estás seguro de eliminar la vacante "${vacante.tituloVacante}"?`)) {
+      this.apiService.delete(`vacantes/${vacante.vacanteID}`).subscribe({
+        next: () => {
+          this.toastService.showSuccess('Vacante eliminada correctamente');
+          this.syncService.notifyVacancyChange();
+          this.cargarVacantes();
+        },
+        error: (error) => {
+          console.error('Error al eliminar vacante:', error);
+          this.toastService.showError('Error al eliminar la vacante');
+        }
+      });
+    }
   }
 }
