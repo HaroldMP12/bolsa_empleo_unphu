@@ -579,6 +579,9 @@ export class MensajesComponent implements OnInit, OnDestroy {
         if (empresa?.imagenLogo) {
           this.fotosPerfiles[usuarioId] = `https://localhost:7236${empresa.imagenLogo}`;
           console.log('Foto empresa cargada:', this.fotosPerfiles[usuarioId]);
+        } else if (empresa?.urlImagen) {
+          this.fotosPerfiles[usuarioId] = `https://localhost:7236${empresa.urlImagen}`;
+          console.log('Foto empresa (urlImagen) cargada:', this.fotosPerfiles[usuarioId]);
         }
       },
       error: () => {

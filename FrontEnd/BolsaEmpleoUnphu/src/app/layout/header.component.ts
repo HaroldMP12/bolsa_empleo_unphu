@@ -541,8 +541,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
         // Intentar como empresa
         this.perfilService.obtenerPerfilEmpresa(this.currentUser!.usuarioID).subscribe({
           next: (empresa) => {
+            console.log('Empresa data:', empresa);
             if (empresa?.imagenLogo) {
               this.userProfilePhoto = `https://localhost:7236${empresa.imagenLogo}`;
+            } else if (empresa?.urlImagen) {
+              this.userProfilePhoto = `https://localhost:7236${empresa.urlImagen}`;
             }
           },
           error: () => {
