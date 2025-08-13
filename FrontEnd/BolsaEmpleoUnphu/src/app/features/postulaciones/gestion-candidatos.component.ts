@@ -125,10 +125,12 @@ import { Subscription } from 'rxjs';
                 <div class="documento-item">
                   <span class="label">Foto de Perfil:</span>
                   <div class="foto-perfil">
-                    <img *ngIf="getUserProperty(candidatoSeleccionado.usuario, 'fotoPerfil')" 
-                         [src]="getUserProperty(candidatoSeleccionado.usuario, 'fotoPerfil')" 
-                         alt="Foto de perfil" class="foto-img">
-                    <div *ngIf="!getUserProperty(candidatoSeleccionado.usuario, 'fotoPerfil')" class="no-disponible">
+                    <img *ngIf="candidatoSeleccionado.usuario?.fotoPerfil" 
+                         [src]="candidatoSeleccionado.usuario.fotoPerfil" 
+                         alt="Foto de perfil" class="foto-img"
+                         (click)="verFotoCompleta(candidatoSeleccionado.usuario.fotoPerfil)"
+                         style="cursor: pointer;">
+                    <div *ngIf="!candidatoSeleccionado.usuario?.fotoPerfil" class="no-disponible">
                       📷 No disponible
                     </div>
                   </div>
@@ -136,13 +138,13 @@ import { Subscription } from 'rxjs';
                 <div class="documento-item">
                   <span class="label">Currículum Vitae:</span>
                   <div class="cv-section">
-                    <a *ngIf="getUserProperty(candidatoSeleccionado.usuario, 'cv')" 
-                       [href]="getUserProperty(candidatoSeleccionado.usuario, 'cv')" 
+                    <a *ngIf="candidatoSeleccionado.usuario?.cv" 
+                       [href]="candidatoSeleccionado.usuario.cv" 
                        target="_blank" 
                        class="btn-cv">
                       📄 Ver CV
                     </a>
-                    <div *ngIf="!getUserProperty(candidatoSeleccionado.usuario, 'cv')" class="no-disponible">
+                    <div *ngIf="!candidatoSeleccionado.usuario?.cv" class="no-disponible">
                       📄 No disponible
                     </div>
                   </div>
@@ -778,6 +780,12 @@ export class GestionCandidatosComponent implements OnInit, OnDestroy {
     return usuario && usuario[property] ? usuario[property] : null;
   }
 
+  verFotoCompleta(fotoUrl: string): void {
+    if (fotoUrl) {
+      window.open(fotoUrl, '_blank');
+    }
+  }
+
   cargarPerfilCompleto(usuarioID: number): void {
     // Cargar perfil del estudiante desde la API
     fetch(`https://localhost:7236/api/perfiles/usuario/${usuarioID}`, {
@@ -786,10 +794,12 @@ export class GestionCandidatosComponent implements OnInit, OnDestroy {
     .then(res => res.json())
     .then(perfil => {
       console.log('Perfil cargado completo:', perfil);
-      console.log('Promedio en perfil:', perfil.promedio);
-      console.log('Tipo de promedio:', typeof perfil.promedio);
       
       if (this.candidatoSeleccionado && perfil) {
+        // Construir URLs completas para foto y CV
+        const fotoPerfil = perfil.urlImagen ? `https://localhost:7236${perfil.urlImagen}` : null;
+        const cv = perfil.urlCV ? `https://localhost:7236${perfil.urlCV}` : null;
+        
         // Actualizar datos del usuario con información real del perfil
         (this.candidatoSeleccionado.usuario as any) = {
           ...this.candidatoSeleccionado.usuario,
@@ -797,9 +807,10 @@ export class GestionCandidatosComponent implements OnInit, OnDestroy {
           matricula: perfil.matricula || 'No disponible',
           semestre: perfil.semestre || 'No disponible',
           promedio: perfil.promedioAcademico !== null && perfil.promedioAcademico !== undefined ? perfil.promedioAcademico : 'No disponible',
-          fotoPerfil: perfil.fotoPerfil,
-          cv: perfil.cv
+          fotoPerfil: fotoPerfil,
+          cv: cv
         };
+        console.log('URLs construidas - Foto:', fotoPerfil, 'CV:', cv);
         console.log('Usuario actualizado:', this.candidatoSeleccionado.usuario);
       }
     })
