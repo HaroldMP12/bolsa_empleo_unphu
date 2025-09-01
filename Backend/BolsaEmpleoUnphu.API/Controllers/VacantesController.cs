@@ -241,65 +241,47 @@ public class VacantesController : ControllerBase
     [Authorize(Roles = "Empresa,Admin")]
     public async Task<IActionResult> DeleteVacante(int id)
     {
-        var vacante = await _context.Vacantes.FindAsync(id);
-        if (vacante == null)
-        {
-            return NotFound();
-        }
-
-        // Validación 3: Solo tu empresa puede eliminar sus vacantes (excepto Admin)
-        var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
-        if (userRole != "Admin")
-        {
-            var usuarioId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-            var empresa = await _context.Empresas.FirstOrDefaultAsync(e => e.UsuarioID == usuarioId);
-            
-            if (empresa == null)
-                return BadRequest("No tienes una empresa asociada");
-                
-            if (vacante.EmpresaID != empresa.EmpresaID)
-                return StatusCode(403, "Solo puedes eliminar vacantes de tu empresa");
-        }
-
         try
         {
-            // Usar transacción para asegurar consistencia
-            using var transaction = await _context.Database.BeginTransactionAsync();
+            // Verificar que la vacante existe
+            var vacanteExists = await _context.Vacantes.AnyAsync(v => v.VacanteID == id);
+            if (!vacanteExists)
+            {
+                return NotFound();
+            }
+
+            // Validación de permisos
+            var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+            if (userRole != "Admin")
+            {
+                var usuarioId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+                var empresa = await _context.Empresas.FirstOrDefaultAsync(e => e.UsuarioID == usuarioId);
+                
+                if (empresa == null)
+                    return BadRequest("No tienes una empresa asociada");
+                    
+                var vacante = await _context.Vacantes.FindAsync(id);
+                if (vacante!.EmpresaID != empresa.EmpresaID)
+                    return StatusCode(403, "Solo puedes eliminar vacantes de tu empresa");
+            }
+
+            // Eliminar usando SQL directo en el orden correcto
+            var sql = @"
+                DELETE FROM RespuestasPostulaciones 
+                WHERE PostulacionID IN (SELECT PostulacionID FROM Postulaciones WHERE VacanteID = @p0)
+                   OR PreguntaID IN (SELECT PreguntaID FROM PreguntasVacantes WHERE VacanteID = @p0);
+                
+                DELETE FROM Postulaciones WHERE VacanteID = @p0;
+                DELETE FROM PreguntasVacantes WHERE VacanteID = @p0;
+                DELETE FROM Vacantes WHERE VacanteID = @p0;
+            ";
             
-            try
-            {
-                // 1. Eliminar respuestas de postulaciones relacionadas con esta vacante
-                await _context.Database.ExecuteSqlRawAsync(
-                    "DELETE FROM RespuestasPostulaciones WHERE PostulacionID IN (SELECT PostulacionID FROM Postulaciones WHERE VacanteID = {0})", id);
-
-                // 2. Eliminar respuestas relacionadas con preguntas de esta vacante
-                await _context.Database.ExecuteSqlRawAsync(
-                    "DELETE FROM RespuestasPostulaciones WHERE PreguntaID IN (SELECT PreguntaID FROM PreguntasVacantes WHERE VacanteID = {0})", id);
-
-                // 3. Eliminar postulaciones
-                await _context.Database.ExecuteSqlRawAsync(
-                    "DELETE FROM Postulaciones WHERE VacanteID = {0}", id);
-
-                // 4. Eliminar preguntas de la vacante
-                await _context.Database.ExecuteSqlRawAsync(
-                    "DELETE FROM PreguntasVacantes WHERE VacanteID = {0}", id);
-
-                // 5. Eliminar la vacante
-                await _context.Database.ExecuteSqlRawAsync(
-                    "DELETE FROM Vacantes WHERE VacanteID = {0}", id);
-
-                await transaction.CommitAsync();
-                return NoContent();
-            }
-            catch
-            {
-                await transaction.RollbackAsync();
-                throw;
-            }
+            await _context.Database.ExecuteSqlRawAsync(sql, id);
+            return NoContent();
         }
         catch (Exception ex)
         {
-            return StatusCode(500, $"Error al eliminar la vacante: {ex.Message}");
+            return StatusCode(500, $"Error: {ex.Message}");
         }
     }
 
