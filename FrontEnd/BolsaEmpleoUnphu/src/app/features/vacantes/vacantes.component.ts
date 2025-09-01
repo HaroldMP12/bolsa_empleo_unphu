@@ -1458,34 +1458,47 @@ export class VacantesComponent implements OnInit, OnDestroy {
     
     // Validar campos requeridos
     if (!this.nuevaVacante.titulo?.trim()) {
-      console.log('Falta título');
+      console.log('❌ Falta título:', this.nuevaVacante.titulo);
       return false;
     }
-    if (!this.nuevaVacante.descripcion.trim()) {
-      console.log('Falta descripción');
+    console.log('✅ Título válido:', this.nuevaVacante.titulo);
+    
+    if (!this.nuevaVacante.descripcion?.trim()) {
+      console.log('❌ Falta descripción:', this.nuevaVacante.descripcion);
       return false;
     }
-    if (!this.nuevaVacante.requisitos.trim()) {
-      console.log('Falta requisitos');
+    console.log('✅ Descripción válida');
+    
+    if (!this.nuevaVacante.requisitos?.trim()) {
+      console.log('❌ Falta requisitos:', this.nuevaVacante.requisitos);
       return false;
     }
+    console.log('✅ Requisitos válidos');
+    
     if (!this.nuevaVacante.modalidad?.trim()) {
-      console.log('Falta modalidad');
+      console.log('❌ Falta modalidad:', this.nuevaVacante.modalidad);
       return false;
     }
-    if (!this.nuevaVacante.ubicacion.trim()) {
-      console.log('Falta ubicación');
+    console.log('✅ Modalidad válida:', this.nuevaVacante.modalidad);
+    
+    if (!this.nuevaVacante.ubicacion?.trim()) {
+      console.log('❌ Falta ubicación:', this.nuevaVacante.ubicacion);
       return false;
     }
+    console.log('✅ Ubicación válida:', this.nuevaVacante.ubicacion);
+    
     const categoriaID = parseInt(this.nuevaVacante.categoriaID.toString());
     if (!categoriaID || categoriaID === 0 || isNaN(categoriaID)) {
-      console.log('Falta categoría, valor actual:', this.nuevaVacante.categoriaID, 'tipo:', typeof this.nuevaVacante.categoriaID);
+      console.log('❌ Falta categoría, valor actual:', this.nuevaVacante.categoriaID, 'parseado:', categoriaID, 'tipo:', typeof this.nuevaVacante.categoriaID);
       return false;
     }
+    console.log('✅ Categoría válida:', categoriaID);
+    
     if (!this.nuevaVacante.fechaVencimiento?.trim()) {
-      console.log('Falta fecha vencimiento');
+      console.log('❌ Falta fecha vencimiento:', this.nuevaVacante.fechaVencimiento);
       return false;
     }
+    console.log('✅ Fecha vencimiento válida:', this.nuevaVacante.fechaVencimiento);
     
     // Validar que la fecha de vencimiento sea futura
     if (this.nuevaVacante.fechaVencimiento) {
