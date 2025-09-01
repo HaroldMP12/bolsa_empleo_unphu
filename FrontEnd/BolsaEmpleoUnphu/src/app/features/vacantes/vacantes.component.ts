@@ -1477,7 +1477,8 @@ export class VacantesComponent implements OnInit, OnDestroy {
       console.log('Falta ubicación');
       return false;
     }
-    if (!this.nuevaVacante.categoriaID || this.nuevaVacante.categoriaID === 0) {
+    const categoriaID = parseInt(this.nuevaVacante.categoriaID.toString());
+    if (!categoriaID || categoriaID === 0 || isNaN(categoriaID)) {
       console.log('Falta categoría, valor actual:', this.nuevaVacante.categoriaID, 'tipo:', typeof this.nuevaVacante.categoriaID);
       return false;
     }
