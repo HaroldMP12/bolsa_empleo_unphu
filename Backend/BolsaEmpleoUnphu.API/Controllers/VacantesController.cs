@@ -263,32 +263,39 @@ public class VacantesController : ControllerBase
 
         try
         {
-            // Eliminar respuestas de postulaciones relacionadas
-            var respuestasPostulaciones = await _context.RespuestasPostulaciones
-                .Where(rp => _context.Postulaciones
-                    .Where(p => p.VacanteID == id)
-                    .Select(p => p.PostulacionID)
-                    .Contains(rp.PostulacionID))
-                .ToListAsync();
-            _context.RespuestasPostulaciones.RemoveRange(respuestasPostulaciones);
+            // Usar transacción para asegurar consistencia
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            
+            try
+            {
+                // 1. Eliminar respuestas de postulaciones relacionadas con esta vacante
+                await _context.Database.ExecuteSqlRawAsync(
+                    "DELETE FROM RespuestasPostulaciones WHERE PostulacionID IN (SELECT PostulacionID FROM Postulaciones WHERE VacanteID = {0})", id);
 
-            // Eliminar postulaciones relacionadas
-            var postulaciones = await _context.Postulaciones
-                .Where(p => p.VacanteID == id)
-                .ToListAsync();
-            _context.Postulaciones.RemoveRange(postulaciones);
+                // 2. Eliminar respuestas relacionadas con preguntas de esta vacante
+                await _context.Database.ExecuteSqlRawAsync(
+                    "DELETE FROM RespuestasPostulaciones WHERE PreguntaID IN (SELECT PreguntaID FROM PreguntasVacantes WHERE VacanteID = {0})", id);
 
-            // Eliminar preguntas de la vacante
-            var preguntasVacante = await _context.PreguntasVacantes
-                .Where(pv => pv.VacanteID == id)
-                .ToListAsync();
-            _context.PreguntasVacantes.RemoveRange(preguntasVacante);
+                // 3. Eliminar postulaciones
+                await _context.Database.ExecuteSqlRawAsync(
+                    "DELETE FROM Postulaciones WHERE VacanteID = {0}", id);
 
-            // Finalmente eliminar la vacante
-            _context.Vacantes.Remove(vacante);
-            await _context.SaveChangesAsync();
+                // 4. Eliminar preguntas de la vacante
+                await _context.Database.ExecuteSqlRawAsync(
+                    "DELETE FROM PreguntasVacantes WHERE VacanteID = {0}", id);
 
-            return NoContent();
+                // 5. Eliminar la vacante
+                await _context.Database.ExecuteSqlRawAsync(
+                    "DELETE FROM Vacantes WHERE VacanteID = {0}", id);
+
+                await transaction.CommitAsync();
+                return NoContent();
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
         catch (Exception ex)
         {
