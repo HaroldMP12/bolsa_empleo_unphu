@@ -1520,18 +1520,16 @@ export class PerfilComponent implements OnInit {
 
   private guardarPerfilEstudiante(): void {
     console.log('Iniciando guardado de perfil estudiante');
-    // Remover validaciones temporalmente para testing
-    // console.log('Personal form valid:', this.personalForm.valid);
-    // console.log('Academic form valid:', this.academicForm.valid);
     console.log('Academic form values:', this.academicForm.value);
     
     this.guardando = true;
     const semestreValue = this.academicForm.get('semestre')?.value;
     const anoIngresoValue = this.academicForm.get('anoIngreso')?.value;
+    const esGraduado = semestreValue === 'graduado';
     
     const perfilData: any = {
       usuarioID: this.currentUser!.usuarioID,
-      tipoPerfil: semestreValue === 'graduado' ? 'Egresado' : 'Estudiante',
+      tipoPerfil: esGraduado ? 'Egresado' : 'Estudiante',
       matricula: this.academicForm.get('matricula')?.value || null,
       carreraID: parseInt(this.academicForm.get('carrera')?.value) || 1,
       semestre: semestreValue && semestreValue !== 'graduado' && semestreValue !== '' ? parseInt(semestreValue) : null,
@@ -1549,6 +1547,11 @@ export class PerfilComponent implements OnInit {
       experienciaLaboral: this.experiencias.length > 0 ? JSON.stringify(this.experiencias) : null,
       telefono: this.personalForm.get('telefono')?.value || null
     };
+    
+    // Si cambió a graduado, actualizar rol del usuario
+    if (esGraduado && this.currentUser?.rol === 'Estudiante') {
+      this.actualizarRolUsuario('Egresado');
+    }
     
     console.log('=== DATOS A GUARDAR ===');
     console.log('Foto seleccionada:', this.fotoSeleccionada);
@@ -1758,7 +1761,7 @@ export class PerfilComponent implements OnInit {
     const semestre = this.academicForm?.get('semestre')?.value;
     if (semestre === 'graduado') return 'Egresado';
     if (semestre) return `${semestre}° Semestre`;
-    return 'Estudiante';
+    return this.currentUser?.rol === 'Egresado' ? 'Egresado' : 'Estudiante';
   }
 
   toggleEditMode(): void {
@@ -2013,5 +2016,35 @@ export class PerfilComponent implements OnInit {
 
   getFileUrl(fileName: string): string {
     return this.fileService.getFileUrl(fileName, 'cv');
+  }
+
+  private actualizarRolUsuario(nuevoRol: string): void {
+    if (!this.currentUser) return;
+    
+    const updateData = {
+      usuarioID: this.currentUser.usuarioID,
+      rolID: nuevoRol === 'Egresado' ? 2 : 1
+    };
+    
+    fetch(`https://localhost:7236/api/usuarios/${this.currentUser.usuarioID}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
+      body: JSON.stringify({
+        ...this.currentUser,
+        rolID: updateData.rolID
+      })
+    })
+    .then(() => {
+      // Actualizar usuario en el servicio de auth
+      const updatedUser = { ...this.currentUser!, rol: nuevoRol };
+      this.authService.updateCurrentUser(updatedUser);
+      console.log('Rol actualizado a:', nuevoRol);
+    })
+    .catch(error => {
+      console.error('Error al actualizar rol:', error);
+    });
   }
 }
