@@ -261,10 +261,39 @@ public class VacantesController : ControllerBase
                 return StatusCode(403, "Solo puedes eliminar vacantes de tu empresa");
         }
 
-        _context.Vacantes.Remove(vacante);
-        await _context.SaveChangesAsync();
+        try
+        {
+            // Eliminar respuestas de postulaciones relacionadas
+            var respuestasPostulaciones = await _context.RespuestasPostulaciones
+                .Where(rp => _context.Postulaciones
+                    .Where(p => p.VacanteID == id)
+                    .Select(p => p.PostulacionID)
+                    .Contains(rp.PostulacionID))
+                .ToListAsync();
+            _context.RespuestasPostulaciones.RemoveRange(respuestasPostulaciones);
 
-        return NoContent();
+            // Eliminar postulaciones relacionadas
+            var postulaciones = await _context.Postulaciones
+                .Where(p => p.VacanteID == id)
+                .ToListAsync();
+            _context.Postulaciones.RemoveRange(postulaciones);
+
+            // Eliminar preguntas de la vacante
+            var preguntasVacante = await _context.PreguntasVacantes
+                .Where(pv => pv.VacanteID == id)
+                .ToListAsync();
+            _context.PreguntasVacantes.RemoveRange(preguntasVacante);
+
+            // Finalmente eliminar la vacante
+            _context.Vacantes.Remove(vacante);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error al eliminar la vacante: {ex.Message}");
+        }
     }
 
     // GET: api/vacantes/activas
