@@ -723,7 +723,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
     
     // Cargar todas las vacantes
-    fetch('https://localhost:7236/api/vacantes', {
+    fetch('https://localhost:7236/api/vacantes/activas?pageSize=100', {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
     })
     .then(res => res.json())

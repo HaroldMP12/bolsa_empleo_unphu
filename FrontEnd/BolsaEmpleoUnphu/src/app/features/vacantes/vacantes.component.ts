@@ -1013,7 +1013,8 @@ export class VacantesComponent implements OnInit, OnDestroy {
   }
 
   cargarTodasLasVacantes(): void {
-    this.apiService.get<any>('vacantes?pageSize=1000').subscribe({
+    // Cargar todas las vacantes sin límite de paginación
+    this.apiService.get<any>('vacantes/activas?pageSize=100').subscribe({
       next: (response) => {
         const vacantesData = response.data || response || [];
         console.log('Total vacantes cargadas para estudiantes:', vacantesData.length);
