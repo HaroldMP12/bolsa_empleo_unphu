@@ -267,6 +267,11 @@ public class VacantesController : ControllerBase
 
             // Eliminar usando SQL directo en el orden correcto
             var sql = @"
+                DELETE FROM Mensajes 
+                WHERE ConversacionID IN (SELECT ConversacionID FROM Conversaciones WHERE VacanteID = @p0);
+                
+                DELETE FROM Conversaciones WHERE VacanteID = @p0;
+                
                 DELETE FROM RespuestasPostulaciones 
                 WHERE PostulacionID IN (SELECT PostulacionID FROM Postulaciones WHERE VacanteID = @p0)
                    OR PreguntaID IN (SELECT PreguntaID FROM PreguntasVacantes WHERE VacanteID = @p0);
